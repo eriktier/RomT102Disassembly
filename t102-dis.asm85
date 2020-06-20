@@ -2,7 +2,7 @@
 ; ======================================================
 ; Reset Vector
 ; ======================================================
-0000H  (C3H) JMP 1BA7H      ; Difference between M100 and T102: Jump to boot routine
+0000H  (C3H) JMP 1BA7H      ; Different from M100: Jump to boot routine
 
 0003H  DB   "MENU",00H
 
@@ -325,11 +325,27 @@
 0358H  DB   "CF"
 
 ; ======================================================
-; Initialization image loaded to F5F0H    ; Active system signature -- Warm vs Cold boot
+; Initialization image loaded to F5F0H
 ; ======================================================
-035AH  DB   4DH,8AH,00H,00H,F0H,F5H,C9H,00H
-0362H  DB   00H,FBH,C9H,00H,C9H,00H,00H,C9H
-036AH  DB   00H,00H,C3H,31H,14H
+035AH  DB   4DH,
+035BH  DB   8AH,
+035CH  DB   00H,
+035DH  DB   00H,
+035EH  DB   F0H,
+035FH  DB   F5H,
+0360H  (C9H) RET            ; This RET can be changed to JMP to hook Boot-up (F5F6H)
+0361H  (00H) NOP            ; Space for address for JMP
+0362H  (00H) NOP
+0363H  (FBH) EI             ; This is the hook for WAND (F5F9H) (RST 5.5)
+0364H  (C9H) RET            ; Replace EI, RET, NOP with a JMP instruction
+0365H  (00H) NOP
+0366H  (C9H) RET            ; This is the RST 6.5 routine (RS232 receive interrupt) hook (F5FCH)
+0367H  (00H) NOP            ; Replace RET, NOP, NOP with a JMP instruction
+0368H  (00H) NOP
+0369H  (C9H) RET            ; This is the RST 7.5 hook (Background tick)  (F5FFH)
+036AH  (00H) NOP
+036BH  (00H) NOP
+036CH  (C3H) JMP 1431H      ; Normal TRAP (low power) interrupt routine - Hook at F602H
 
 
 ; ======================================================
@@ -338,7 +354,7 @@
 036FH  DB   3EH,01H,D3H,E8H,21H,40H,00H,11H
 0377H  DB   A4H,FAH,7EH,12H,23H,13H,7DH,D6H
 037FH  DB   48H,C2H,0FH,F6H,D3H,E8H,2AH,A4H
-0387H  DB   FAH,11H,41H,42H,C3H,18H,00H,F3H     ; Difference between M100 and T102
+0387H  DB   FAH,11H,41H,42H,C3H,18H,00H,F3H     ; Different from M1002
 038FH  DB   3EH,01H,D3H,E8H,C7H,00H,01H,00H
 0397H  DB   00H,FFH,FFH,00H,00H,00H,00H,00H
 039FH  DB   00H,00H,00H,00H,01H,01H,08H,28H
@@ -346,7 +362,7 @@
 03AFH  DB   28H,00H,00H,00H,50H,38H,30H,00H
 03B7H  DB   00H,00H,00H,00H,00H,00H,00H,00H
 03BFH  DB   00H,00H,64H,FFH,00H,00H,4DH,37H
-03C7H  DB   49H,31H,44H,C3H,00H,00H,00H,C9H     ; Difference between M100 and T102
+03C7H  DB   49H,31H,44H,C3H,00H,00H,00H,C9H     ; Different from M100
 03CFH  DB   00H,C9H,D3H,00H,C9H,DBH,00H,C9H
 03D7H  DB   3AH,00H,00H,00H,00H,00H,00H,00H
 03DFH  DB   00H,0EH,00H,15H,FDH,FEH,FFH,B2H
@@ -1416,7 +1432,7 @@
 09FCH  (5EH) MOV E,M
 09FDH  (23H) INX H
 09FEH  (56H) MOV D,M
-09FFH  (21H) LXI H,F683H    ; Difference between M100 and T102
+09FFH  (21H) LXI H,F683H    ; Different from M100
 0A02H  (DFH) RST 3          ; Compare DE and HL
 0A03H  (DAH) JC 0A1DH
 0A06H  (2AH) LHLD FBB6H     ; Unused memory pointer
@@ -4468,7 +4484,7 @@
 1B84H  (CDH) CALL 3FD2H     ; Trigger interrupt.  HL points to interrupt table
 1B87H  (3EH) MVI A,AFH
 1B89H  (32H) STA F943H
-1B8CH  (C3H) JMP 1BABH      ; Difference from m100, likely bug fix for year increase
+1B8CH  (C3H) JMP 1BABH      ; Different from m100, likely bug fix for year increase
 
 1B8FH  (CDH) CALL 20D5H
 1B92H  (C8H) RZ
@@ -4484,7 +4500,7 @@
 1BA4H  (C3H) JMP 659BH
 
 1BA7H  (AFH) XRA A
-1BA8H  (C3H) JMP 7D33H      ; End difference from m100
+1BA8H  (C3H) JMP 7D33H      ; End different from m100
 
 1BABH  (CDH) CALL 7682H     ; Check for optional external controller
 1BAEH  (C3H) JMP 7391H
@@ -5465,13 +5481,13 @@
 ; Update system pointers for .DO), .CO), vars), etc.
 ; ======================================================
 2146H  (AFH) XRA A
-2147H  (CDH) CALL 6C42H     ; Difference between M100 and T102
+2147H  (CDH) CALL 6C42H     ; Different from M1002
 214AH  (2AH) LHLD FAC0H     ; Lowest RAM address used by system
 214DH  (23H) INX H
 214EH  (E5H) PUSH H
 214FH  (21H) LXI H,F98EH
 2152H  (11H) LXI D,FFFFH
-2155H  (CDH) CALL 1B8FH     ; Difference between M100 and T102
+2155H  (CDH) CALL 1B8FH     ; Different from M1002
 2158H  (CAH) JZ 2175H
 215BH  (0FH) RRC
 215CH  (DAH) JC 2155H
@@ -6257,7 +6273,7 @@
 265CH  (C1H) POP B
 265DH  (B8H) CMP B
 265EH  (CAH) JZ 26E3H
-2661H  (CDH) CALL 6C37H     ; Difference between M100 and T102
+2661H  (CDH) CALL 6C37H     ; Different from M1002
 2664H  (C3H) JMP 2658H
 
 2667H  (CDH) CALL 148AH     ; Start tape and load tape header
@@ -8323,7 +8339,7 @@
 33A4H  DB   3FH,75H,30H,71H,49H,13H,48H,00H
 33ACH  DB   BFH,90H,81H,34H,32H,24H,70H,50H
 33B4H  DB   40H,11H,11H,07H,94H,18H,40H,29H
-33BCH  DB   C0H,14H,28H,57H,08H,55H,48H,84H     ; Difference between M100 and T102
+33BCH  DB   C0H,14H,28H,57H,08H,55H,48H,84H     ; Different from M1002
 33C4H  DB   40H,19H,99H,99H,99H,94H,89H,67H
 33CCH  DB   C0H,33H,33H,33H,33H,33H,31H,60H
 33D4H  DB   41H,10H,00H,00H,00H,00H,00H,00H
@@ -11185,49 +11201,50 @@
 ; ======================================================
 ; LCD Escape sequence lookup table
 ; ======================================================
-43B8H  DB   "jHEEHEK7EJNEl5EL"
-43C8H  (EAH) JPE 4D44H
-43CBH  (C4H) CNZ 5944H
-43CEH  (AFH) XRA A
-43CFH  (43H) MOV B,E
-43D0H  (41H) MOV B,C
-43D1H  (69H) MOV L,C
-43D2H  (44H) MOV B,H
-43D3H  (42H) MOV B,D
-43D4H  (6EH) MOV L,M
-43D5H  (44H) MOV B,H
-43D6H  (43H) MOV B,E
-43D7H  (53H) MOV D,E
-43D8H  (44H) MOV B,H
-43D9H  (44H) MOV B,H
-43DAH  (5CH) MOV E,H
-43DBH  (44H) MOV B,H
-43DCH  (48H) MOV C,B
-43DDH  (A8H) XRA B
-43DEH  (44H) MOV B,H
-43DFH  (70H) MOV M,B
-43E0H  (31H) LXI SP,7144H
-43E3H  (32H) STA 5044H
-43E6H  (AFH) XRA A
-43E7H  (44H) MOV B,H
-43E8H  (51H) MOV D,C
-43E9H  (BAH) CMP D
-43EAH  (44H) MOV B,H
-43EBH  (54H) MOV D,H
-43ECH  (39H) DAD SP
-43EDH  (44H) MOV B,H
-43EEH  (55H) MOV D,L
-43EFH  (37H) STC
-43F0H  (44H) MOV B,H
-43F1H  (56H) MOV D,M
-43F2H  (3FH) CMC
-43F3H  (44H) MOV B,H
-43F4H  (57H) MOV D,A
-43F5H  (40H) MOV B,B
-43F6H  (44H) MOV B,H
-43F7H  (58H) MOV E,B
-43F8H  (4AH) MOV C,D
-43F9H  (44H) MOV B,H
+43B8H  DB   'j'
+43B9H  DW   4548H
+43BBH  DB   'E'
+43BCH  DW   4548H
+43BEH  DB   'K'
+43BFH  DW   4537H
+43C1H  DB   'J'
+43C2H  DW   454EH
+43C4H  DB   'l'
+43C5H  DW   4535H
+43C7H  DB   'L'
+43C8H  DW   44EAH
+43CAH  DB   'M'
+43CBH  DW   44C4H
+43CDH  DB   'Y'
+43CEH  DW   43AFH
+43D0H  DB   'A'
+43D1H  DW   4469H
+43D3H  DB   'B'
+43D4H  DW   446EH
+43D6H  DB   'C'
+43D7H  DW   4453H
+43D9H  DB   'D'
+43DAH  DW   445CH
+43DCH  DB   'H'
+43DDH  DW   44A8H
+43DFH  DB   'p'
+43E0H  DW   4431H
+43E2H  DB   'q'
+43E3H  DW   4432H
+43E5H  DB   'P'
+43E6H  DW   44AFH
+43E8H  DB   'Q'
+43E9H  DW   44BAH
+43EBH  DB   'T'
+43ECH  DW   4439H
+43EEH  DB   'U'
+43EFH  DW   4437H
+43F1H  DB   'V'
+43F2H  DW   443FH
+43F4H  DB   'W'
+43F5H  DW   4440H
+43F7H  DB   'X'
+43F8H  DW   444AH
 
 ; ======================================================
 ; ESCape sequence driver
@@ -11755,7 +11772,7 @@
 4697H  (CDH) CALL 4222H     ; Send CRLF to screen or printer
 469AH  (AFH) XRA A
 469BH  (12H) STAX D
-469CH  (C3H) JMP 7FFAH      ; Difference between M100 and T102
+469CH  (C3H) JMP 7FFAH      ; Different from M100
 469FH  (C9H) RET
 
 
@@ -12235,7 +12252,7 @@
 ; USING function
 ; ======================================================
 4991H  (CDH) CALL 0DACH
-4994H  (CDH) CALL 7304H     ; Difference between M100 and T102
+4994H  (CDH) CALL 7304H     ; Different from M100
 4997H  (CFH) RST 1          ; Compare next byte with M
 4998H  DB   3BH
 4999H  (EBH) XCHG
@@ -13464,50 +13481,24 @@
 ; ======================================================
 ; Device name table
 ; ======================================================
-50F1H  (4CH) MOV C,H
-50F2H  (43H) MOV B,E
-50F3H  (44H) MOV B,H
-50F4H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-50F5H  DB   43H
-50F6H  (52H) MOV D,D
-50F7H  (54H) MOV D,H
-50F8H  (FEH) CPI 43H
-50FAH  (41H) MOV B,C
-50FBH  (53H) MOV D,E
-50FCH  (FDH) JX 4F43H
-50FFH  (4DH) MOV C,L
-5100H  (FCH) CM 4157H
-5103H  (4EH) MOV C,M
-5104H  (44H) MOV B,H
-5105H  (FBH) EI
-5106H  (4CH) MOV C,H
-5107H  (50H) MOV D,B
-5108H  (54H) MOV D,H
-5109H  (FAH) JM 444DH
-510CH  (4DH) MOV C,L
-510DH  (F9H) SPHL
-510EH  (52H) MOV D,D
-510FH  (41H) MOV B,C
-5110H  (4DH) MOV C,L
-5111H  (F8H) RM
-5112H  (00H) NOP
+50F1H  DB   "LCD",FFH
+50F5H  DB   "CRT",FEH
+50F9H  DB   "CAS",FDH
+50FDH  DB   "COM",FCH
+5101H  DB   "WAND",FBH
+5106H  DB   "LPT",FAH
+510AH  DB   "MDM",F9H
+510EH  DB   "RAM",F8H
+5112H  DB   00H
 
 ; ======================================================
 ; Device control block vector addresses table
 ; ======================================================
-5113H  (D2H) JNC F214H
-5116H  (14H) INR D
-5117H  (7FH) MOV A,A
-5118H  (16H) MVI D,62H
-511AH  (17H) RAL
-511BH  (77H) MOV M,A
-511CH  (18H) RLDE
-511DH  (54H) MOV D,H
-511EH  (17H) RAL
-511FH  (D1H) POP D
-5120H  (17H) RAL
-5121H  (FCH) CM FF14H
-5124H  (30H) SIM
+5113H  DW   14D2H, 14F2H, 167FH, 1762H
+511BH  DW   1877H, 1754H, 17D1H, 14FCH
+
+5123H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
+5124H  DB   30H
 5125H  (E5H) PUSH H
 5126H  (D5H) PUSH D
 5127H  (F5H) PUSH PSW
@@ -13539,12 +13530,12 @@
 ; ======================================================
 ; TELCOM Entry point
 ; ======================================================
-5146H  (CDH) CALL 4244H
+5146H  (CDH) CALL 4244H     ; Resume automatic scrolling
 5149H  (21H) LXI H,51A4H
-514CH  (CDH) CALL 42A5H
-514FH  (C3H) JMP 51C7H
+514CH  (CDH) CALL 42A5H     ; Set and display function keys (M has key table)
+514FH  (C3H) JMP 51C7H      ; Print current STAT settings
 
-5152H  (CDH) CALL 4229H
+5152H  (CDH) CALL 4229H     ; BEEP statement
 5155H  (21H) LXI H,51A4H
 5158H  (CDH) CALL 5A7CH     ; Set new function key table
 
@@ -13977,22 +13968,14 @@
 543FH  (3CH) INR A
 5440H  (C3H) JMP 5316H
 
-5443H  (50H) MOV D,B
-5444H  (72H) MOV M,D
-5445H  (65H) MOV H,L
-5446H  (F6H) ORI 44H
-5448H  (6FH) MOV L,A
-5449H  (77H) MOV M,A
-544AH  (EEH) XRI 20H
-544CH  (55H) MOV D,L
-544DH  (F0H) RP
-544EH  (80H) ADD B
-544FH  (80H) ADD B
-5450H  (80H) ADD B
-5451H  (80H) ADD B
-5452H  (42H) MOV B,D
-5453H  (79H) MOV A,C
-5454H  (E5H) PUSH H
+5443H  DB   "Pre",F6H
+5447H  DB   "Dow",EEH
+544BH  DB   " U",F0H
+544EH  DB   80H
+544FH  DB   80H
+5450H  DB   80H
+5451H  DB   80H
+5452H  DB   "By",E5H
 
 ; ======================================================
 ; TELCOM TERM instruction routine
@@ -14034,18 +14017,18 @@
 54AAH  (CDH) CALL 13DBH     ; Check keyboard queue for pending characters
 54ADH  (CAH) JZ 54C6H
 54B0H  (CDH) CALL 12CBH     ; Wait for key from keyboard
-54B3H  (DAH) JC 54FCH
+54B3H  (DAH) JC 54FCH       ; TELCOM "dispatcher" routine
 54B6H  (47H) MOV B,A
-54B7H  (3AH) LDA F658H
+54B7H  (3AH) LDA F658H      ; Full/Half duplex switch
 54BAH  (A7H) ANA A
 54BBH  (78H) MOV A,B
-54BCH  (CCH) CZ 4B44H
+54BCH  (CCH) CZ 4B44H       ; Send A to screen or printer
 54BFH  (A7H) ANA A
 54C0H  (C4H) CNZ 6E32H      ; Send character in A to serial port using XON/XOFF
 54C3H  (DAH) JC 54E2H
 54C6H  (CDH) CALL 6D6DH     ; Check RS232 queue for pending characters
 54C9H  (CAH) JZ 548FH
-54CCH  (CDH) CALL 7315H
+54CCH  (CDH) CALL 7315H     ; Different from M100: Get a character from RS232 receive queue
 54CFH  (DAH) JC 548FH
 54D2H  (E7H) RST 4          ; Send character in A to screen/printer
 54D3H  (47H) MOV B,A
@@ -14062,7 +14045,7 @@
 54E9H  (DAH) JC 54E6H
 54ECH  (C3H) JMP 548FH
 
-54EFH  (CDH) CALL 4229H
+54EFH  (CDH) CALL 4229H     ; BEEP statement
 54F2H  (AFH) XRA A
 54F3H  (32H) STA F659H
 54F6H  (CDH) CALL 5556H
@@ -14074,7 +14057,7 @@
 ; ======================================================
 54FCH  (5FH) MOV E,A
 54FDH  (16H) MVI D,FFH
-54FFH  (21H) LXI H,551DH
+54FFH  (21H) LXI H,551DH    ; TERM Mode function key vector table
 5502H  (19H) DAD D
 5503H  (19H) DAD D
 5504H  (7EH) MOV A,M
@@ -14085,29 +14068,17 @@
 550BH  (D5H) PUSH D
 550CH  (E9H) PCHL
 
+
 ; ======================================================
 ; TERM Mode function key vector table
 ; ======================================================
-550DH  (23H) INX H
-550EH  (55H) MOV D,L
-550FH  (7EH) MOV A,M
-5510H  (56H) MOV D,M
-5511H  (9DH) SBB L
-5512H  (55H) MOV D,L
-5513H  (3EH) MVI A,55H
-5515H  (50H) MOV D,B
-5516H  (55H) MOV D,L
-5517H  (1DH) DCR E
-5518H  (55H) MOV D,L
-5519H  (20H) RIM
-551AH  (55H) MOV D,L
-551BH  (1EH) MVI E,57H
-551DH  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-551EH  DB   32H
-551FH  (C9H) RET
+550DH  DW   5523H, 567EH, 559DH, 553EH
+5515H  DW   5550H, 551DH, 5520H, 571EH
 
-5520H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-5521H  DB   34H
+551DH  DB   FFH
+
+551EH  (32H) STA FFC9H
+5521H  (34H) INR M
 5522H  (C9H) RET
 
 
@@ -14128,11 +14099,11 @@
 ; ======================================================
 ; TELCOM FULL/HALF function routine
 ; ======================================================
-553EH  (21H) LXI H,F658H
+553EH  (21H) LXI H,F658H    ; Full/Half duplex switch
 5541H  (7EH) MOV A,M
 5542H  (2FH) CMA
 5543H  (77H) MOV M,A
-5544H  (3AH) LDA F658H
+5544H  (3AH) LDA F658H      ; Full/Half duplex switch
 5547H  (11H) LXI D,F7B9H
 554AH  (21H) LXI H,5583H
 554DH  (C3H) JMP 556BH
@@ -14303,7 +14274,7 @@
 569FH  (32H) STA FAC6H
 56A2H  (F1H) POP PSW
 56A3H  (E5H) PUSH H
-56A4H  (CDH) CALL 2206H
+56A4H  (CDH) CALL 2206H     ; Get .DO filename and locate in RAM directory
 56A7H  (DAH) JC 56B7H
 56AAH  (22H) SHLD FAC4H
 56ADH  (CDH) CALL 6B2DH
@@ -14391,7 +14362,7 @@
 5745H  (CDH) CALL 424EH     ; Turn the cursor off
 5748H  (CDH) CALL 52BBH     ; Disconnect phone line and disable modem carrier
 574BH  (CDH) CALL 6370H
-574EH  (C3H) JMP 5146H
+574EH  (C3H) JMP 5146H      ; TELCOM Entry point
 
 5751H  DB   "File to Upload",00H
 5760H  DB   "File to Download",00H
@@ -14431,13 +14402,13 @@
 57CAH  (CDH) CALL 5D4DH
 57CDH  (21H) LXI H,5797H
 57D0H  (22H) SHLD F652H
-57D3H  (CDH) CALL 5A79H
-57D6H  (CDH) CALL 5A12H
+57D3H  (CDH) CALL 5A79H     ; Clear function key definition table
+57D6H  (CDH) CALL 5A12H     ; Print time), day and date on first line of screen
 57D9H  (21H) LXI H,1C01H
 57DCH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
 57DFH  (21H) LXI H,5B0DH
 57E2H  (CDH) CALL 5A58H     ; Print NULL terminated string at M
-57E5H  (21H) LXI H,FDA1H
+57E5H  (21H) LXI H,FDA1H    ; Map of MENU entry positions to RAM directory positions
 57E8H  (22H) SHLD FDD7H
 57EBH  (06H) MVI B,36H
 57EDH  (36H) MVI M,FFH
@@ -14445,7 +14416,7 @@
 57F0H  (05H) DCR B
 57F1H  (C2H) JNZ 57EDH
 57F4H  (68H) MOV L,B
-57F5H  (11H) LXI D,5B1EH
+57F5H  (11H) LXI D,5B1EH    ; Directory file-type display order table
 
 ; ======================================================
 ; Display directory entries
@@ -14455,17 +14426,17 @@
 57FAH  (CAH) JZ 5807H
 57FDH  (4FH) MOV C,A
 57FEH  (D5H) PUSH D
-57FFH  (CDH) CALL 5970H
+57FFH  (CDH) CALL 5970H     ; Display directory entries of type in register C
 5802H  (D1H) POP D
 5803H  (13H) INX D
-5804H  (C3H) JMP 57F8H
+5804H  (C3H) JMP 57F8H      ; Display directory entries
 
 5807H  (7DH) MOV A,L
 5808H  (3DH) DCR A
-5809H  (32H) STA FDEFH
+5809H  (32H) STA FDEFH      ; Maximum MENU directory location
 580CH  (FEH) CPI 17H
 580EH  (CAH) JZ 5823H
-5811H  (CDH) CALL 59C9H
+5811H  (CDH) CALL 59C9H     ; Position cursor for next directory entry
 5814H  (E5H) PUSH H
 5815H  (21H) LXI H,5B1AH
 5818H  (CDH) CALL 5A58H     ; Print NULL terminated string at M
@@ -14476,12 +14447,12 @@
 5820H  (C2H) JNZ 5811H
 5823H  (97H) SUB A
 5824H  (32H) STA FDD9H
-5827H  (32H) STA FDEEH
+5827H  (32H) STA FDEEH      ; Current MENU directory location
 582AH  (6FH) MOV L,A
 582BH  (CDH) CALL 59E5H
 582EH  (21H) LXI H,1808H
 5831H  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
-5834H  (CDH) CALL 7EACH
+5834H  (CDH) CALL 7EACH     ; Display number of free bytes on LCD
 
 ; ======================================================
 ; Handle CTRL-U key from MENU command loop
@@ -14496,31 +14467,31 @@
 584CH  (21H) LXI H,0908H
 584FH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
 5852H  (97H) SUB A
-5853H  (32H) STA FDEDH
+5853H  (32H) STA FDEDH      ; Flag to indicate MENU entry location or command entry
 5856H  (21H) LXI H,FDD9H
 5859H  (3CH) INR A
 
 ; ======================================================
 ; MENU Program command loop
 ; ======================================================
-585AH  (CCH) CZ 4229H
-585DH  (CDH) CALL 5D70H
-5860H  (CDH) CALL 5D64H
+585AH  (CCH) CZ 4229H       ; BEEP statement
+585DH  (CDH) CALL 5D70H     ; Print time on top line until key pressed
+5860H  (CDH) CALL 5D64H     ; Wait for char from keyboard & convert to uppercase
 5863H  (FEH) CPI 0DH
-5865H  (CAH) JZ 58F7H
+5865H  (CAH) JZ 58F7H       ; Handle ENTER key from MENU command loop
 5868H  (FEH) CPI 08H
-586AH  (CAH) JZ 588EH
+586AH  (CAH) JZ 588EH       ; Handle Backspace key from MENU command loop
 586DH  (FEH) CPI 7FH
-586FH  (CAH) JZ 588EH
+586FH  (CAH) JZ 588EH       ; Handle Backspace key from MENU command loop
 5872H  (FEH) CPI 15H
-5874H  (CAH) JZ 5837H
+5874H  (CAH) JZ 5837H       ; Handle CTRL-U key from MENU command loop
 5877H  (FEH) CPI 20H
 5879H  (DAH) JC 589CH
 587CH  (4FH) MOV C,A
-587DH  (3AH) LDA FDEDH
+587DH  (3AH) LDA FDEDH      ; Flag to indicate MENU entry location or command entry
 5880H  (CCH) CZ 5897H
 5883H  (FEH) CPI 09H
-5885H  (CAH) JZ 585AH
+5885H  (CAH) JZ 585AH       ; MENU Program command loop
 5888H  (CDH) CALL 5D88H
 588BH  (C3H) JMP 585DH
 
@@ -14529,7 +14500,7 @@
 ; Handle Backspace key from MENU command loop
 ; ======================================================
 588EH  (CDH) CALL 5D9EH
-5891H  (CAH) JZ 585AH
+5891H  (CAH) JZ 585AH       ; MENU Program command loop
 5894H  (C3H) JMP 585DH
 
 5897H  (B7H) ORA A
@@ -14537,7 +14508,7 @@
 5899H  (F1H) POP PSW
 589AH  (3EH) MVI A,1CH
 589CH  (F5H) PUSH PSW
-589DH  (3AH) LDA FDEEH
+589DH  (3AH) LDA FDEEH      ; Current MENU directory location
 58A0H  (5FH) MOV E,A
 58A1H  (F1H) POP PSW
 58A2H  (D6H) SUI 1CH
@@ -14555,11 +14526,11 @@
 58B9H  (7BH) MOV A,E
 58BAH  (C6H) ADI 04H
 58BCH  (57H) MOV D,A
-58BDH  (3AH) LDA FDEFH
+58BDH  (3AH) LDA FDEFH      ; Maximum MENU directory location
 58C0H  (BAH) CMP D
 58C1H  (F8H) RM
 58C2H  (7AH) MOV A,D
-58C3H  (32H) STA FDEEH
+58C3H  (32H) STA FDEEH      ; Current MENU directory location
 58C6H  (E5H) PUSH H
 58C7H  (2AH) LHLD F639H     ; Cursor row (1-8)
 58CAH  (E5H) PUSH H
@@ -14585,14 +14556,14 @@
 58E3H  (3DH) DCR A
 58E4H  (57H) MOV D,A
 58E5H  (F0H) RP
-58E6H  (3AH) LDA FDEFH
+58E6H  (3AH) LDA FDEFH      ; Maximum MENU directory location
 58E9H  (57H) MOV D,A
 58EAH  (C9H) RET
 
 58EBH  (7BH) MOV A,E
 58ECH  (3CH) INR A
 58EDH  (57H) MOV D,A
-58EEH  (3AH) LDA FDEFH
+58EEH  (3AH) LDA FDEFH      ; Maximum MENU directory location
 58F1H  (BAH) CMP D
 58F2H  (7AH) MOV A,D
 58F3H  (F0H) RP
@@ -14604,17 +14575,17 @@
 ; ======================================================
 ; Handle ENTER key from MENU command loop
 ; ======================================================
-58F7H  (3AH) LDA FDEDH
+58F7H  (3AH) LDA FDEDH      ; Flag to indicate MENU entry location or command entry
 58FAH  (B7H) ORA A
 58FBH  (CAH) JZ 590CH
 58FEH  (36H) MVI M,00H
 5900H  (CDH) CALL 5AB1H
 5903H  (C2H) JNZ 5921H
-5906H  (CDH) CALL 4229H
-5909H  (C3H) JMP 5837H
+5906H  (CDH) CALL 4229H     ; BEEP statement
+5909H  (C3H) JMP 5837H      ; Handle CTRL-U key from MENU command loop
 
-590CH  (3AH) LDA FDEEH
-590FH  (21H) LXI H,FDA1H
+590CH  (3AH) LDA FDEEH      ; Current MENU directory location
+590FH  (21H) LXI H,FDA1H    ; Map of MENU entry positions to RAM directory positions
 5912H  (11H) LXI D,0002H
 5915H  (B7H) ORA A
 5916H  (CAH) JZ 591EH
@@ -14625,7 +14596,7 @@
 591EH  (CDH) CALL 5AE4H
 5921H  (E5H) PUSH H
 5922H  (CDH) CALL 4231H     ; CLS statement
-5925H  (CDH) CALL 4244H
+5925H  (CDH) CALL 4244H     ; Resume automatic scrolling
 5928H  (3AH) LDA FDFAH
 592BH  (CDH) CALL 1E3CH
 592EH  (3EH) MVI A,0CH
@@ -14641,20 +14612,20 @@
 593FH  (7EH) MOV A,M
 5940H  (CDH) CALL 5AE3H     ; Get start address of file at M
 5943H  (FEH) CPI A0H
-5945H  (CAH) JZ 254BH
+5945H  (CAH) JZ 254BH       ; Launch .CO files from MENU
 5948H  (FEH) CPI B0H
-594AH  (CAH) JZ 596FH
+594AH  (CAH) JZ 596FH       ; Launch ROM command file from MENU program
 594DH  (FEH) CPI F0H
 594FH  (CAH) JZ F624H
 5952H  (FEH) CPI C0H
-5954H  (CAH) JZ 5F65H
+5954H  (CAH) JZ 5F65H       ; Edit .DO files
 5957H  (22H) SHLD F67CH     ; Start of BASIC program pointer
 595AH  (1BH) DCX D
 595BH  (1BH) DCX D
 595CH  (EBH) XCHG
 595DH  (22H) SHLD FA8CH
 5960H  (CDH) CALL 05F0H     ; Update line addresses for current BASIC program
-5963H  (CDH) CALL 6C9CH
+5963H  (CDH) CALL 6C9CH     ; Copy BASIC Function key table to key definition area
 5966H  (CDH) CALL 6C7FH
 5969H  (CDH) CALL 3F28H     ; Initialize BASIC Variables for new execution
 596CH  (C3H) JMP 0804H      ; Execute BASIC program
@@ -14670,7 +14641,7 @@
 ; Display directory entries of type in register C
 ; ======================================================
 5970H  (06H) MVI B,1BH
-5972H  (11H) LXI D,F962H
+5972H  (11H) LXI D,F962H    ; Start of RAM directory
 5975H  (1AH) LDAX D
 5976H  (3CH) INR A
 5977H  (C8H) RZ
@@ -14690,11 +14661,11 @@
 5989H  (13H) INX D
 598AH  (22H) SHLD FDD7H
 598DH  (E1H) POP H
-598EH  (CDH) CALL 59C9H
+598EH  (CDH) CALL 59C9H     ; Position cursor for next directory entry
 5991H  (E5H) PUSH H
 5992H  (21H) LXI H,FDD9H
 5995H  (E5H) PUSH H
-5996H  (CDH) CALL 59ADH
+5996H  (CDH) CALL 59ADH     ; Convert filename from space padded to '.ext' format
 5999H  (E1H) POP H
 599AH  (CDH) CALL 5A58H     ; Print NULL terminated string at M
 599DH  (E1H) POP H
@@ -14715,7 +14686,7 @@
 ; Convert filename from space padded to '.ext' format
 ; ======================================================
 59ADH  (3EH) MVI A,06H
-59AFH  (CDH) CALL 5A62H
+59AFH  (CDH) CALL 5A62H     ; Copy A bytes from (DE) to M
 59B2H  (3EH) MVI A,20H
 59B4H  (2BH) DCX H
 59B5H  (BEH) CMP M
@@ -14761,7 +14732,7 @@
 59E4H  (C9H) RET
 
 59E5H  (CDH) CALL 73C5H
-59E8H  (CDH) CALL 59C9H
+59E8H  (CDH) CALL 59C9H     ; Position cursor for next directory entry
 59EBH  (06H) MVI B,0AH
 59EDH  (E5H) PUSH H
 59EEH  (21H) LXI H,F63AH    ; Cursor column (1-40)
@@ -14794,9 +14765,9 @@
 ; ======================================================
 ; Print time),day),date on first line w/o CLS
 ; ======================================================
-5A15H  (CDH) CALL 5D6AH
+5A15H  (CDH) CALL 5D6AH     ; Home cursor
 5A18H  (21H) LXI H,FD8BH
-5A1BH  (CDH) CALL 192FH
+5A1BH  (CDH) CALL 192FH     ; DATE$ function
 5A1EH  (36H) MVI M,20H
 5A20H  (23H) INX H
 5A21H  (CDH) CALL 1962H     ; Read day and store at M
@@ -14815,7 +14786,7 @@
 5A3EH  (EBH) XCHG
 5A3FH  (E5H) PUSH H
 5A40H  (79H) MOV A,C
-5A41H  (CDH) CALL 5A62H
+5A41H  (CDH) CALL 5A62H     ; Copy A bytes from (DE) to M
 5A44H  (54H) MOV D,H
 5A45H  (5DH) MOV E,L
 5A46H  (36H) MVI M,20H
@@ -14839,7 +14810,7 @@
 5A5AH  (C8H) RZ
 5A5BH  (E7H) RST 4          ; Send character in A to screen/printer
 5A5CH  (23H) INX H
-5A5DH  (C3H) JMP 5A58H     ; Print NULL terminated string at M
+5A5DH  (C3H) JMP 5A58H      ; Print NULL terminated string at M
 
 5A60H  (3EH) MVI A,02H
 
@@ -14853,7 +14824,7 @@
 5A66H  (23H) INX H
 5A67H  (F1H) POP PSW
 5A68H  (3DH) DCR A
-5A69H  (C2H) JNZ 5A62H
+5A69H  (C2H) JNZ 5A62H      ; Copy A bytes from (DE) to M
 5A6CH  (C9H) RET
 
 
@@ -14868,7 +14839,7 @@
 5A72H  (23H) INX H
 5A73H  (13H) INX D
 5A74H  (0DH) DCR C
-5A75H  (C2H) JNZ 5A6DH
+5A75H  (C2H) JNZ 5A6DH      ; Compare string at DE with that at M (max C bytes)
 5A78H  (C9H) RET
 
 
@@ -14917,9 +14888,9 @@
 ; ======================================================
 5AA9H  (3EH) MVI A,08H
 5AABH  (21H) LXI H,FDD9H
-5AAEH  (CDH) CALL 5A62H
+5AAEH  (CDH) CALL 5A62H     ; Copy A bytes from (DE) to M
 5AB1H  (06H) MVI B,1BH
-5AB3H  (11H) LXI D,F962H
+5AB3H  (11H) LXI D,F962H    ; Start of RAM directory
 5AB6H  (21H) LXI H,FDF0H
 5AB9H  (1AH) LDAX D
 5ABAH  (3CH) INR A
@@ -14931,11 +14902,11 @@
 5AC3H  (13H) INX D
 5AC4H  (13H) INX D
 5AC5H  (E5H) PUSH H
-5AC6H  (CDH) CALL 59ADH
+5AC6H  (CDH) CALL 59ADH     ; Convert filename from space padded to '.ext' format
 5AC9H  (E1H) POP H
 5ACAH  (0EH) MVI C,09H
 5ACCH  (11H) LXI D,FDD9H
-5ACFH  (CDH) CALL 5A6DH
+5ACFH  (CDH) CALL 5A6DH     ; Compare string at DE with that at M (max C bytes)
 5AD2H  (C2H) JNZ 5AD8H
 5AD5H  (E1H) POP H
 5AD6H  (0CH) INR C
@@ -14979,78 +14950,21 @@
 ; ======================================================
 ; Directory file-type display order table
 ; ======================================================
-5B1EH  (B0H) ORA B
-5B1FH  (F0H) RP
-5B20H  (C0H) RNZ
-5B21H  (80H) ADD B
-5B22H  (A0H) ANA B
-5B23H  (00H) NOP
-5B24H  (53H) MOV D,E
-5B25H  (65H) MOV H,L
-5B26H  (6CH) MOV L,H
-5B27H  (65H) MOV H,L
-5B28H  (63H) MOV H,E
-5B29H  (74H) MOV M,H
-5B2AH  (3AH) LDA 5F20H
-5B2DH  (20H) RIM
-5B2EH  (20H) RIM
-5B2FH  (20H) RIM
-5B30H  (20H) RIM
-5B31H  (20H) RIM
-5B32H  (20H) RIM
-5B33H  (20H) RIM
-5B34H  (20H) RIM
-5B35H  (20H) RIM
-5B36H  (00H) NOP
-5B37H  (20H) RIM
-5B38H  (08H) DSUB
-5B39H  (08H) DSUB
-5B3AH  (5FH) MOV E,A
-5B3BH  (08H) DSUB
-5B3CH  (00H) NOP
-5B3DH  (00H) NOP
-5B3EH  (80H) ADD B
-5B3FH  (80H) ADD B
-5B40H  (80H) ADD B
-5B41H  (80H) ADD B
-5B42H  (80H) ADD B
-5B43H  (80H) ADD B
-5B44H  (80H) ADD B
-5B45H  (80H) ADD B
-5B46H  (46H) MOV B,M
-5B47H  (69H) MOV L,C
-5B48H  (6CH) MOV L,H
-5B49H  (65H) MOV H,L
-5B4AH  (73H) MOV M,E
-5B4BH  (8DH) ADC L
-5B4CH  (4CH) MOV C,H
-5B4DH  (6FH) MOV L,A
-5B4EH  (61H) MOV H,C
-5B4FH  (64H) MOV H,H
-5B50H  (20H) RIM
-5B51H  (A2H) ANA D
-5B52H  (53H) MOV D,E
-5B53H  (61H) MOV H,C
-5B54H  (76H) HLT
-5B55H  (65H) MOV H,L
-5B56H  (20H) RIM
-5B57H  (A2H) ANA D
-5B58H  (52H) MOV D,D
-5B59H  (75H) MOV M,L
-5B5AH  (6EH) MOV L,M
-5B5BH  (8DH) ADC L
-5B5CH  (4CH) MOV C,H
-5B5DH  (69H) MOV L,C
-5B5EH  (73H) MOV M,E
-5B5FH  (74H) MOV M,H
-5B60H  (8DH) ADC L
-5B61H  (80H) ADD B
-5B62H  (80H) ADD B
-5B63H  (4DH) MOV C,L
-5B64H  (65H) MOV H,L
-5B65H  (6EH) MOV L,M
-5B66H  (75H) MOV M,L
-5B67H  (8DH) ADC L
+5B1EH  DB   B0H,F0H,C0H,80H,A0H,00H
+
+5B24H  DB   "Select: _         ",00H
+
+5B37H  DB   20H,08H,08H,5FH,08H,00H,00H,80H
+5B3FH  DB   80H,80H,80H,80H,80H,80H,80H
+
+5B46H  DB   "Files",8DH
+5B4CH  DB   "Load ",A2H
+5B52H  DB   "Save ",A2H
+5B58H  DB   "Run",8DH
+5B5CH  DB   "List",8DH
+5B61H  DB   80H
+5B62H  DB   80H
+5B63H  DB   "Menu",8DH
 
 ; ======================================================
 ; ADDRSS Entry point
@@ -15073,19 +14987,19 @@
 ; SCHEDL entry with (DE) pointing to filename
 ; ======================================================
 5B72H  (3EH) MVI A,FFH
-5B74H  (32H) STA FDEDH
+5B74H  (32H) STA FDEDH      ; Flag to indicate MENU entry location or command entry
 5B77H  (CDH) CALL 5D4DH
 5B7AH  (D5H) PUSH D
-5B7BH  (CDH) CALL 5AA9H
+5B7BH  (CDH) CALL 5AA9H     ; Search directory for filename
 5B7EH  (CDH) CALL 5AE3H     ; Get start address of file at M
 5B81H  (C2H) JNZ 5BA9H
 5B84H  (E1H) POP H
-5B85H  (22H) SHLD FDEEH
+5B85H  (22H) SHLD FDEEH     ; Current MENU directory location
 5B88H  (21H) LXI H,5B88H
 5B8BH  (22H) SHLD F652H
 5B8EH  (CDH) CALL 4231H     ; CLS statement
-5B91H  (CDH) CALL 4229H
-5B94H  (2AH) LHLD FDEEH
+5B91H  (CDH) CALL 4229H     ; BEEP statement
+5B94H  (2AH) LHLD FDEEH     ; Current MENU directory location
 5B97H  (CDH) CALL 5A58H     ; Print NULL terminated string at M
 5B9AH  (21H) LXI H,5CD6H
 5B9DH  (CDH) CALL 5A58H     ; Print NULL terminated string at M
@@ -15096,14 +15010,14 @@
 5BA9H  (22H) SHLD FDD7H
 5BACH  (CDH) CALL 4231H     ; CLS statement
 5BAFH  (21H) LXI H,5D0AH
-5BB2H  (CDH) CALL 42A5H
+5BB2H  (CDH) CALL 42A5H     ; Set and display function keys (M has key table)
 5BB5H  (21H) LXI H,5BE2H
 5BB8H  (22H) SHLD F652H
 5BBBH  (CDH) CALL 5D5DH
 5BBEH  (97H) SUB A
 5BBFH  (32H) STA F675H      ; Output device for RST 20H (0=screen)
 5BC2H  (21H) LXI H,5CE1H
-5BC5H  (3AH) LDA FDEDH
+5BC5H  (3AH) LDA FDEDH      ; Flag to indicate MENU entry location or command entry
 5BC8H  (B7H) ORA A
 5BC9H  (CAH) JZ 5BCFH
 5BCCH  (21H) LXI H,5CE8H
@@ -15119,7 +15033,7 @@
 5BE2H  (97H) SUB A
 5BE3H  (32H) STA F675H      ; Output device for RST 20H (0=screen)
 5BE6H  (CDH) CALL 4BB8H     ; Move LCD to blank line (send CRLF if needed)
-5BE9H  (CDH) CALL 4229H
+5BE9H  (CDH) CALL 4229H     ; BEEP statement
 5BECH  (21H) LXI H,5D0AH
 5BEFH  (CDH) CALL 5A7CH     ; Set new function key table
 5BF2H  (C3H) JMP 5BBBH
@@ -15137,12 +15051,12 @@
 5C03H  (D5H) PUSH D
 5C04H  (CDH) CALL 5DC5H
 5C07H  (CDH) CALL 67DFH
-5C0AH  (3AH) LDA FDEEH
+5C0AH  (3AH) LDA FDEEH      ; Current MENU directory location
 5C0DH  (32H) STA F675H      ; Output device for RST 20H (0=screen)
 5C10H  (CDH) CALL 6A10H
 5C13H  (97H) SUB A
 5C14H  (32H) STA F675H      ; Output device for RST 20H (0=screen)
-5C17H  (3AH) LDA FDEEH
+5C17H  (3AH) LDA FDEEH      ; Current MENU directory location
 5C1AH  (B7H) ORA A
 5C1BH  (C2H) JNZ 5C24H
 5C1EH  (CDH) CALL 5DE4H
@@ -15192,7 +15106,7 @@
 5C60H  (CDH) CALL 5C74H     ; Check next byte(s) at (DE) for CRLF
 5C63H  (C2H) JNZ 5C40H
 5C66H  (F1H) POP PSW
-5C67H  (C3H) JMP 5C3FH     ; Find text at M in the file at (DE)
+5C67H  (C3H) JMP 5C3FH      ; Find text at M in the file at (DE)
 
 5C6AH  (D1H) POP D
 5C6BH  (37H) STC
@@ -15203,7 +15117,7 @@
 ; Increment DE past next CRLF in text file at (DE)
 ; ======================================================
 5C6DH  (CDH) CALL 5C74H     ; Check next byte(s) at (DE) for CRLF
-5C70H  (C2H) JNZ 5C6DH     ; Increment DE past next CRLF in text file at (DE)
+5C70H  (C2H) JNZ 5C6DH      ; Increment DE past next CRLF in text file at (DE)
 5C73H  (C9H) RET
 
 
@@ -15272,75 +15186,38 @@
 ; ADDRSS/SCHEDL instruction vector table
 ; ======================================================
 5CEFH  DB   "FIND"
-5CF3H  (F5H) PUSH PSW
-5CF4H  (5BH) MOV E,E
-5CF5H  (4CH) MOV C,H
-5CF6H  (46H) MOV B,M
-5CF7H  (4EH) MOV C,M
-5CF8H  (44H) MOV B,H
-5CF9H  (F7H) RST 6          ; Get sign of FAC1
-5CFAH  (5BH) MOV E,E
-5CFBH  (4DH) MOV C,L
-5CFCH  (45H) MOV B,L
-5CFDH  (4EH) MOV C,M
-5CFEH  (55H) MOV D,L
-5CFFH  (97H) SUB A
-5D00H  (57H) MOV D,A
-5D01H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-5D02H  DB   4EH
-5D03H  (4FH) MOV C,A
-5D04H  (54H) MOV D,H
-5D05H  (45H) MOV B,L
-5D06H  (2EH) MVI L,44H
-5D08H  (4FH) MOV C,A
-5D09H  (00H) NOP
-5D0AH  (46H) MOV B,M
-5D0BH  (69H) MOV L,C
-5D0CH  (6EH) MOV L,M
-5D0DH  (64H) MOV H,H
-5D0EH  (A0H) ANA B
-5D0FH  (80H) ADD B
-5D10H  (80H) ADD B
-5D11H  (80H) ADD B
-5D12H  (4CH) MOV C,H
-5D13H  (66H) MOV H,M
-5D14H  (6EH) MOV L,M
-5D15H  (64H) MOV H,H
-5D16H  (A0H) ANA B
-5D17H  (80H) ADD B
-5D18H  (80H) ADD B
-5D19H  (4DH) MOV C,L
-5D1AH  (65H) MOV H,L
-5D1BH  (6EH) MOV L,M
-5D1CH  (75H) MOV M,L
-5D1DH  (8DH) ADC L
-5D1EH  (80H) ADD B
-5D1FH  (80H) ADD B
-5D20H  (4DH) MOV C,L
-5D21H  (6FH) MOV L,A
-5D22H  (72H) MOV M,D
-5D23H  (E5H) PUSH H
-5D24H  (51H) MOV D,C
-5D25H  (75H) MOV M,L
-5D26H  (69H) MOV L,C
-5D27H  (F4H) CP 8080H
-5D2AH  (80H) ADD B
-5D2BH  (80H) ADD B
-5D2CH  (43H) MOV B,E
-5D2DH  (61H) MOV H,C
-5D2EH  (6CH) MOV L,H
-5D2FH  (6CH) MOV L,H
-5D30H  (A0H) ANA B
-5D31H  (4DH) MOV C,L
-5D32H  (6FH) MOV L,A
-5D33H  (72H) MOV M,D
-5D34H  (E5H) PUSH H
-5D35H  (51H) MOV D,C
-5D36H  (75H) MOV M,L
-5D37H  (69H) MOV L,C
-5D38H  (F4H) CP 8080H
-5D3BH  (80H) ADD B
-5D3CH  (80H) ADD B
+5CF3H  DW   5BF5H
+5CF5H  DB   "LFND"
+5CF9H  DW   5BF7H
+5CFBH  DB   "MENU"
+5CFFH  DW   5797H
+5D01H  DB   FFH
+
+5D02H  DB   "NOTE.DO",00H
+
+5D0AH  DB   "Find",A0H
+5D0FH  DB   80H
+5D10H  DB   80H
+5D11H  DB   80H
+5D12H  DB   "Lfnd",A0H
+5D17H  DB   80H
+5D18H  DB   80H
+5D19H  DB   "Menu",8DH
+5D1EH  DB   80H
+5D1FH  DB   80H
+5D20H  DB   "Mor",E5H
+5D24H  DB   "Qui",F4H
+5D28H  DB   80H
+5D29H  DB   80H
+5D2AH  DB   80H
+5D2BH  DB   80H
+5D2CH  DB   "Call",A0H
+5D31H  DB   "Mor",E5H
+5D35H  DB   "Qui",F4H
+5D39H  DB   80H
+5D3AH  DB   80H
+5D3BH  DB   80H
+5D3CH  DB   80H
 5D3DH  (C3H) JMP 5797H      ; MENU Program
 
 5D40H  (11H) LXI D,0010H
@@ -15390,20 +15267,20 @@
 5D74H  (E5H) PUSH H
 5D75H  (CDH) CALL 13DBH     ; Check keyboard queue for pending characters
 5D78H  (F5H) PUSH PSW
-5D79H  (CCH) CZ 5A15H
+5D79H  (CCH) CZ 5A15H       ; Print time),day),date on first line w/o CLS
 5D7CH  (F1H) POP PSW
 5D7DH  (E1H) POP H
 5D7EH  (F5H) PUSH PSW
 5D7FH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
 5D82H  (F1H) POP PSW
 5D83H  (E1H) POP H
-5D84H  (CAH) JZ 5D70H
+5D84H  (CAH) JZ 5D70H       ; Print time on top line until key pressed
 5D87H  (C9H) RET
 
 5D88H  (71H) MOV M,C
 5D89H  (23H) INX H
 5D8AH  (E5H) PUSH H
-5D8BH  (21H) LXI H,FDEDH
+5D8BH  (21H) LXI H,FDEDH    ; Flag to indicate MENU entry location or command entry
 5D8EH  (34H) INR M
 5D8FH  (79H) MOV A,C
 5D90H  (E7H) RST 4          ; Send character in A to screen/printer
@@ -15412,14 +15289,14 @@
 5D97H  (E1H) POP H
 5D98H  (C9H) RET
 
-5D99H  (3AH) LDA FDEDH
+5D99H  (3AH) LDA FDEDH      ; Flag to indicate MENU entry location or command entry
 5D9CH  (B7H) ORA A
 5D9DH  (C9H) RET
 
 5D9EH  (CDH) CALL 5D99H
 5DA1H  (C8H) RZ
 5DA2H  (3DH) DCR A
-5DA3H  (32H) STA FDEDH
+5DA3H  (32H) STA FDEDH      ; Flag to indicate MENU entry location or command entry
 5DA6H  (2BH) DCX H
 5DA7H  (E5H) PUSH H
 5DA8H  (21H) LXI H,5B37H
@@ -15428,7 +15305,7 @@
 5DAFH  (3CH) INR A
 5DB0H  (C9H) RET
 
-5DB1H  (32H) STA FDEEH
+5DB1H  (32H) STA FDEEH      ; Current MENU directory location
 5DB4H  (CDH) CALL 5D46H
 5DB7H  (EBH) XCHG
 5DB8H  (2AH) LHLD FDD7H
@@ -15436,14 +15313,14 @@
 5DBCH  (3AH) LDA F63BH      ; Active rows count (1-8)
 5DBFH  (3DH) DCR A
 5DC0H  (3DH) DCR A
-5DC1H  (32H) STA FDEFH
+5DC1H  (32H) STA FDEFH      ; Maximum MENU directory location
 5DC4H  (C9H) RET
 
 5DC5H  (21H) LXI H,F63CH    ; Active columns count (1-40)
 5DC8H  (3EH) MVI A,FFH
 5DCAH  (32H) STA F921H
 5DCDH  (32H) STA F920H
-5DD0H  (3AH) LDA FDEEH
+5DD0H  (3AH) LDA FDEEH      ; Current MENU directory location
 5DD3H  (B7H) ORA A
 5DD4H  (CAH) JZ 5DDFH
 5DD7H  (3EH) MVI A,01H
@@ -15453,7 +15330,7 @@
 5DE0H  (32H) STA F922H
 5DE3H  (C9H) RET
 
-5DE4H  (21H) LXI H,FDEFH
+5DE4H  (21H) LXI H,FDEFH    ; Maximum MENU directory location
 5DE7H  (35H) DCR M
 5DE8H  (CCH) CZ 5C98H
 5DEBH  (FEH) CPI 51H
@@ -15465,10 +15342,10 @@
 ; ======================================================
 5DEEH  (21H) LXI H,5DFBH
 5DF1H  (22H) SHLD F652H
-5DF4H  (21H) LXI H,5E22H
+5DF4H  (21H) LXI H,5E22H    ; TEXT Function key table - empty
 5DF7H  (CDH) CALL 5A7CH     ; Set new function key table
 5DFAH  (AFH) XRA A
-5DFBH  (C4H) CNZ 4229H
+5DFBH  (C4H) CNZ 4229H      ; BEEP statement
 5DFEH  (CDH) CALL 5D53H
 5E01H  (21H) LXI H,5E15H
 5E04H  (CDH) CALL 27B1H     ; Print buffer at M until NULL or '"'
@@ -15476,8 +15353,8 @@
 5E0AH  (D7H) RST 2          ; Get next non-white char from M
 5E0BH  (A7H) ANA A
 5E0CH  (CAH) JZ 5797H       ; MENU Program
-5E0FH  (CDH) CALL 2206H
-5E12H  (C3H) JMP 5F65H
+5E0FH  (CDH) CALL 2206H     ; Get .DO filename and locate in RAM directory
+5E12H  (C3H) JMP 5F65H      ; Edit .DO files
 
 5E15H  DB   "File to edit",00H
 
@@ -15485,50 +15362,16 @@
 ; ======================================================
 ; TEXT Function key table - empty
 ; ======================================================
-5E22H  (80H) ADD B
-5E23H  (80H) ADD B
-5E24H  (80H) ADD B
-5E25H  (80H) ADD B
-5E26H  (80H) ADD B
-5E27H  (80H) ADD B
-5E28H  (80H) ADD B
-5E29H  (83H) ADD E
-5E2AH  (46H) MOV B,M
-5E2BH  (69H) MOV L,C
-5E2CH  (6EH) MOV L,M
-5E2DH  (64H) MOV H,H
-5E2EH  (8EH) ADC M
-5E2FH  (4CH) MOV C,H
-5E30H  (6FH) MOV L,A
-5E31H  (61H) MOV H,C
-5E32H  (64H) MOV H,H
-5E33H  (96H) SUB M
-5E34H  (53H) MOV D,E
-5E35H  (61H) MOV H,C
-5E36H  (76H) HLT
-5E37H  (65H) MOV H,L
-5E38H  (87H) ADD A
-5E39H  (80H) ADD B
-5E3AH  (43H) MOV B,E
-5E3BH  (6FH) MOV L,A
-5E3CH  (70H) MOV M,B
-5E3DH  (79H) MOV A,C
-5E3EH  (8FH) ADC A
-5E3FH  (43H) MOV B,E
-5E40H  (75H) MOV M,L
-5E41H  (74H) MOV M,H
-5E42H  (20H) RIM
-5E43H  (95H) SUB L
-5E44H  (53H) MOV D,E
-5E45H  (65H) MOV H,L
-5E46H  (6CH) MOV L,H
-5E47H  (20H) RIM
-5E48H  (8CH) ADC H
-5E49H  (4DH) MOV C,L
-5E4AH  (65H) MOV H,L
-5E4BH  (6EH) MOV L,M
-5E4CH  (75H) MOV M,L
-5E4DH  (1BH) DCX D
+5E22H  DB   80H,80H,80H,80H,80H,80H,80H,83H
+
+5E2AH  DB   "Find",8EH
+5E2FH  DB   "Load",96H
+5E34H  DB   "Save",87H
+5E39H  DB   80H
+5E3AH  DB   "Copy",8FH
+5E3FH  DB   "Cut ",95H
+5E44H  DB   "Sel ",8CH
+5E49H  DB   "Menu",1BH
 5E4EH  (9BH) SBB E
 5E4FH  (19H) DAD D
 5E50H  (00H) NOP
@@ -15556,7 +15399,7 @@
 5E7CH  (F1H) POP PSW
 5E7DH  (E1H) POP H
 5E7EH  (E5H) PUSH H
-5E7FH  (C3H) JMP 1140H
+5E7FH  (C3H) JMP 1140H      ; LIST statement
 
 5E82H  (CDH) CALL 4F45H
 5E85H  (CDH) CALL 212DH
@@ -15649,40 +15492,21 @@
 ; ======================================================
 5F2FH  (CDH) CALL 12CBH     ; Wait for key from keyboard
 5F32H  (FEH) CPI 20H
-5F34H  (C2H) JNZ 5F2FH
+5F34H  (C2H) JNZ 5F2FH      ; Wait for a space to be entered on keyboard
 5F37H  (C9H) RET
 
-5F38H  DB   "Text ill-formed"
-5F47H  (07H) RLC
-5F48H  (00H) NOP
-5F49H  (0DH) DCR C
-5F4AH  (0AH) LDAX B
-5F4BH  (50H) MOV D,B
-5F4CH  (72H) MOV M,D
-5F4DH  (65H) MOV H,L
-5F4EH  (73H) MOV M,E
-5F4FH  (73H) MOV M,E
-5F50H  (20H) RIM
-5F51H  (73H) MOV M,E
-5F52H  (70H) MOV M,B
-5F53H  (61H) MOV H,C
-5F54H  (63H) MOV H,E
-5F55H  (65H) MOV H,L
-5F56H  (20H) RIM
-5F57H  (62H) MOV H,D
-5F58H  (61H) MOV H,C
-5F59H  (72H) MOV M,D
-5F5AH  (20H) RIM
-5F5BH  (66H) MOV H,M
-5F5CH  (6FH) MOV L,A
-5F5DH  (72H) MOV M,D
-5F5EH  (20H) RIM
-5F5FH  (00H) NOP
-5F60H  (54H) MOV D,H
-5F61H  (45H) MOV B,L
-5F62H  (58H) MOV E,B
-5F63H  (54H) MOV D,H
-5F64H  (00H) NOP
+5F38H  DB   "Text ill-formed",07H,00H
+
+5F49H  DB   0DH,0AH
+
+5F4BH  DB   "Press space bar for ",00H
+
+5F60H  DB   "TEXT",00H
+
+
+; ======================================================
+; Edit .DO files
+; ======================================================
 5F65H  (E5H) PUSH H
 5F66H  (21H) LXI H,0000H
 5F69H  (22H) SHLD F6E7H
@@ -15741,7 +15565,7 @@
 5FE6H  (E5H) PUSH H
 5FE7H  (3AH) LDA F6DFH
 5FEAH  (32H) STA F6E0H
-5FEDH  (CDH) CALL 63E5H
+5FEDH  (CDH) CALL 63E5H     ; Get next byte for TEXT Program entry
 5FF0H  (32H) STA F6DFH
 5FF3H  (F5H) PUSH PSW
 5FF4H  (CDH) CALL 65ECH
@@ -15750,7 +15574,7 @@
 5FFBH  (FEH) CPI 7FH
 5FFDH  (CAH) JZ 6118H
 6000H  (FEH) CPI 20H
-6002H  (D2H) JNC 608AH
+6002H  (D2H) JNC 608AH      ; TEXT control I routine
 6005H  (4FH) MOV C,A
 6006H  (06H) MVI B,00H
 6008H  (21H) LXI H,6016H
@@ -15768,62 +15592,21 @@
 ; ======================================================
 ; TEXT control character vector table
 ; ======================================================
-6016H  (15H) DCR D
-6017H  (60H) MOV H,B
-6018H  (8CH) ADC H
-6019H  (61H) MOV H,C
-601AH  (D7H) RST 2          ; Get next non-white char from M
-601BH  (61H) MOV H,C
-601CH  (8FH) ADC A
-601DH  (62H) MOV H,D
-601EH  (DEH) SBI 60H
-6020H  (55H) MOV D,L
-6021H  (61H) MOV H,C
-6022H  (7AH) MOV A,D
-6023H  (61H) MOV H,C
-6024H  (13H) INX D
-6025H  (67H) MOV H,A
-6026H  (0BH) DCX B
-6027H  (61H) MOV H,C
-6028H  (8AH) ADC D
-6029H  (60H) MOV H,B
-602AH  (15H) DCR D
-602BH  (60H) MOV H,B
-602CH  (15H) DCR D
-602DH  (60H) MOV H,B
-602EH  (42H) MOV B,D
-602FH  (62H) MOV H,D
-6030H  (BEH) CMP M
-6031H  (60H) MOV H,B
-6032H  (51H) MOV D,C
-6033H  (65H) MOV H,L
-6034H  (31H) LXI SP,7C64H
-6037H  (60H) MOV H,B
-6038H  (0BH) DCX B
-6039H  (62H) MOV H,D
-603AH  (FDH) JX 5161H
-603DH  (61H) MOV H,C
-603EH  (C2H) JNZ 4561H
-6041H  (64H) MOV H,H
-6042H  (74H) MOV M,H
-6043H  (67H) MOV H,A
-6044H  (10H) ASHR
-6045H  (62H) MOV H,D
-6046H  (E2H) JPO 9160H
-6049H  (66H) MOV H,M
-604AH  (1CH) INR E
-604BH  (62H) MOV H,D
-604CH  (56H) MOV D,M
-604DH  (60H) MOV H,B
-604EH  (DEH) SBI 60H
-6050H  (51H) MOV D,C
-6051H  (61H) MOV H,C
-6052H  (55H) MOV D,L
-6053H  (61H) MOV H,C
-6054H  (E2H) JPO 3A60H
-6057H  (E0H) RPO
-6058H  (F6H) ORI D6H
-605AH  (1BH) DCX D
+6016H  DW   6015H, 618CH, 61D7H, 628FH
+601EH  DW   60DEH, 6155H, 617AH, 6713H
+6026H  DW   610BH, 608AH, 6015H, 6015H
+602EH  DW   6242H, 60BEH, 6551H, 6431H
+6036H  DW   607CH, 620BH, 61FDH, 6151H
+603EH  DW   61C2H, 6445H, 6774H, 6210H
+6046H  DW   60E2H, 6691H, 621CH, 6056H
+604EH  DW   60DEH, 6151H, 6155H, 60E2H
+
+
+; ======================================================
+; TEXT ESCape routine
+; ======================================================
+6056H  (3AH) LDA F6E0H
+6059H  (D6H) SUI 1BH
 605BH  (C0H) RNZ
 605CH  (6FH) MOV L,A
 605DH  (67H) MOV H,A
@@ -15831,7 +15614,7 @@
 6061H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
 6062H  DB   38H
 6063H  (CDH) CALL 65B9H
-6066H  (CDH) CALL 4244H
+6066H  (CDH) CALL 4244H     ; Resume automatic scrolling
 6069H  (CDH) CALL 428AH     ; Erase function key display
 606CH  (CDH) CALL 63DBH
 606FH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
@@ -15844,7 +15627,7 @@
 ; ======================================================
 ; TEXT control P routine
 ; ======================================================
-607CH  (CDH) CALL 63E5H
+607CH  (CDH) CALL 63E5H     ; Get next byte for TEXT Program entry
 607FH  (DAH) JC 6501H
 6082H  (A7H) ANA A
 6083H  (C8H) RZ
@@ -15857,7 +15640,7 @@
 ; TEXT control I routine
 ; ======================================================
 608AH  (F5H) PUSH PSW
-608BH  (CDH) CALL 628FH
+608BH  (CDH) CALL 628FH     ; TEXT control C routine
 608EH  (CDH) CALL 6A9BH
 6091H  (CDH) CALL 6AF9H
 6094H  (F1H) POP PSW
@@ -15881,7 +15664,7 @@
 ; ======================================================
 ; TEXT control M routine
 ; ======================================================
-60BEH  (CDH) CALL 628FH
+60BEH  (CDH) CALL 628FH     ; TEXT control C routine
 60C1H  (CDH) CALL 6A9BH
 60C4H  (2AH) LHLD FB62H
 60C7H  (23H) INX H
@@ -15934,12 +15717,12 @@
 ; ======================================================
 ; TEXT control H routine
 ; ======================================================
-610BH  (CDH) CALL 628FH
+610BH  (CDH) CALL 628FH     ; TEXT control C routine
 610EH  (CDH) CALL 6AF9H
 6111H  (CDH) CALL 630BH
 6114H  (CDH) CALL 615BH
 6117H  (D8H) RC
-6118H  (CDH) CALL 628FH
+6118H  (CDH) CALL 628FH     ; TEXT control C routine
 611BH  (CDH) CALL 6AF9H
 611EH  (E5H) PUSH H
 611FH  (CDH) CALL 630BH
@@ -16108,7 +15891,7 @@
 ; ======================================================
 6210H  (2AH) LHLD F767H
 6213H  (CDH) CALL 6236H
-6216H  (CDH) CALL 422DH
+6216H  (CDH) CALL 422DH     ; Home cursor
 6219H  (C3H) JMP 62A0H
 
 
@@ -16138,7 +15921,7 @@
 ; ======================================================
 ; TEXT control L routine
 ; ======================================================
-6242H  (CDH) CALL 628FH
+6242H  (CDH) CALL 628FH     ; TEXT control C routine
 6245H  (CDH) CALL 6AF9H
 6248H  (22H) SHLD F6E2H
 624BH  (22H) SHLD F6E4H
@@ -16174,7 +15957,7 @@
 6277H  (F2H) JP 6264H
 627AH  (C9H) RET
 
-627BH  (CDH) CALL 422DH
+627BH  (CDH) CALL 422DH     ; Home cursor
 627EH  (CDH) CALL 4253H     ; Delete current line on screen
 6281H  (CDH) CALL 63CDH
 6284H  (87H) ADD A
@@ -16182,6 +15965,7 @@
 6286H  (11H) LXI D,F6EBH
 6289H  (21H) LXI H,F6EDH
 628CH  (C3H) JMP 2542H      ; Move B bytes from M to (DE)
+
 
 ; ======================================================
 ; TEXT control C routine
@@ -16265,8 +16049,8 @@
 631EH  (F5H) PUSH PSW
 631FH  (E5H) PUSH H
 6320H  (CDH) CALL 65DFH
-6323H  (CDH) CALL 422DH
-6326H  (CDH) CALL 4258H
+6323H  (CDH) CALL 422DH     ; Home cursor
+6326H  (CDH) CALL 4258H     ; Insert line a current line
 6329H  (CDH) CALL 6A55H
 632CH  (D5H) PUSH D
 632DH  (CDH) CALL 6A3EH
@@ -16279,7 +16063,7 @@
 6336H  (87H) ADD A
 6337H  (4FH) MOV C,A
 6338H  (06H) MVI B,00H
-633AH  (CDH) CALL 6BE6H
+633AH  (CDH) CALL 6BE6H     ; Move BC bytes from M to (DE) with decrement
 633DH  (EBH) XCHG
 633EH  (D1H) POP D
 633FH  (72H) MOV M,D
@@ -16361,7 +16145,7 @@
 63AAH  (6BH) MOV L,E
 63ABH  (62H) MOV H,D
 63ACH  (2BH) DCX H
-63ADH  (CDH) CALL 6BE6H
+63ADH  (CDH) CALL 6BE6H     ; Move BC bytes from M to (DE) with decrement
 63B0H  (23H) INX H
 63B1H  (F1H) POP PSW
 63B2H  (77H) MOV M,A
@@ -16464,7 +16248,7 @@
 643AH  (F5H) PUSH PSW
 643BH  (CDH) CALL 634AH
 643EH  (F1H) POP PSW
-643FH  (D2H) JNC 628FH
+643FH  (D2H) JNC 628FH      ; TEXT control C routine
 6442H  (C3H) JMP 60A3H
 
 
@@ -16535,7 +16319,7 @@
 
 64B6H  (CDH) CALL 2262H
 64B9H  (2AH) LHLD F9A5H     ; Start of Paste Buffer
-64BCH  (22H) SHLD F88CH
+64BCH  (22H) SHLD F88CH     ; End of RAM for file storage
 64BFH  (AFH) XRA A
 64C0H  (32H) STA F6E6H
 64C3H  (CDH) CALL 64ABH
@@ -16562,7 +16346,7 @@
 64E5H  (B1H) ORA C
 64E6H  (C8H) RZ
 64E7H  (E5H) PUSH H
-64E8H  (2AH) LHLD F88CH
+64E8H  (2AH) LHLD F88CH     ; End of RAM for file storage
 64EBH  (CDH) CALL 6B6DH     ; Insert BC spaces at M
 64EEH  (EBH) XCHG
 64EFH  (E1H) POP H
@@ -16578,11 +16362,11 @@
 64FFH  (E1H) POP H
 6500H  (C9H) RET
 
-6501H  (CDH) CALL 628FH
+6501H  (CDH) CALL 628FH     ; TEXT control C routine
 6504H  (CDH) CALL 6383H
 6507H  (CDH) CALL 2146H     ; Update system pointers for .DO), .CO), vars), etc.
 650AH  (CDH) CALL 6AF9H
-650DH  (22H) SHLD F88CH
+650DH  (22H) SHLD F88CH     ; End of RAM for file storage
 6510H  (7CH) MOV A,H
 6511H  (32H) STA F6E6H
 6514H  (2AH) LHLD F9A5H     ; Start of Paste Buffer
@@ -16605,7 +16389,7 @@
 6533H  (F1H) POP PSW
 6534H  (DAH) JC 60A3H
 6537H  (D5H) PUSH D
-6538H  (2AH) LHLD F88CH
+6538H  (2AH) LHLD F88CH     ; End of RAM for file storage
 653BH  (3AH) LDA F639H      ; Cursor row (1-8)
 653EH  (CDH) CALL 6986H
 6541H  (CDH) CALL 6A3EH
@@ -16621,7 +16405,7 @@
 ; ======================================================
 ; TEXT control N routine
 ; ======================================================
-6551H  (CDH) CALL 1B98H
+6551H  (CDH) CALL 1B98H     ; Different from M100
 6554H  (CDH) CALL 6AF9H
 6557H  (E5H) PUSH H
 6558H  (21H) LXI H,65D7H
@@ -16634,7 +16418,7 @@
 6565H  (A7H) ANA A
 6566H  (37H) STC
 6567H  (CAH) JZ 658BH
-656AH  (CDH) CALL 65C3H
+656AH  (CDH) CALL 65C3H     ; Copy NULL terminated string at M to (DE)
 656DH  (D1H) POP D
 656EH  (D5H) PUSH D
 656FH  (1AH) LDAX D
@@ -16658,7 +16442,7 @@
 6592H  (D4H) CNC 65AEH
 6595H  (C3H) JMP 6229H
 
-6598H  (CDH) CALL 628FH
+6598H  (CDH) CALL 628FH     ; TEXT control C routine
 659BH  (2AH) LHLD F639H     ; Cursor row (1-8)
 659EH  (CDH) CALL 63CDH
 65A1H  (BDH) CMP L
@@ -16716,7 +16500,7 @@
 6600H  (11H) LXI D,5F48H
 6603H  (D5H) PUSH D
 6604H  (CDH) CALL 65B3H
-6607H  (3AH) LDA F63AH    ; Cursor column (1-40)
+6607H  (3AH) LDA F63AH      ; Cursor column (1-40)
 660AH  (32H) STA FACAH
 660DH  (E1H) POP H
 660EH  (E5H) PUSH H
@@ -16733,7 +16517,7 @@
 6626H  (3AH) LDA FACAH
 6629H  (67H) MOV H,A
 662AH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
-662DH  (CDH) CALL 425DH      ; Erase from cursor to end of line
+662DH  (CDH) CALL 425DH     ; Erase from cursor to end of line
 6630H  (F1H) POP PSW
 6631H  (11H) LXI D,F685H    ; Keyboard buffer
 6634H  (06H) MVI B,01H
@@ -16745,7 +16529,7 @@
 6640H  (E5H) PUSH H
 6641H  (D8H) RC
 6642H  (FEH) CPI 7FH
-6644H  (CAH) JZ 46A0H
+6644H  (CAH) JZ 46A0H       ; Input routine backspace), left arrow), CTRL-H handler
 6647H  (FEH) CPI 20H
 6649H  (D2H) JNC 667EH
 664CH  (21H) LXI H,665BH
@@ -16753,28 +16537,23 @@
 6651H  (C3H) JMP 4378H
 
 6654H  (11H) LXI D,F685H    ; Keyboard buffer
-6657H  (CDH) CALL 65C3H
+6657H  (CDH) CALL 65C3H     ; Copy NULL terminated string at M to (DE)
 665AH  (C3H) JMP 6678H
 
-665DH  (03H) INX B
-665EH  (72H) MOV M,D
-665FH  (66H) MOV H,M
-6660H  (08H) DSUB
-6661H  (A0H) ANA B
-6662H  (46H) MOV B,M
-6663H  (09H) DAD B
-6664H  (7CH) MOV A,H
-6665H  (66H) MOV H,M
-6666H  (0DH) DCR C
-6667H  (75H) MOV M,L
-6668H  (66H) MOV H,M
-6669H  (15H) DCR D
-666AH  (C3H) JMP 1846H
-
-666DH  (C3H) JMP 1D46H
-
-6670H  (A0H) ANA B
-6671H  (46H) MOV B,M
+665DH  DB   03H
+665EH  DW   6672H
+6660H  DB   08H
+6661H  DW   46A0H
+6663H  DB   09H
+6664H  DW   667CH
+6666H  DB   0DH
+6667H  DW   6675H
+6669H  DB   15H
+666AH  DW   46C3H
+666CH  DB   18H
+666DH  DW   46C3H
+666FH  DB   1DH
+6670H  DW   46A0H
 6672H  (11H) LXI D,F685H    ; Keyboard buffer
 6675H  (E1H) POP H
 6676H  (AFH) XRA A
@@ -16788,7 +16567,7 @@
 6682H  (D6H) SUI 09H
 6684H  (21H) LXI H,F63AH    ; Cursor column (1-40)
 6687H  (BEH) CMP M
-6688H  (DAH) JC 4229H
+6688H  (DAH) JC 4229H       ; BEEP statement
 668BH  (79H) MOV A,C
 668CH  (04H) INR B
 668DH  (E7H) RST 4          ; Send character in A to screen/printer
@@ -16825,7 +16604,7 @@
 66C3H  (32H) STA F675H      ; Output device for RST 20H (0=screen)
 66C6H  (11H) LXI D,F64AH
 66C9H  (21H) LXI H,F685H    ; Keyboard buffer
-66CCH  (CDH) CALL 65C3H
+66CCH  (CDH) CALL 65C3H     ; Copy NULL terminated string at M to (DE)
 66CFH  (3CH) INR A
 66D0H  (32H) STA F920H
 66D3H  (CDH) CALL 4222H     ; Send CRLF to screen or printer
@@ -16840,7 +16619,7 @@
 66E6H  (CDH) CALL 65F3H
 66E9H  (2AH) LHLD F6E7H
 66ECH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
-66EFH  (C3H) JMP 5FDDH
+66EFH  (C3H) JMP 5FDDH      ; Main TEXT edit loop
 
 66F2H  (CDH) CALL 66FEH
 66F5H  (CDH) CALL 4F45H
@@ -16943,7 +16722,7 @@
 67C1H  (CDH) CALL 6981H
 67C4H  (E1H) POP H
 67C5H  (CDH) CALL 630BH
-67C8H  (C3H) JMP 5FDDH
+67C8H  (C3H) JMP 5FDDH      ; Main TEXT edit loop
 
 67CBH  (CDH) CALL 4F45H
 67CEH  (CDH) CALL 65ABH
@@ -16989,7 +16768,7 @@
 6826H  (C9H) RET
 
 6827H  (EBH) XCHG
-6828H  (22H) SHLD F88CH
+6828H  (22H) SHLD F88CH     ; End of RAM for file storage
 682BH  (EBH) XCHG
 682CH  (2AH) LHLD F892H
 682FH  (22H) SHLD F88EH
@@ -17008,7 +16787,7 @@
 6848H  (C2H) JNZ 683BH
 684BH  (2AH) LHLD F88EH
 684EH  (22H) SHLD F892H
-6851H  (2AH) LHLD F88CH
+6851H  (2AH) LHLD F88CH     ; End of RAM for file storage
 6854H  (EBH) XCHG
 6855H  (3AH) LDA F920H
 6858H  (3DH) DCR A
@@ -17218,7 +16997,7 @@
 69C3H  (A3H) ANA E
 69C4H  (3CH) INR A
 69C5H  (C1H) POP B
-69C6H  (CAH) JZ 425DH      ; Erase from cursor to end of line
+69C6H  (CAH) JZ 425DH       ; Erase from cursor to end of line
 69C9H  (C5H) PUSH B
 69CAH  (F1H) POP PSW
 69CBH  (6FH) MOV L,A
@@ -17249,7 +17028,7 @@
 
 69FEH  (CDH) CALL 6A2EH
 6A01H  (CAH) JZ 69F7H
-6A04H  (CDH) CALL 425DH      ; Erase from cursor to end of line
+6A04H  (CDH) CALL 425DH     ; Erase from cursor to end of line
 6A07H  (CDH) CALL 4222H     ; Send CRLF to screen or printer
 6A0AH  (C3H) JMP 69FEH
 
@@ -17264,7 +17043,7 @@
 6A1BH  (C2H) JNZ 6A17H
 6A1EH  (3AH) LDA F920H
 6A21H  (A7H) ANA A
-6A22H  (CCH) CZ 426EH     ; Cancel inverse character mode
+6A22H  (CCH) CZ 426EH       ; Cancel inverse character mode
 6A25H  (D1H) POP D
 6A26H  (C9H) RET
 
@@ -17291,7 +17070,7 @@
 6A41H  (3CH) INR A
 6A42H  (C3H) JMP 6A48H
 
-6A45H  (3AH) LDA F639H     ; Cursor row (1-8)
+6A45H  (3AH) LDA F639H      ; Cursor row (1-8)
 6A48H  (5FH) MOV E,A
 6A49H  (16H) MVI D,00H
 6A4BH  (21H) LXI H,F6E9H
@@ -17430,7 +17209,7 @@
 6B1BH  (E1H) POP H
 6B1CH  (E5H) PUSH H
 6B1DH  (CDH) CALL 6AC7H
-6B20H  (3AH) LDA F63AH    ; Cursor column (1-40)
+6B20H  (3AH) LDA F63AH      ; Cursor column (1-40)
 6B23H  (BCH) CMP H
 6B24H  (DAH) JC 6B0CH
 6B27H  (E1H) POP H
@@ -17526,7 +17305,7 @@
 6B96H  (C1H) POP B
 6B97H  (78H) MOV A,B
 6B98H  (B1H) ORA C
-6B99H  (C4H) CNZ 6BE6H
+6B99H  (C4H) CNZ 6BE6H      ; Move BC bytes from M to (DE) with decrement
 6B9CH  (23H) INX H
 6B9DH  (C1H) POP B
 6B9EH  (C9H) RET
@@ -17554,7 +17333,7 @@
 6BB1H  (D1H) POP D
 6BB2H  (78H) MOV A,B
 6BB3H  (B1H) ORA C
-6BB4H  (C4H) CNZ 6BDBH     ; Move BC bytes from M to (DE) with increment
+6BB4H  (C4H) CNZ 6BDBH      ; Move BC bytes from M to (DE) with increment
 6BB7H  (EBH) XCHG
 6BB8H  (22H) SHLD FBB6H     ; Unused memory pointer
 6BBBH  (C1H) POP B
@@ -17589,7 +17368,7 @@
 6BDFH  (0BH) DCX B
 6BE0H  (78H) MOV A,B
 6BE1H  (B1H) ORA C
-6BE2H  (C2H) JNZ 6BDBH     ; Move BC bytes from M to (DE) with increment
+6BE2H  (C2H) JNZ 6BDBH      ; Move BC bytes from M to (DE) with increment
 6BE5H  (C9H) RET
 
 
@@ -17603,102 +17382,48 @@
 6BEAH  (0BH) DCX B
 6BEBH  (78H) MOV A,B
 6BECH  (B1H) ORA C
-6BEDH  (C2H) JNZ 6BE6H
+6BEDH  (C2H) JNZ 6BE6H      ; Move BC bytes from M to (DE) with decrement
 6BF0H  (C9H) RET
+
 
 ; ======================================================
 ; ROM programs catalog entries
 ; ======================================================
-6BF1H  (B0H) ORA B
-6BF2H  (49H) MOV C,C
-6BF3H  (6CH) MOV L,H
-6BF4H  (42H) MOV B,D
-6BF5H  (41H) MOV B,C
-6BF6H  (53H) MOV D,E
-6BF7H  (49H) MOV C,C
-6BF8H  (43H) MOV B,E
-6BF9H  (20H) RIM
-6BFAH  (20H) RIM
-6BFBH  (00H) NOP
-6BFCH  (B0H) ORA B
-6BFDH  (EEH) XRI 5DH
-6BFFH  (54H) MOV D,H
-6C00H  (45H) MOV B,L
-6C01H  (58H) MOV E,B
-6C02H  (54H) MOV D,H
-6C03H  (20H) RIM
-6C04H  (20H) RIM
-6C05H  (20H) RIM
-6C06H  (00H) NOP
-6C07H  (B0H) ORA B
-6C08H  (46H) MOV B,M
-6C09H  (51H) MOV D,C
-6C0AH  (54H) MOV D,H
-6C0BH  (45H) MOV B,L
-6C0CH  (4CH) MOV C,H
-6C0DH  (43H) MOV B,E
-6C0EH  (4FH) MOV C,A
-6C0FH  (4DH) MOV C,L
-6C10H  (20H) RIM
-6C11H  (00H) NOP
-6C12H  (B0H) ORA B
-6C13H  (68H) MOV L,B
-6C14H  (5BH) MOV E,E
-6C15H  (41H) MOV B,C
-6C16H  (44H) MOV B,H
-6C17H  (44H) MOV B,H
-6C18H  (52H) MOV D,D
-6C19H  (53H) MOV D,E
-6C1AH  (53H) MOV D,E
-6C1BH  (20H) RIM
-6C1CH  (00H) NOP
-6C1DH  (B0H) ORA B
-6C1EH  (6FH) MOV L,A
-6C1FH  (5BH) MOV E,E
-6C20H  (53H) MOV D,E
-6C21H  (43H) MOV B,E
-6C22H  (48H) MOV C,B
-6C23H  (45H) MOV B,L
-6C24H  (44H) MOV B,H
-6C25H  (4CH) MOV C,H
-6C26H  (20H) RIM
-6C27H  (00H) NOP
-6C28H  (88H) ADC B
-6C29H  (00H) NOP
-6C2AH  (00H) NOP
-6C2BH  (00H) NOP
-6C2CH  (32H) STA FFFBH
-6C2FH  (C3H) JMP 7682H
-
-6C32H  (20H) RIM
-6C33H  (C8H) RZ
-6C34H  (00H) NOP
-6C35H  (00H) NOP
-6C36H  (00H) NOP
-6C37H  (C5H) PUSH B
-6C38H  (CDH) CALL 26DDH
-6C3BH  (C1H) POP B
-6C3CH  (C9H) RET
-
-6C3DH  DB   "iH",00H
-6C40H  DB   00H
-6C41H  DB   00H
-
-6C42H  (32H) STA F809H
-6C45H  (C3H) JMP 218DH
-
-6C48H  (20H) RIM
+6BF1H  DB   B0H
+6BF2H  DW   6C49H
+6BF4H  DB   "BASIC  ",00H
+6BFCH  DB   B0H
+6BFDH  DW   5DEEH
+6BFFH  DB   "TEXT   ",00H
+6C07H  DB   B0H
+6C08H  DW   5146H
+6C0AH  DB   "TELCOM ",00H
+6C12H  DB   B0H
+6C13H  DW   5B68H
+6C15H  DB   "ADDRSS ",00H
+6C1DH  DB   B0H
+6C1EH  DW   5B6FH
+6C20H  DB   "SCHEDL ",00H
+6C28H  DB   88H
+6C29H  DW   0000H
+6C2BH  DB   32H,FBH,FFH,C3H,82H,76H,20H ; Different from M100
+6C33H  DB   C8H
+6C34H  DW   0000H
+6C37H  DB   C5H,CDH,DDH,26H,C1H,C9H,69H ; Different from M100
+6C3EH  DB   48H
+6C3FH  DW   0000H
+6C42H  DB   32H,09H,F8H,C3H,8DH,21H,20H ; Different from M100
 
 ; ======================================================
 ; BASIC Entry point
 ; ======================================================
 6C49H  (CDH) CALL 6C7FH
-6C4CH  (CDH) CALL 7EA6H
+6C4CH  (CDH) CALL 7EA6H     ; Display TRS-80 Model number & Free bytes on LCD
 6C4FH  (21H) LXI H,F999H
 6C52H  (22H) SHLD FA8CH
 6C55H  (2AH) LHLD F99AH     ; BASIC program not saved pointer
 6C58H  (22H) SHLD F67CH     ; Start of BASIC program pointer
-6C5BH  (CDH) CALL 6C9CH
+6C5BH  (CDH) CALL 6C9CH     ; Copy BASIC Function key table to key definition area
 6C5EH  (CDH) CALL 5A9EH     ; Display function keys on 8th line
 6C61H  (AFH) XRA A
 6C62H  (32H) STA F650H
@@ -17728,17 +17453,17 @@
 ; Copy BASIC Function key table to key definition area
 ; ======================================================
 6C93H  (21H) LXI H,F789H    ; Function key definition area
-6C96H  (11H) LXI D,F80AH
+6C96H  (11H) LXI D,F80AH    ; Function key definition area (BASIC)
 6C99H  (C3H) JMP 6CA2H
 
 
 ; ======================================================
 ; Copy BASIC Function key table to key definition area
 ; ======================================================
-6C9CH  (21H) LXI H,F80AH
+6C9CH  (21H) LXI H,F80AH    ; Function key definition area (BASIC)
 6C9FH  (11H) LXI D,F789H    ; Function key definition area
 6CA2H  (06H) MVI B,80H
-6CA4H  (C3H) JMP 2542H     ; Move B bytes from M to (DE)
+6CA4H  (C3H) JMP 2542H      ; Move B bytes from M to (DE)
 
 6CA7H  (2BH) DCX H
 6CA8H  (D7H) RST 2          ; Get next non-white char from M
@@ -17783,7 +17508,7 @@
 ; Re-initialize system without destroying files
 ; ======================================================
 6CD6H  (F3H) DI
-6CD7H  (21H) LXI H,FF40H      ; XON/XOFF protocol control
+6CD7H  (21H) LXI H,FF40H    ; XON/XOFF protocol control
 6CDAH  (06H) MVI B,BDH
 6CDCH  (CDH) CALL 4F0AH     ; Zero B bytes at M
 6CDFH  (3CH) INR A
@@ -17799,22 +17524,22 @@
 6CE7H  (3EH) MVI A,43H
 6CE9H  (D3H) OUT B8H
 6CEBH  (3EH) MVI A,05H
-6CEDH  (CDH) CALL 7383H
+6CEDH  (CDH) CALL 7383H     ; Set clock chip mode
 6CF0H  (3EH) MVI A,EDH
 6CF2H  (D3H) OUT BAH
 6CF4H  (AFH) XRA A
-6CF5H  (32H) STA FF45H
+6CF5H  (32H) STA FF45H      ; Contents of port E8H
 6CF8H  (D3H) OUT E8H
 6CFAH  (D3H) OUT A8H
-6CFCH  (CDH) CALL 6C2CH
-6CFFH  (CDH) CALL 7533H
+6CFCH  (CDH) CALL 6C2CH     ; Differen from M100: Check for optional external controller
+6CFFH  (CDH) CALL 7533H     ; Enable LCD drivers after short delay
 6D02H  (AFH) XRA A
 6D03H  (D3H) OUT FEH
-6D05H  (CDH) CALL 7533H
+6D05H  (CDH) CALL 7533H     ; Enable LCD drivers after short delay
 6D08H  (3EH) MVI A,3BH
 6D0AH  (D3H) OUT FEH
 6D0CH  (CDH) CALL 752BH
-6D0FH  (CDH) CALL 7533H
+6D0FH  (CDH) CALL 7533H     ; Enable LCD drivers after short delay
 6D12H  (3EH) MVI A,39H
 6D14H  (D3H) OUT FEH
 6D16H  (FBH) EI
@@ -17851,10 +17576,10 @@
 6D49H  (E6H) ANI 06H
 6D4BH  (EEH) XRI 02H
 6D4DH  (C2H) JNZ 6D41H
-6D50H  (CDH) CALL 765CH
+6D50H  (CDH) CALL 765CH     ; Set interrupt to 1DH
 6D53H  (79H) MOV A,C
 6D54H  (D3H) OUT B9H
-6D56H  (3AH) LDA FF45H
+6D56H  (3AH) LDA FF45H      ; Contents of port E8H
 6D59H  (47H) MOV B,A
 6D5AH  (F6H) ORI 02H
 6D5CH  (D3H) OUT E8H
@@ -17876,10 +17601,10 @@
 6D6DH  (3AH) LDA FF42H      ; XON/XOFF enable flag
 6D70H  (B7H) ORA A
 6D71H  (CAH) JZ 6D79H
-6D74H  (3AH) LDA FF41H
+6D74H  (3AH) LDA FF41H      ; XON/XOFF protocol control
 6D77H  (3CH) INR A
 6D78H  (C8H) RZ
-6D79H  (3AH) LDA FF86H
+6D79H  (3AH) LDA FF86H      ; RS232 buffer count
 6D7CH  (B7H) ORA A
 6D7DH  (C9H) RET
 
@@ -17890,18 +17615,18 @@
 6D7EH  (E5H) PUSH H
 6D7FH  (D5H) PUSH D
 6D80H  (C5H) PUSH B
-6D81H  (21H) LXI H,71F8H
+6D81H  (21H) LXI H,71F8H    ; Interrupt exit routine (pop all regs & RET)
 6D84H  (E5H) PUSH H
-6D85H  (21H) LXI H,FF86H
+6D85H  (21H) LXI H,FF86H    ; RS232 buffer count
 6D88H  (CDH) CALL 729FH     ; Check if SHIFT-BREAK is being pressed
 6D8BH  (D8H) RC
 6D8CH  (CDH) CALL 6D6DH     ; Check RS232 queue for pending characters
 6D8FH  (CAH) JZ 6D88H
 6D92H  (FEH) CPI 03H
-6D94H  (DCH) CC 6E0BH
+6D94H  (DCH) CC 6E0BH       ; Send XON (CTRL-Q) out RS232
 6D97H  (F3H) DI
 6D98H  (35H) DCR M
-6D99H  (CDH) CALL 6DFCH
+6D99H  (CDH) CALL 6DFCH     ; Calculate address to save next RS232 character
 6D9CH  (7EH) MOV A,M
 6D9DH  (EBH) XCHG
 6D9EH  (23H) INX H
@@ -17921,15 +17646,15 @@
 ; ======================================================
 ; RST 6.5 routine (RS232 receive interrupt)
 ; ======================================================
-6DACH  (CDH) CALL F5FCH
+6DACH  (CDH) CALL F5FCH     ; RST 6.5 RAM Vector
 6DAFH  (E5H) PUSH H
 6DB0H  (D5H) PUSH D
 6DB1H  (C5H) PUSH B
 6DB2H  (F5H) PUSH PSW
-6DB3H  (21H) LXI H,71F7H
+6DB3H  (21H) LXI H,71F7H    ; Interrupt exit routine (pop all regs & RET)
 6DB6H  (E5H) PUSH H
 6DB7H  (DBH) IN C8H
-6DB9H  (21H) LXI H,FF8DH      ; RS232 Parity Control byte
+6DB9H  (21H) LXI H,FF8DH    ; RS232 Parity Control byte
 6DBCH  (A6H) ANA M
 6DBDH  (4FH) MOV C,A
 6DBEH  (DBH) IN D8H
@@ -17946,16 +17671,16 @@
 6DD6H  (3AH) LDA FF42H      ; XON/XOFF enable flag
 6DD9H  (B7H) ORA A
 6DDAH  (C0H) RNZ
-6DDBH  (21H) LXI H,FF86H
+6DDBH  (21H) LXI H,FF86H    ; RS232 buffer count
 6DDEH  (7EH) MOV A,M
 6DDFH  (FEH) CPI 40H
 6DE1H  (C8H) RZ
 6DE2H  (FEH) CPI 28H
-6DE4H  (D4H) CNC 6E1EH
+6DE4H  (D4H) CNC 6E1EH      ; Turn off XON/XOFF protocol
 6DE7H  (C5H) PUSH B
 6DE8H  (34H) INR M
 6DE9H  (23H) INX H
-6DEAH  (CDH) CALL 6DFCH
+6DEAH  (CDH) CALL 6DFCH     ; Calculate address to save next RS232 character
 6DEDH  (C1H) POP B
 6DEEH  (71H) MOV M,C
 6DEFH  (78H) MOV A,B
@@ -17966,7 +17691,7 @@
 6DF4H  (35H) DCR M
 6DF5H  (34H) INR M
 6DF6H  (C0H) RNZ
-6DF7H  (3AH) LDA FF86H
+6DF7H  (3AH) LDA FF86H      ; RS232 buffer count
 6DFAH  (77H) MOV M,A
 6DFBH  (C9H) RET
 
@@ -17981,7 +17706,7 @@
 6E00H  (E6H) ANI 3FH
 6E02H  (77H) MOV M,A
 6E03H  (EBH) XCHG
-6E04H  (21H) LXI H,FF46H
+6E04H  (21H) LXI H,FF46H    ; RS232 Character buffer
 6E07H  (06H) MVI B,00H
 6E09H  (09H) DAD B
 6E0AH  (C9H) RET
@@ -17993,13 +17718,13 @@
 6E0BH  (3AH) LDA FF42H      ; XON/XOFF enable flag
 6E0EH  (A7H) ANA A
 6E0FH  (C8H) RZ
-6E10H  (3AH) LDA FF8AH
+6E10H  (3AH) LDA FF8AH      ; Control-S status
 6E13H  (3DH) DCR A
 6E14H  (C0H) RNZ
-6E15H  (32H) STA FF8AH
+6E15H  (32H) STA FF8AH      ; Control-S status
 6E18H  (C5H) PUSH B
 6E19H  (0EH) MVI C,11H
-6E1BH  (C3H) JMP 6E3AH
+6E1BH  (C3H) JMP 6E3AH      ; Send character in C to serial port
 
 
 ; ======================================================
@@ -18008,14 +17733,14 @@
 6E1EH  (3AH) LDA FF42H      ; XON/XOFF enable flag
 6E21H  (A7H) ANA A
 6E22H  (C8H) RZ
-6E23H  (3AH) LDA FF8AH
+6E23H  (3AH) LDA FF8AH      ; Control-S status
 6E26H  (B7H) ORA A
 6E27H  (C0H) RNZ
 6E28H  (3CH) INR A
-6E29H  (32H) STA FF8AH
+6E29H  (32H) STA FF8AH      ; Control-S status
 6E2CH  (C5H) PUSH B
 6E2DH  (0EH) MVI C,13H
-6E2FH  (C3H) JMP 6E3AH
+6E2FH  (C3H) JMP 6E3AH      ; Send character in C to serial port
 
 
 ; ======================================================
@@ -18023,7 +17748,7 @@
 ; ======================================================
 6E32H  (C5H) PUSH B
 6E33H  (4FH) MOV C,A
-6E34H  (CDH) CALL 6E4DH
+6E34H  (CDH) CALL 6E4DH     ; Handle XON/XOFF protocol
 6E37H  (DAH) JC 6E4AH
 
 ; ======================================================
@@ -18033,7 +17758,7 @@
 6E3DH  (DAH) JC 6E4AH
 6E40H  (DBH) IN D8H
 6E42H  (E6H) ANI 10H
-6E44H  (CAH) JZ 6E3AH
+6E44H  (CAH) JZ 6E3AH       ; Send character in C to serial port
 6E47H  (79H) MOV A,C
 6E48H  (D3H) OUT C8H
 6E4AH  (79H) MOV A,C
@@ -18051,13 +17776,13 @@
 6E53H  (FEH) CPI 11H
 6E55H  (C2H) JNZ 6E5FH
 6E58H  (AFH) XRA A
-6E59H  (32H) STA FF8AH
+6E59H  (32H) STA FF8AH      ; Control-S status
 6E5CH  (C3H) JMP 6E65H
 
 6E5FH  (D6H) SUI 13H
 6E61H  (C2H) JNZ 6E69H
 6E64H  (3DH) DCR A
-6E65H  (32H) STA FF41H
+6E65H  (32H) STA FF41H      ; XON/XOFF protocol control
 6E68H  (C9H) RET
 
 6E69H  (CDH) CALL 729FH     ; Check if SHIFT-BREAK is being pressed
@@ -18078,10 +17803,10 @@
 6E7BH  (16H) MVI D,00H
 6E7DH  (5FH) MOV E,A
 6E7EH  (19H) DAD D
-6E7FH  (22H) SHLD FF8BH
+6E7FH  (22H) SHLD FF8BH     ; UART baud rate timer value
 6E82H  (E1H) POP H
 6E83H  (E5H) PUSH H
-6E84H  (2AH) LHLD FF8BH
+6E84H  (2AH) LHLD FF8BH     ; UART baud rate timer value
 6E87H  (7EH) MOV A,M
 6E88H  (D3H) OUT BCH
 6E8AH  (23H) INX H
@@ -18092,20 +17817,14 @@
 6E92H  (E1H) POP H
 6E93H  (C9H) RET
 
-6E94H  DB   00H
-6E95H  DB   "HkE",00H
-6E99H  DB   "B",00H
-6E9BH  (41H) MOV B,C
-6E9CH  (80H) ADD B
-6E9DH  (40H) MOV B,B
-6E9EH  (40H) MOV B,B
-6E9FH  (40H) MOV B,B
-6EA0H  (20H) RIM
-6EA1H  (40H) MOV B,B
-6EA2H  (10H) ASHR
-6EA3H  (40H) MOV B,B
-6EA4H  (08H) DSUB
-6EA5H  (40H) MOV B,B
+
+; ======================================================
+; RS232 baud rate timer values
+; ======================================================
+6E94H  DW   4800H, 456BH, 4200H, 4100H
+6E9CH  DW   4080H, 4040H, 4020H, 4010H
+6EA4H  DW   4008H
+
 
 ; ======================================================
 ; Initialize RS232 or modem
@@ -18119,17 +17838,17 @@
 6EAFH  (26H) MVI H,03H
 6EB1H  (06H) MVI B,2DH
 6EB3H  (F3H) DI
-6EB4H  (CDH) CALL 6E75H
+6EB4H  (CDH) CALL 6E75H     ; Set RS232 baud rate stored in H
 6EB7H  (78H) MOV A,B
 6EB8H  (D3H) OUT BAH
 6EBAH  (DBH) IN D8H
 6EBCH  (7DH) MOV A,L
 6EBDH  (E6H) ANI 1FH
 6EBFH  (D3H) OUT D8H
-6EC1H  (CDH) CALL 6F39H
+6EC1H  (CDH) CALL 6F39H     ; Initialize serial buffer parameters
 6EC4H  (3DH) DCR A
-6EC5H  (32H) STA FF43H
-6EC8H  (C3H) JMP 71F7H
+6EC5H  (32H) STA FF43H      ; RS232 initialization status
+6EC8H  (C3H) JMP 71F7H      ; Interrupt exit routine (pop all regs & RET)
 
 
 ; ======================================================
@@ -18139,14 +17858,14 @@
 6ECDH  (F6H) ORI C0H
 6ECFH  (D3H) OUT BAH
 6ED1H  (AFH) XRA A
-6ED2H  (32H) STA FF43H
+6ED2H  (32H) STA FF43H      ; RS232 initialization status
 6ED5H  (C9H) RET
 
 6ED6H  (1EH) MVI E,00H
 6ED8H  (DBH) IN D8H
 6EDAH  (E6H) ANI 01H
 6EDCH  (AAH) XRA D
-6EDDH  (C2H) JNZ 6EE5H
+6EDDH  (C2H) JNZ 6EE5H      ; Click sound port if sound enabled
 6EE0H  (1CH) INR E
 6EE1H  (F2H) JP 6ED8H
 6EE4H  (C9H) RET
@@ -18158,7 +17877,7 @@
 6EE5H  (F5H) PUSH PSW
 6EE6H  (3AH) LDA FF44H      ; Sound flag
 6EE9H  (B7H) ORA A
-6EEAH  (CCH) CZ 7676H
+6EEAH  (CCH) CZ 7676H       ; Click sound port
 6EEDH  (F1H) POP PSW
 6EEEH  (C9H) RET
 
@@ -18198,7 +17917,7 @@
 6F22H  (7CH) MOV A,H
 6F23H  (B5H) ORA L
 6F24H  (C2H) JNZ 6F09H
-6F27H  (CDH) CALL 6F39H
+6F27H  (CDH) CALL 6F39H     ; Initialize serial buffer parameters
 6F2AH  (E1H) POP H
 6F2BH  (C2H) JNZ FFF6H
 6F2EH  (C3H) JMP 14EEH
@@ -18207,7 +17926,7 @@
 ; ======================================================
 ; Enable XON/OFF when CTRL-S / CTRL-Q sent
 ; ======================================================
-6F31H     ; Enable XON/OFF when CTRL-S / CTRL-Q sent  (3EH) MVI A,AFH
+6F31H  (3EH) MVI A,AFH
 6F33H  (F3H) DI
 6F34H  (32H) STA FF42H      ; XON/XOFF enable flag
 6F37H  (FBH) EI
@@ -18220,9 +17939,9 @@
 6F39H  (AFH) XRA A
 6F3AH  (6FH) MOV L,A
 6F3BH  (67H) MOV H,A
-6F3CH  (22H) SHLD FF40H      ; XON/XOFF protocol control
-6F3FH  (22H) SHLD FF86H
-6F42H  (22H) SHLD FF88H
+6F3CH  (22H) SHLD FF40H     ; XON/XOFF protocol control
+6F3FH  (22H) SHLD FF86H     ; RS232 buffer count
+6F42H  (22H) SHLD FF88H     ; RS232 buffer input pointer
 6F45H  (C9H) RET
 
 
@@ -18247,19 +17966,19 @@
 ; ======================================================
 6F5BH  (CDH) CALL 6F71H
 6F5EH  (06H) MVI B,08H
-6F60H  (CDH) CALL 6F6AH
+6F60H  (CDH) CALL 6F6AH     ; Write bit 0 of A to cassette
 6F63H  (05H) DCR B
 6F64H  (C2H) JNZ 6F60H
-6F67H  (C3H) JMP 729FH     ; Check if SHIFT-BREAK is being pressed
+6F67H  (C3H) JMP 729FH      ; Check if SHIFT-BREAK is being pressed
 
 
 ; ======================================================
 ; Write bit 0 of A to cassette
 ; ======================================================
 6F6AH  (07H) RLC
-6F6BH  (11H) LXI D,1F24H
+6F6BH  (11H) LXI D,1F24H    ; Cassette frequency cycle count
 6F6EH  (DAH) JC 6F74H
-6F71H  (11H) LXI D,4349H
+6F71H  (11H) LXI D,4349H    ; Cassette frequency cycle count
 6F74H  (15H) DCR D
 6F75H  (C2H) JNZ 6F74H
 6F78H  (57H) MOV D,A
@@ -18277,13 +17996,13 @@
 ; Read cassette header and sync byte
 ; ======================================================
 6F85H  (06H) MVI B,80H
-6F87H  (CDH) CALL 6FDBH
+6F87H  (CDH) CALL 6FDBH     ; Read Cassette port data bit
 6F8AH  (D8H) RC
 6F8BH  (79H) MOV A,C
 6F8CH  (FEH) CPI 08H
-6F8EH  (DAH) JC 6F85H     ; Read cassette header and sync byte
+6F8EH  (DAH) JC 6F85H       ; Read cassette header and sync byte
 6F91H  (FEH) CPI 40H
-6F93H  (D2H) JNC 6F85H     ; Read cassette header and sync byte
+6F93H  (D2H) JNC 6F85H      ; Read cassette header and sync byte
 6F96H  (05H) DCR B
 6F97H  (C2H) JNZ 6F87H
 6F9AH  (CDH) CALL 729FH     ; Check if SHIFT-BREAK is being pressed
@@ -18311,11 +18030,11 @@
 6FC2H  (CAH) JZ 6FC9H
 6FC5H  (94H) SUB H
 6FC6H  (C2H) JNZ 6F9AH
-6FC9H  (32H) STA FF8EH
+6FC9H  (32H) STA FF8EH      ; Cassette port pulse control
 6FCCH  (16H) MVI D,00H
-6FCEH  (CDH) CALL 6FDBH
+6FCEH  (CDH) CALL 6FDBH     ; Read Cassette port data bit
 6FD1H  (D8H) RC
-6FD2H  (CDH) CALL 7023H
+6FD2H  (CDH) CALL 7023H     ; Count and pack cassette input bits
 6FD5H  (FEH) CPI 7FH
 6FD7H  (C2H) JNZ 6FCEH
 6FDAH  (C9H) RET
@@ -18325,7 +18044,7 @@
 ; Read Cassette port data bit
 ; ======================================================
 6FDBH  (0EH) MVI C,00H
-6FDDH  (3AH) LDA FF8EH
+6FDDH  (3AH) LDA FF8EH      ; Cassette port pulse control
 6FE0H  (A7H) ANA A
 6FE1H  (CAH) JZ 6FFAH
 6FE4H  (CDH) CALL 729FH     ; Check if SHIFT-BREAK is being pressed
@@ -18354,7 +18073,7 @@
 700AH  (D2H) JNC 7004H
 700DH  (3AH) LDA FF44H      ; Sound flag
 7010H  (A7H) ANA A
-7011H  (CCH) CZ 7676H
+7011H  (CCH) CZ 7676H       ; Click sound port
 7014H  (AFH) XRA A
 7015H  (C9H) RET
 
@@ -18380,15 +18099,15 @@
 ; ======================================================
 ; Read character from cassette w/o checksum
 ; ======================================================
-702AH  (CDH) CALL 6FDBH
+702AH  (CDH) CALL 6FDBH     ; Read Cassette port data bit
 702DH  (D8H) RC
 702EH  (79H) MOV A,C
 702FH  (FEH) CPI 15H
-7031H  (DAH) JC 702AH     ; Read character from cassette w/o checksum
+7031H  (DAH) JC 702AH       ; Read character from cassette w/o checksum
 7034H  (06H) MVI B,08H
-7036H  (CDH) CALL 6FDBH
+7036H  (CDH) CALL 6FDBH     ; Read Cassette port data bit
 7039H  (D8H) RC
-703AH  (CDH) CALL 7023H
+703AH  (CDH) CALL 7023H     ; Count and pack cassette input bits
 703DH  (05H) DCR B
 703EH  (C2H) JNZ 7036H
 7041H  (AFH) XRA A
@@ -18398,14 +18117,14 @@
 ; ======================================================
 ; Cassette REMOTE routine - turn motor on or off
 ; ======================================================
-7043H  (3AH) LDA FF45H
+7043H  (3AH) LDA FF45H      ; Contents of port E8H
 7046H  (E6H) ANI F1H
 7048H  (1CH) INR E
 7049H  (1DH) DCR E
 704AH  (CAH) JZ 704FH
 704DH  (F6H) ORI 08H
 704FH  (D3H) OUT E8H
-7051H  (32H) STA FF45H
+7051H  (32H) STA FF45H      ; Contents of port E8H
 7054H  (C9H) RET
 
 
@@ -18422,9 +18141,9 @@
 ; ======================================================
 ; Key detection -- Determine which keys are pressed
 ; ======================================================
-7060H  (21H) LXI H,FF99H
-7063H  (11H) LXI D,FFA2H
-7066H  (CDH) CALL 72B1H
+7060H  (21H) LXI H,FF99H    ; Keyboard scan column storage #1
+7063H  (11H) LXI D,FFA2H    ; Keyboard scan column storage @2
+7066H  (CDH) CALL 72B1H     ; Scan BREAK),CAPS),NUM),CODE),GRAPH),CTRL),SHIFT & set bits in A
 7069H  (2FH) CMA
 706AH  (BEH) CMP M
 706BH  (77H) MOV M,A
@@ -18464,7 +18183,7 @@
 70A6H  (34H) INR M
 70A7H  (F8H) RM
 70A8H  (3AH) LDA FFA7H
-70ABH  (2AH) LHLD FFA8H
+70ABH  (2AH) LHLD FFA8H     ; Pointer to entry in 2nd Storage Buffer for key
 70AEH  (A6H) ANA M
 70AFH  (C8H) RZ
 
@@ -18474,13 +18193,13 @@
 70B0H  (3AH) LDA FFAAH      ; Keyboard buffer count
 70B3H  (FEH) CPI 02H
 70B5H  (D0H) RNC
-70B6H  (21H) LXI H,FFA4H
+70B6H  (21H) LXI H,FFA4H    ; Key repeat start delay counter
 70B9H  (35H) DCR M
 70BAH  (C0H) RNZ
 70BBH  (36H) MVI M,06H
 70BDH  (3EH) MVI A,01H
 70BFH  (32H) STA FFF3H
-70C2H  (C3H) JMP 7122H
+70C2H  (C3H) JMP 7122H      ; Key decoding
 
 70C5H  (C5H) PUSH B
 70C6H  (E5H) PUSH H
@@ -18525,7 +18244,7 @@
 70F7H  (72H) MOV M,D
 70F8H  (D1H) POP D
 70F9H  (EBH) XCHG
-70FAH  (22H) SHLD FFA8H
+70FAH  (22H) SHLD FFA8H     ; Pointer to entry in 2nd Storage Buffer for key
 70FDH  (EBH) XCHG
 70FEH  (C3H) JMP 70DDH
 
@@ -18553,13 +18272,13 @@
 711AH  (2BH) DCX H
 711BH  (36H) MVI M,54H
 711DH  (2BH) DCX H
-711EH  (3AH) LDA FFA2H
+711EH  (3AH) LDA FFA2H      ; Keyboard scan column storage @2
 7121H  (77H) MOV M,A
 
 ; ======================================================
 ; Key decoding
 ; ======================================================
-7122H  (3AH) LDA FFA6H
+7122H  (3AH) LDA FFA6H      ; Key position storage
 7125H  (4FH) MOV C,A
 7126H  (11H) LXI D,002CH
 7129H  (42H) MOV B,D
@@ -18567,7 +18286,7 @@
 712CH  (DAH) JC 7133H
 712FH  (21H) LXI H,FFA7H
 7132H  (70H) MOV M,B
-7133H  (3AH) LDA FFA3H
+7133H  (3AH) LDA FFA3H      ; Shift key status storage
 7136H  (0FH) RRC
 7137H  (F5H) PUSH PSW
 7138H  (79H) MOV A,C
@@ -18589,7 +18308,7 @@
 7155H  (B7H) ORA A
 7156H  (1FH) RAR
 7157H  (4FH) MOV C,A
-7158H  (D2H) JNC 71E4H
+7158H  (D2H) JNC 71E4H      ; Keyboard buffer management - place subsequent key in buffer
 715BH  (FEH) CPI 08H
 715DH  (D2H) JNC 7180H
 7160H  (3AH) LDA F650H
@@ -18607,17 +18326,17 @@
 7177H  (CAH) JZ 7180H
 717AH  (79H) MOV A,C
 717BH  (F6H) ORI 80H
-717DH  (C3H) JMP 71D5H
+717DH  (C3H) JMP 71D5H      ; Keyboard buffer management - place key in new buffer
 
 7180H  (05H) DCR B
-7181H  (C3H) JMP 71E4H
+7181H  (C3H) JMP 71E4H      ; Keyboard buffer management - place subsequent key in buffer
 
 7184H  (F1H) POP PSW
 7185H  (DAH) JC 7189H
 7188H  (58H) MOV E,B
 7189H  (0FH) RRC
 718AH  (F5H) PUSH PSW
-718BH  (DAH) JC 720AH
+718BH  (DAH) JC 720AH       ; Handle unshifted & non-CTRL key during key decoding
 718EH  (21H) LXI H,7C49H
 7191H  (0FH) RRC
 7192H  (DAH) JC 71B5H
@@ -18630,12 +18349,12 @@
 71A3H  (09H) DAD B
 71A4H  (D5H) PUSH D
 71A5H  (57H) MOV D,A
-71A6H  (CDH) CALL 7233H
+71A6H  (CDH) CALL 7233H     ; Handle NUM key during key decoding
 71A9H  (7AH) MOV A,D
 71AAH  (D1H) POP D
 71ABH  (CAH) JZ 71B7H
 71AEH  (0FH) RRC
-71AFH  (DCH) CC 722CH
+71AFH  (DCH) CC 722CH       ; Handle CAPS LOCK key during key decoding
 71B2H  (21H) LXI H,7BF1H
 71B5H  (19H) DAD D
 71B6H  (09H) DAD B
@@ -18649,10 +18368,10 @@
 71C4H  (4FH) MOV C,A
 71C5H  (E6H) ANI EFH
 71C7H  (FEH) CPI 03H
-71C9H  (C2H) JNZ 71E4H
+71C9H  (C2H) JNZ 71E4H      ; Keyboard buffer management - place subsequent key in buffer
 71CCH  (3AH) LDA F650H
 71CFH  (E6H) ANI C0H
-71D1H  (C2H) JNZ 71E4H
+71D1H  (C2H) JNZ 71E4H      ; Keyboard buffer management - place subsequent key in buffer
 71D4H  (79H) MOV A,C
 
 ; ======================================================
@@ -18661,7 +18380,7 @@
 71D5H  (32H) STA FFEBH
 71D8H  (FEH) CPI 03H
 71DAH  (C0H) RNZ
-71DBH  (21H) LXI H,FFAAH      ; Keyboard buffer count
+71DBH  (21H) LXI H,FFAAH    ; Keyboard buffer count
 71DEH  (36H) MVI M,01H
 71E0H  (23H) INX H
 71E1H  (C3H) JMP 71F0H
@@ -18670,7 +18389,7 @@
 ; ======================================================
 ; Keyboard buffer management - place subsequent key in buffer
 ; ======================================================
-71E4H  (21H) LXI H,FFAAH      ; Keyboard buffer count
+71E4H  (21H) LXI H,FFAAH    ; Keyboard buffer count
 71E7H  (7EH) MOV A,M
 71E8H  (FEH) CPI 20H
 71EAH  (C8H) RZ
@@ -18701,7 +18420,7 @@
 7201H  (C0H) RNZ
 7202H  (21H) LXI H,FF91H
 7205H  (06H) MVI B,11H
-7207H  (C3H) JMP 4F0AH     ; Zero B bytes at M
+7207H  (C3H) JMP 4F0AH      ; Zero B bytes at M
 
 
 ; ======================================================
@@ -18714,7 +18433,7 @@
 7213H  (FEH) CPI 2CH
 7215H  (DAH) JC 721DH
 7218H  (FEH) CPI 30H
-721AH  (DAH) JC 7222H
+721AH  (DAH) JC 7222H       ; Handle Arrow keys during key decoding
 721DH  (F1H) POP PSW
 721EH  (F5H) PUSH PSW
 721FH  (C3H) JMP 718EH
@@ -18758,10 +18477,10 @@
 ; ======================================================
 ; Scan keyboard for character (CTRL-BREAK ==> CTRL-C)
 ; ======================================================
-7242H  (CDH) CALL 765CH
+7242H  (CDH) CALL 765CH     ; Set interrupt to 1DH
 7245H  (3AH) LDA FFAAH      ; Keyboard buffer count
 7248H  (B7H) ORA A
-7249H  (CAH) JZ 726AH
+7249H  (CAH) JZ 726AH       ; Enable interrupts as normal
 724CH  (21H) LXI H,FFACH
 724FH  (7EH) MOV A,M
 7250H  (C6H) ADI 02H
@@ -18829,7 +18548,7 @@
 7295H  (09H) DAD B
 7296H  (09H) DAD B
 7297H  (09H) DAD B
-7298H  (CDH) CALL 3FD2H
+7298H  (CDH) CALL 3FD2H     ; Trigger interrupt.  HL points to interrupt table
 729BH  (C1H) POP B
 729CH  (E1H) POP H
 729DH  (AFH) XRA A
@@ -18842,7 +18561,7 @@
 729FH  (C5H) PUSH B
 72A0H  (DBH) IN B9H
 72A2H  (4FH) MOV C,A
-72A3H  (CDH) CALL 72B1H
+72A3H  (CDH) CALL 72B1H     ; Scan BREAK),CAPS),NUM),CODE),GRAPH),CTRL),SHIFT & set bits in A
 72A6H  (F5H) PUSH PSW
 72A7H  (79H) MOV A,C
 72A8H  (D3H) OUT B9H
@@ -18896,7 +18615,7 @@
 72E8H  (0EH) MVI C,64H
 72EAH  (C5H) PUSH B
 72EBH  (0EH) MVI C,1EH
-72EDH  (CDH) CALL 7657H
+72EDH  (CDH) CALL 7657H     ; Delay routine - decrement C until zero
 72F0H  (C1H) POP B
 72F1H  (0DH) DCR C
 72F2H  (C2H) JNZ 72EAH
@@ -18911,7 +18630,7 @@
 
 7304H  (CDH) CALL 35D9H     ; different from m100 to: 7328H
 7307H  (E5H) PUSH H
-7308H  (2AH) LHLD FC1AH    ; Start of FAC1 for integers
+7308H  (2AH) LHLD FC1AH     ; Start of FAC1 for integers
 730BH  (11H) LXI D,F5F0H    ; Active system signature -- Warm vs Cold boot
 730EH  (DFH) RST 3          ; Compare DE and HL
 730FH  (EBH) XCHG
@@ -18926,7 +18645,7 @@
 731CH  (3FH) CMC
 731DH  (C0H) RNZ
 731EH  (47H) MOV B,A
-731FH  (3AH) LDA F65BH    ; RS232 parameter setting table
+731FH  (3AH) LDA F65BH      ; RS232 parameter setting table
 7322H  (FEH) CPI 3AH
 7324H  (78H) MOV A,B
 7325H  (3FH) CMC
@@ -18938,21 +18657,21 @@
 ; ======================================================
 ; Copy clock chip regs to M
 ; ======================================================
-7329H     ; Copy clock chip regs to M  (F6H) ORI AFH
+7329H  (F6H) ORI AFH
 732BH  (F5H) PUSH PSW
-732CH  (CDH) CALL 765CH
+732CH  (CDH) CALL 765CH     ; Set interrupt to 1DH
 732FH  (3EH) MVI A,03H
-7331H  (C4H) CNZ 7383H
+7331H  (C4H) CNZ 7383H      ; Set clock chip mode
 7334H  (3EH) MVI A,01H
-7336H  (CDH) CALL 7383H
+7336H  (CDH) CALL 7383H     ; Set clock chip mode
 7339H  (0EH) MVI C,07H
-733BH  (CDH) CALL 7657H
+733BH  (CDH) CALL 7657H     ; Delay routine - decrement C until zero
 733EH  (06H) MVI B,0AH
 7340H  (0EH) MVI C,04H
 7342H  (56H) MOV D,M
 7343H  (F1H) POP PSW
 7344H  (F5H) PUSH PSW
-7345H  (CAH) JZ 7352H
+7345H  (CAH) JZ 7352H       ; Read next bit from Clock Chip
 7348H  (DBH) IN BBH
 734AH  (1FH) RAR
 734BH  (7AH) MOV A,D
@@ -18992,9 +18711,9 @@
 7373H  (C2H) JNZ 7340H
 7376H  (F1H) POP PSW
 7377H  (3EH) MVI A,02H
-7379H  (CCH) CZ 7383H
+7379H  (CCH) CZ 7383H       ; Set clock chip mode
 737CH  (AFH) XRA A
-737DH  (CDH) CALL 7383H
+737DH  (CDH) CALL 7383H     ; Set clock chip mode
 7380H  (C3H) JMP 743CH
 
 
@@ -19002,14 +18721,14 @@
 ; Set clock chip mode
 ; ======================================================
 7383H  (D3H) OUT B9H
-7385H  (3AH) LDA FF45H
+7385H  (3AH) LDA FF45H      ; Contents of port E8H
 7388H  (F6H) ORI 04H
 738AH  (D3H) OUT E8H
 738CH  (E6H) ANI FBH
 738EH  (D3H) OUT E8H
 7390H  (C9H) RET
 
-7391H  (CDH) CALL 765CH
+7391H  (CDH) CALL 765CH     ; Set interrupt to 1DH
 7394H  (21H) LXI H,7055H
 7397H  (E5H) PUSH H
 7398H  (21H) LXI H,FFF3H
@@ -19028,9 +18747,9 @@
 ; Blink the cursor
 ; ======================================================
 73A9H  (E5H) PUSH H
-73AAH  (21H) LXI H,FFECH
+73AAH  (21H) LXI H,FFECH    ; Cursor bit pattern storage
 73ADH  (16H) MVI D,00H
-73AFH  (CDH) CALL 74A2H
+73AFH  (CDH) CALL 74A2H     ; Byte Plot - Send bit pattern to LCD for character
 73B2H  (06H) MVI B,06H
 73B4H  (2BH) DCX H
 73B5H  (7EH) MOV A,M
@@ -19041,7 +18760,7 @@
 73BAH  (C2H) JNZ 73B5H
 73BDH  (23H) INX H
 73BEH  (16H) MVI D,01H
-73C0H  (CDH) CALL 74A2H
+73C0H  (CDH) CALL 74A2H     ; Byte Plot - Send bit pattern to LCD for character
 73C3H  (E1H) POP H
 73C4H  (C9H) RET
 
@@ -19049,17 +18768,17 @@
 73C6H  (D5H) PUSH D
 73C7H  (C5H) PUSH B
 73C8H  (F5H) PUSH PSW
-73C9H  (CDH) CALL 765CH
+73C9H  (CDH) CALL 765CH     ; Set interrupt to 1DH
 73CCH  (21H) LXI H,FFF2H
 73CFH  (7EH) MOV A,M
 73D0H  (0FH) RRC
-73D1H  (DCH) CC 73A9H     ; Blink the cursor
+73D1H  (DCH) CC 73A9H       ; Blink the cursor
 73D4H  (36H) MVI M,80H
 73D6H  (C3H) JMP 71F4H
 
 73D9H  (F5H) PUSH PSW
 73DAH  (E5H) PUSH H
-73DBH  (CDH) CALL 765CH
+73DBH  (CDH) CALL 765CH     ; Set interrupt to 1DH
 73DEH  (21H) LXI H,FFF2H
 73E1H  (7EH) MOV A,M
 73E2H  (E6H) ANI 7FH
@@ -19076,7 +18795,7 @@
 ; ======================================================
 ; Character plotting level 7.  Plot character in C on LCD at (H),L)
 ; ======================================================
-73EEH  (CDH) CALL 765CH
+73EEH  (CDH) CALL 765CH     ; Set interrupt to 1DH
 73F1H  (21H) LXI H,0000H
 73F4H  (39H) DAD SP
 73F5H  (22H) SHLD FFF8H
@@ -19107,7 +18826,7 @@
 741FH  (19H) DAD D
 7420H  (F1H) POP PSW
 7421H  (D2H) JNC 7430H
-7424H  (11H) LXI D,FFECH
+7424H  (11H) LXI D,FFECH    ; Cursor bit pattern storage
 7427H  (D5H) PUSH D
 7428H  (06H) MVI B,05H
 742AH  (CDH) CALL 2542H     ; Move B bytes from M to (DE)
@@ -19115,7 +18834,7 @@
 742EH  (12H) STAX D
 742FH  (E1H) POP H
 7430H  (16H) MVI D,01H
-7432H  (CDH) CALL 74A2H
+7432H  (CDH) CALL 74A2H     ; Byte Plot - Send bit pattern to LCD for character
 7435H  (AFH) XRA A
 7436H  (32H) STA FFF9H
 7439H  (CDH) CALL 752BH
@@ -19123,7 +18842,7 @@
 743EH  (30H) SIM
 743FH  (C9H) RET
 
-7440H  (CDH) CALL 765CH
+7440H  (CDH) CALL 765CH     ; Set interrupt to 1DH
 7443H  (15H) DCR D
 7444H  (1DH) DCR E
 7445H  (EBH) XCHG
@@ -19136,7 +18855,7 @@
 ; ======================================================
 744CH  (F6H) ORI AFH
 744EH  (F5H) PUSH PSW
-744FH  (CDH) CALL 765CH
+744FH  (CDH) CALL 765CH     ; Set interrupt to 1DH
 7452H  (D5H) PUSH D
 7453H  (0EH) MVI C,FEH
 7455H  (7AH) MOV A,D
@@ -19146,7 +18865,7 @@
 7459H  (D6H) SUI 32H
 745BH  (D2H) JNC 7456H
 745EH  (06H) MVI B,00H
-7460H  (21H) LXI H,7643H
+7460H  (21H) LXI H,7643H    ; 8155 PIO chip bit patterns for Lower LCD drivers
 7463H  (7BH) MOV A,E
 7464H  (17H) RAL
 7465H  (17H) RAL
@@ -19161,7 +18880,7 @@
 7475H  (B2H) ORA D
 7476H  (47H) MOV B,A
 7477H  (1EH) MVI E,01H
-7479H  (21H) LXI H,FFECH
+7479H  (21H) LXI H,FFECH    ; Cursor bit pattern storage
 747CH  (CDH) CALL 74F5H
 747FH  (D1H) POP D
 7480H  (50H) MOV D,B
@@ -19170,11 +18889,11 @@
 7484H  (87H) ADD A
 7485H  (4FH) MOV C,A
 7486H  (06H) MVI B,00H
-7488H  (21H) LXI H,7643H
+7488H  (21H) LXI H,7643H    ; 8155 PIO chip bit patterns for Lower LCD drivers
 748BH  (09H) DAD B
 748CH  (F1H) POP PSW
 748DH  (7EH) MOV A,M
-748EH  (21H) LXI H,FFECH
+748EH  (21H) LXI H,FFECH    ; Cursor bit pattern storage
 7491H  (C2H) JNZ 7497H
 7494H  (2FH) CMA
 7495H  (A6H) ANA M
@@ -19213,7 +18932,7 @@
 74C6H  (1FH) RAR
 74C7H  (21H) LXI H,75C9H
 74CAH  (DAH) JC 74D0H
-74CDH  (21H) LXI H,7551H
+74CDH  (21H) LXI H,7551H    ; 8155 PIO chip bit patterns for Upper LCD drivers
 74D0H  (09H) DAD B
 74D1H  (47H) MOV B,A
 74D2H  (CDH) CALL 753BH
@@ -19242,10 +18961,10 @@
 74F7H  (D5H) PUSH D
 74F8H  (F5H) PUSH PSW
 74F9H  (78H) MOV A,B
-74FAH  (CDH) CALL 7548H
+74FAH  (CDH) CALL 7548H     ; Wait for LCD driver to be available
 74FDH  (D3H) OUT FEH
 74FFH  (CAH) JZ 7507H
-7502H  (CDH) CALL 7548H
+7502H  (CDH) CALL 7548H     ; Wait for LCD driver to be available
 7505H  (DBH) IN FFH
 7507H  (F1H) POP PSW
 7508H  (C2H) JNZ 751BH
@@ -19271,7 +18990,7 @@
 7529H  (D1H) POP D
 752AH  (C9H) RET
 
-752BH  (CDH) CALL 7533H
+752BH  (CDH) CALL 7533H     ; Enable LCD drivers after short delay
 752EH  (3EH) MVI A,3EH
 7530H  (D3H) OUT FEH
 7532H  (C9H) RET
@@ -19281,7 +19000,7 @@
 ; Enable LCD drivers after short delay
 ; ======================================================
 7533H  (0EH) MVI C,03H
-7535H  (CDH) CALL 7657H
+7535H  (CDH) CALL 7657H     ; Delay routine - decrement C until zero
 7538H  (21H) LXI H,7641H
 753BH  (7EH) MOV A,M
 753CH  (D3H) OUT B9H
@@ -19304,202 +19023,57 @@
 754FH  (F1H) POP PSW
 7550H  (C9H) RET
 
-7551H  (01H) LXI B,0000H
-7554H  (01H) LXI B,0600H
-7557H  (01H) LXI B,0C00H
-755AH  (01H) LXI B,1200H
-755DH  (01H) LXI B,1800H
-7560H  (01H) LXI B,1E00H
-7563H  (01H) LXI B,2400H
-7566H  (01H) LXI B,2A00H
-7569H  (01H) LXI B,3000H
-756CH  (02H) STAX B
-756DH  (00H) NOP
-756EH  (04H) INR B
-756FH  (02H) STAX B
-7570H  (00H) NOP
-7571H  (0AH) LDAX B
-7572H  (02H) STAX B
-7573H  (00H) NOP
-7574H  (10H) ASHR
-7575H  (02H) STAX B
-7576H  (00H) NOP
-7577H  (16H) MVI D,02H
-7579H  (00H) NOP
-757AH  (1CH) INR E
-757BH  (02H) STAX B
-757CH  (00H) NOP
-757DH  (22H) SHLD 0002H
-7580H  (28H) LDEH 02H
-7582H  (00H) NOP
-7583H  (2EH) MVI L,04H
-7585H  (00H) NOP
-7586H  (02H) STAX B
-7587H  (04H) INR B
-7588H  (00H) NOP
-7589H  (08H) DSUB
-758AH  (04H) INR B
-758BH  (00H) NOP
-758CH  (0EH) MVI C,04H
-758EH  (00H) NOP
-758FH  (14H) INR D
-7590H  (04H) INR B
-7591H  (00H) NOP
-7592H  (1AH) LDAX D
-7593H  (04H) INR B
-7594H  (00H) NOP
-7595H  (20H) RIM
-7596H  (04H) INR B
-7597H  (00H) NOP
-7598H  (26H) MVI H,04H
-759AH  (00H) NOP
-759BH  (2CH) INR L
-759CH  (08H) DSUB
-759DH  (00H) NOP
-759EH  (00H) NOP
-759FH  (08H) DSUB
-75A0H  (00H) NOP
-75A1H  (06H) MVI B,08H
-75A3H  (00H) NOP
-75A4H  (0CH) INR C
-75A5H  (08H) DSUB
-75A6H  (00H) NOP
-75A7H  (12H) STAX D
-75A8H  (08H) DSUB
-75A9H  (00H) NOP
-75AAH  (18H) RLDE
-75ABH  (08H) DSUB
-75ACH  (00H) NOP
-75ADH  (1EH) MVI E,08H
-75AFH  (00H) NOP
-75B0H  (24H) INR H
-75B1H  (08H) DSUB
-75B2H  (00H) NOP
-75B3H  (2AH) LHLD 0008H
-75B6H  (30H) SIM
-75B7H  (10H) ASHR
-75B8H  (00H) NOP
-75B9H  (04H) INR B
-75BAH  (10H) ASHR
-75BBH  (00H) NOP
-75BCH  (0AH) LDAX B
-75BDH  (10H) ASHR
-75BEH  (00H) NOP
-75BFH  (10H) ASHR
-75C0H  (10H) ASHR
-75C1H  (00H) NOP
-75C2H  (16H) MVI D,10H
-75C4H  (00H) NOP
-75C5H  (1CH) INR E
-75C6H  (10H) ASHR
-75C7H  (00H) NOP
-75C8H  (22H) SHLD 0020H
-75CBH  (00H) NOP
-75CCH  (20H) RIM
-75CDH  (00H) NOP
-75CEH  (06H) MVI B,20H
-75D0H  (00H) NOP
-75D1H  (0CH) INR C
-75D2H  (20H) RIM
-75D3H  (00H) NOP
-75D4H  (12H) STAX D
-75D5H  (20H) RIM
-75D6H  (00H) NOP
-75D7H  (18H) RLDE
-75D8H  (20H) RIM
-75D9H  (00H) NOP
-75DAH  (1EH) MVI E,20H
-75DCH  (00H) NOP
-75DDH  (24H) INR H
-75DEH  (20H) RIM
-75DFH  (00H) NOP
-75E0H  (2AH) LHLD 0020H
-75E3H  (30H) SIM
-75E4H  (40H) MOV B,B
-75E5H  (00H) NOP
-75E6H  (04H) INR B
-75E7H  (40H) MOV B,B
-75E8H  (00H) NOP
-75E9H  (0AH) LDAX B
-75EAH  (40H) MOV B,B
-75EBH  (00H) NOP
-75ECH  (10H) ASHR
-75EDH  (40H) MOV B,B
-75EEH  (00H) NOP
-75EFH  (16H) MVI D,40H
-75F1H  (00H) NOP
-75F2H  (1CH) INR E
-75F3H  (40H) MOV B,B
-75F4H  (00H) NOP
-75F5H  (22H) SHLD 0040H
-75F8H  (28H) LDEH 40H
-75FAH  (00H) NOP
-75FBH  (2EH) MVI L,80H
-75FDH  (00H) NOP
-75FEH  (02H) STAX B
-75FFH  (80H) ADD B
-7600H  (00H) NOP
-7601H  (08H) DSUB
-7602H  (80H) ADD B
-7603H  (00H) NOP
-7604H  (0EH) MVI C,80H
-7606H  (00H) NOP
-7607H  (14H) INR D
-7608H  (80H) ADD B
-7609H  (00H) NOP
-760AH  (1AH) LDAX D
-760BH  (80H) ADD B
-760CH  (00H) NOP
-760DH  (20H) RIM
-760EH  (80H) ADD B
-760FH  (00H) NOP
-7610H  (26H) MVI H,80H
-7612H  (00H) NOP
-7613H  (2CH) INR L
-7614H  (00H) NOP
-7615H  (01H) LXI B,0000H
-7618H  (01H) LXI B,0006H
-761BH  (01H) LXI B,000CH
-761EH  (01H) LXI B,0012H
-7621H  (01H) LXI B,0018H
-7624H  (01H) LXI B,001EH
-7627H  (01H) LXI B,0024H
-762AH  (01H) LXI B,002AH
-762DH  (01H) LXI B,0030H
-7630H  (02H) STAX B
-7631H  (04H) INR B
-7632H  (00H) NOP
-7633H  (02H) STAX B
-7634H  (0AH) LDAX B
-7635H  (00H) NOP
-7636H  (02H) STAX B
-7637H  (10H) ASHR
-7638H  (00H) NOP
-7639H  (02H) STAX B
-763AH  (16H) MVI D,00H
-763CH  (02H) STAX B
-763DH  (1CH) INR E
-763EH  (00H) NOP
-763FH  (02H) STAX B
-7640H  (22H) SHLD 03FFH
-7643H  (01H) LXI B,0200H
-7646H  (00H) NOP
-7647H  (04H) INR B
-7648H  (00H) NOP
-7649H  (08H) DSUB
-764AH  (00H) NOP
-764BH  (10H) ASHR
-764CH  (00H) NOP
-764DH  (20H) RIM
-764EH  (00H) NOP
-764FH  (40H) MOV B,B
-7650H  (00H) NOP
-7651H  (80H) ADD B
-7652H  (00H) NOP
-7653H  (00H) NOP
-7654H  (01H) LXI B,0200H
+
+; ======================================================
+; 8155 PIO chip bit patterns for LCD drivers
+; ======================================================
+7551H  DB   01H,00H,00H,01H,00H,06H,01H,00H
+7559H  DB   0CH,01H,00H,12H,01H,00H,18H,01H
+7561H  DB   00H,1EH,01H,00H,24H,01H,00H,2AH
+7569H  DB   01H,00H,30H,02H,00H,04H,02H,00H
+7571H  DB   0AH,02H,00H,10H,02H,00H,16H,02H
+7579H  DB   00H,1CH,02H,00H,22H,02H,00H,28H
+7581H  DB   02H,00H,2EH,04H,00H,02H,04H,00H
+7589H  DB   08H,04H,00H,0EH,04H,00H,14H,04H
+7591H  DB   00H,1AH,04H,00H,20H,04H,00H,26H
+7599H  DB   04H,00H,2CH,08H,00H,00H,08H,00H
+75A1H  DB   06H,08H,00H,0CH,08H,00H,12H,08H
+75A9H  DB   00H,18H,08H,00H,1EH,08H,00H,24H
+75B1H  DB   08H,00H,2AH,08H,00H,30H,10H,00H
+75B9H  DB   04H,10H,00H,0AH,10H,00H,10H,10H
+75C1H  DB   00H,16H,10H,00H,1CH,10H,00H,22H
+75C9H  DB   20H,00H,00H,20H,00H,06H,20H,00H
+75D1H  DB   0CH,20H,00H,12H,20H,00H,18H,20H
+75D9H  DB   00H,1EH,20H,00H,24H,20H,00H,2AH
+75E1H  DB   20H,00H,30H,40H,00H,04H,40H,00H
+75E9H  DB   0AH,40H,00H,10H,40H,00H,16H,40H
+75F1H  DB   00H,1CH,40H,00H,22H,40H,00H,28H
+75F9H  DB   40H,00H,2EH,80H,00H,02H,80H,00H
+7601H  DB   08H,80H,00H,0EH,80H,00H,14H,80H
+7609H  DB   00H,1AH,80H,00H,20H,80H,00H,26H
+7611H  DB   80H,00H,2CH,00H,01H,00H,00H,01H
+7619H  DB   06H,00H,01H,0CH,00H,01H,12H,00H
+7621H  DB   01H,18H,00H,01H,1EH,00H,01H,24H
+7629H  DB   00H,01H,2AH,00H,01H,30H,00H,02H
+7631H  DB   04H,00H,02H,0AH,00H,02H,10H,00H
+7639H  DB   02H,16H,00H,02H,1CH,00H,02H,22H
+
+7641H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
+7642H  DB   03H
+
+; ======================================================
+; 8155 PIO chip bit patterns for LCD drivers
+; ======================================================
+7643H  DB   01H,00H,02H,00H,04H,00H,08H,00H
+764BH  DB   10H,00H,20H,00H,40H,00H,80H,00H
+7653H  DB   00H,01H,00H,02H
+
+
+; ======================================================
+; Delay routine - decrement C until zero
+; ======================================================
 7657H  (0DH) DCR C
-7658H  (C2H) JNZ 7657H
+7658H  (C2H) JNZ 7657H      ; Delay routine - decrement C until zero
 765BH  (C9H) RET
 
 
@@ -19516,11 +19090,11 @@
 ; ======================================================
 ; Beep routine
 ; ======================================================
-7662H  (CDH) CALL 765CH
+7662H  (CDH) CALL 765CH     ; Set interrupt to 1DH
 7665H  (06H) MVI B,00H
-7667H  (CDH) CALL 7676H
+7667H  (CDH) CALL 7676H     ; Click sound port
 766AH  (0EH) MVI C,50H
-766CH  (CDH) CALL 7657H
+766CH  (CDH) CALL 7657H     ; Delay routine - decrement C until zero
 766FH  (05H) DCR B
 7670H  (C2H) JNZ 7667H
 7673H  (C3H) JMP 743CH
@@ -19545,7 +19119,7 @@
 7682H  (21H) LXI H,FFFBH
 7685H  (DBH) IN 82H
 7687H  (E6H) ANI 07H
-7689H  (CAH) JZ 768FH
+7689H  (CAH) JZ 768FH       ; Optional external controller driver
 768CH  (36H) MVI M,00H
 768EH  (C9H) RET
 
@@ -19624,1354 +19198,230 @@
 7708H  (DBH) IN 80H
 770AH  (C9H) RET
 
-770BH  (02H) STAX B
-770CH  (01H) LXI B,0000H
-770FH  (01H) LXI B,0000H
-7712H  (00H) NOP
-7713H  (00H) NOP
-7714H  (00H) NOP
-7715H  (00H) NOP
-7716H  (00H) NOP
-7717H  (00H) NOP
-7718H  (4FH) MOV C,A
-7719H  (00H) NOP
-771AH  (00H) NOP
-771BH  (00H) NOP
-771CH  (07H) RLC
-771DH  (00H) NOP
-771EH  (07H) RLC
-771FH  (00H) NOP
-7720H  (14H) INR D
-7721H  (7FH) MOV A,A
-7722H  (14H) INR D
-7723H  (7FH) MOV A,A
-7724H  (14H) INR D
-7725H  (24H) INR H
-7726H  (2AH) LHLD 2A7FH
-7729H  (12H) STAX D
-772AH  (23H) INX H
-772BH  (13H) INX D
-772CH  (08H) DSUB
-772DH  (64H) MOV H,H
-772EH  (62H) MOV H,D
-772FH  (3AH) LDA 4A45H
-7732H  (30H) SIM
-7733H  (28H) LDEH 00H
-7735H  (04H) INR B
-7736H  (02H) STAX B
-7737H  (01H) LXI B,0000H
-773AH  (1CH) INR E
-773BH  (22H) SHLD 0041H
-773EH  (00H) NOP
-773FH  (41H) MOV B,C
-7740H  (22H) SHLD 001CH
-7743H  (22H) SHLD 7F14H
-7746H  (14H) INR D
-7747H  (22H) SHLD 0808H
-774AH  (3EH) MVI A,08H
-774CH  (08H) DSUB
-774DH  (00H) NOP
-774EH  (80H) ADD B
-774FH  (60H) MOV H,B
-7750H  (00H) NOP
-7751H  (00H) NOP
-7752H  (08H) DSUB
-7753H  (08H) DSUB
-7754H  (08H) DSUB
-7755H  (08H) DSUB
-7756H  (08H) DSUB
-7757H  (00H) NOP
-7758H  (60H) MOV H,B
-7759H  (60H) MOV H,B
-775AH  (00H) NOP
-775BH  (00H) NOP
-775CH  (40H) MOV B,B
-775DH  (20H) RIM
-775EH  (10H) ASHR
-775FH  (08H) DSUB
-7760H  (04H) INR B
-7761H  (3EH) MVI A,51H
-7763H  (49H) MOV C,C
-7764H  (45H) MOV B,L
-7765H  (3EH) MVI A,44H
-7767H  (42H) MOV B,D
-7768H  (7FH) MOV A,A
-7769H  (40H) MOV B,B
-776AH  (40H) MOV B,B
-776BH  (62H) MOV H,D
-776CH  (51H) MOV D,C
-776DH  (51H) MOV D,C
-776EH  (49H) MOV C,C
-776FH  (46H) MOV B,M
-7770H  (22H) SHLD 4941H
-7773H  (49H) MOV C,C
-7774H  (36H) MVI M,18H
-7776H  (14H) INR D
-7777H  (12H) STAX D
-7778H  (7FH) MOV A,A
-7779H  (10H) ASHR
-777AH  (47H) MOV B,A
-777BH  (45H) MOV B,L
-777CH  (45H) MOV B,L
-777DH  (29H) DAD H
-777EH  (11H) LXI D,4A3CH
-7781H  (49H) MOV C,C
-7782H  (49H) MOV C,C
-7783H  (30H) SIM
-7784H  (03H) INX B
-7785H  (01H) LXI B,0579H
-7788H  (03H) INX B
-7789H  (36H) MVI M,49H
-778BH  (49H) MOV C,C
-778CH  (49H) MOV C,C
-778DH  (36H) MVI M,06H
-778FH  (49H) MOV C,C
-7790H  (49H) MOV C,C
-7791H  (29H) DAD H
-7792H  (1EH) MVI E,00H
-7794H  (00H) NOP
-7795H  (24H) INR H
-7796H  (00H) NOP
-7797H  (00H) NOP
-7798H  (00H) NOP
-7799H  (80H) ADD B
-779AH  (64H) MOV H,H
-779BH  (00H) NOP
-779CH  (00H) NOP
-779DH  (08H) DSUB
-779EH  (1CH) INR E
-779FH  (36H) MVI M,63H
-77A1H  (41H) MOV B,C
-77A2H  (14H) INR D
-77A3H  (14H) INR D
-77A4H  (14H) INR D
-77A5H  (14H) INR D
-77A6H  (14H) INR D
-77A7H  (41H) MOV B,C
-77A8H  (63H) MOV H,E
-77A9H  (36H) MVI M,1CH
-77ABH  (08H) DSUB
-77ACH  (02H) STAX B
-77ADH  (01H) LXI B,0951H
-77B0H  (06H) MVI B,32H
-77B2H  (49H) MOV C,C
-77B3H  (79H) MOV A,C
-77B4H  (41H) MOV B,C
-77B5H  (3EH) MVI A,7CH
-77B7H  (12H) STAX D
-77B8H  (11H) LXI D,7C12H
-77BBH  (7FH) MOV A,A
-77BCH  (49H) MOV C,C
-77BDH  (49H) MOV C,C
-77BEH  (49H) MOV C,C
-77BFH  (36H) MVI M,3EH
-77C1H  (41H) MOV B,C
-77C2H  (41H) MOV B,C
-77C3H  (41H) MOV B,C
-77C4H  (22H) SHLD 417FH
-77C7H  (41H) MOV B,C
-77C8H  (41H) MOV B,C
-77C9H  (3EH) MVI A,7FH
-77CBH  (49H) MOV C,C
-77CCH  (49H) MOV C,C
-77CDH  (49H) MOV C,C
-77CEH  (41H) MOV B,C
-77CFH  (7FH) MOV A,A
-77D0H  (09H) DAD B
-77D1H  (09H) DAD B
-77D2H  (09H) DAD B
-77D3H  (01H) LXI B,413EH
-77D6H  (49H) MOV C,C
-77D7H  (49H) MOV C,C
-77D8H  (3AH) LDA 087FH
-77DBH  (08H) DSUB
-77DCH  (08H) DSUB
-77DDH  (7FH) MOV A,A
-77DEH  (00H) NOP
-77DFH  (41H) MOV B,C
-77E0H  (7FH) MOV A,A
-77E1H  (41H) MOV B,C
-77E2H  (00H) NOP
-77E3H  (30H) SIM
-77E4H  (40H) MOV B,B
-77E5H  (41H) MOV B,C
-77E6H  (3FH) CMC
-77E7H  (01H) LXI B,087FH
-77EAH  (14H) INR D
-77EBH  (22H) SHLD 7F41H
-77EEH  (40H) MOV B,B
-77EFH  (40H) MOV B,B
-77F0H  (40H) MOV B,B
-77F1H  (40H) MOV B,B
-77F2H  (7FH) MOV A,A
-77F3H  (02H) STAX B
-77F4H  (0CH) INR C
-77F5H  (02H) STAX B
-77F6H  (7FH) MOV A,A
-77F7H  (7FH) MOV A,A
-77F8H  (06H) MVI B,08H
-77FAH  (30H) SIM
-77FBH  (7FH) MOV A,A
-77FCH  (3EH) MVI A,41H
-77FEH  (41H) MOV B,C
-77FFH  (41H) MOV B,C
-7800H  (3EH) MVI A,7FH
-7802H  (09H) DAD B
-7803H  (09H) DAD B
-7804H  (09H) DAD B
-7805H  (06H) MVI B,3EH
-7807H  (41H) MOV B,C
-7808H  (51H) MOV D,C
-7809H  (21H) LXI H,7F5EH
-780CH  (09H) DAD B
-780DH  (19H) DAD D
-780EH  (29H) DAD H
-780FH  (46H) MOV B,M
-7810H  (26H) MVI H,49H
-7812H  (49H) MOV C,C
-7813H  (49H) MOV C,C
-7814H  (32H) STA 0101H
-7817H  (7FH) MOV A,A
-7818H  (01H) LXI B,3F01H
-781BH  (40H) MOV B,B
-781CH  (40H) MOV B,B
-781DH  (40H) MOV B,B
-781EH  (3FH) CMC
-781FH  (0FH) RRC
-7820H  (30H) SIM
-7821H  (40H) MOV B,B
-7822H  (30H) SIM
-7823H  (0FH) RRC
-7824H  (7FH) MOV A,A
-7825H  (20H) RIM
-7826H  (18H) RLDE
-7827H  (20H) RIM
-7828H  (7FH) MOV A,A
-7829H  (63H) MOV H,E
-782AH  (14H) INR D
-782BH  (08H) DSUB
-782CH  (14H) INR D
-782DH  (63H) MOV H,E
-782EH  (07H) RLC
-782FH  (08H) DSUB
-7830H  (78H) MOV A,B
-7831H  (08H) DSUB
-7832H  (07H) RLC
-7833H  (61H) MOV H,C
-7834H  (51H) MOV D,C
-7835H  (49H) MOV C,C
-7836H  (45H) MOV B,L
-7837H  (43H) MOV B,E
-7838H  (00H) NOP
-7839H  (7FH) MOV A,A
-783AH  (41H) MOV B,C
-783BH  (41H) MOV B,C
-783CH  (00H) NOP
-783DH  (04H) INR B
-783EH  (08H) DSUB
-783FH  (10H) ASHR
-7840H  (20H) RIM
-7841H  (40H) MOV B,B
-7842H  (00H) NOP
-7843H  (41H) MOV B,C
-7844H  (41H) MOV B,C
-7845H  (7FH) MOV A,A
-7846H  (00H) NOP
-7847H  (04H) INR B
-7848H  (02H) STAX B
-7849H  (01H) LXI B,0402H
-784CH  (40H) MOV B,B
-784DH  (40H) MOV B,B
-784EH  (40H) MOV B,B
-784FH  (40H) MOV B,B
-7850H  (40H) MOV B,B
-7851H  (00H) NOP
-7852H  (01H) LXI B,0402H
-7855H  (00H) NOP
-7856H  (20H) RIM
-7857H  (54H) MOV D,H
-7858H  (54H) MOV D,H
-7859H  (54H) MOV D,H
-785AH  (78H) MOV A,B
-785BH  (7FH) MOV A,A
-785CH  (28H) LDEH 44H
-785EH  (44H) MOV B,H
-785FH  (38H) LDES 38H
-7861H  (44H) MOV B,H
-7862H  (44H) MOV B,H
-7863H  (44H) MOV B,H
-7864H  (28H) LDEH 38H
-7866H  (44H) MOV B,H
-7867H  (44H) MOV B,H
-7868H  (28H) LDEH 7FH
-786AH  (38H) LDES 54H
-786CH  (54H) MOV D,H
-786DH  (54H) MOV D,H
-786EH  (18H) RLDE
-786FH  (08H) DSUB
-7870H  (08H) DSUB
-7871H  (7EH) MOV A,M
-7872H  (09H) DAD B
-7873H  (0AH) LDAX B
-7874H  (18H) RLDE
-7875H  (A4H) ANA H
-7876H  (A4H) ANA H
-7877H  (98H) SBB B
-7878H  (7CH) MOV A,H
-7879H  (7FH) MOV A,A
-787AH  (04H) INR B
-787BH  (04H) INR B
-787CH  (04H) INR B
-787DH  (78H) MOV A,B
-787EH  (00H) NOP
-787FH  (44H) MOV B,H
-7880H  (7DH) MOV A,L
-7881H  (40H) MOV B,B
-7882H  (00H) NOP
-7883H  (40H) MOV B,B
-7884H  (80H) ADD B
-7885H  (84H) ADD H
-7886H  (7DH) MOV A,L
-7887H  (00H) NOP
-7888H  (00H) NOP
-7889H  (7FH) MOV A,A
-788AH  (10H) ASHR
-788BH  (28H) LDEH 44H
-788DH  (00H) NOP
-788EH  (41H) MOV B,C
-788FH  (7FH) MOV A,A
-7890H  (40H) MOV B,B
-7891H  (00H) NOP
-7892H  (7CH) MOV A,H
-7893H  (04H) INR B
-7894H  (78H) MOV A,B
-7895H  (04H) INR B
-7896H  (78H) MOV A,B
-7897H  (7CH) MOV A,H
-7898H  (08H) DSUB
-7899H  (04H) INR B
-789AH  (04H) INR B
-789BH  (78H) MOV A,B
-789CH  (38H) LDES 44H
-789EH  (44H) MOV B,H
-789FH  (44H) MOV B,H
-78A0H  (38H) LDES FCH
-78A2H  (28H) LDEH 44H
-78A4H  (44H) MOV B,H
-78A5H  (38H) LDES 38H
-78A7H  (44H) MOV B,H
-78A8H  (44H) MOV B,H
-78A9H  (28H) LDEH FCH
-78ABH  (7CH) MOV A,H
-78ACH  (08H) DSUB
-78ADH  (04H) INR B
-78AEH  (04H) INR B
-78AFH  (08H) DSUB
-78B0H  (48H) MOV C,B
-78B1H  (54H) MOV D,H
-78B2H  (54H) MOV D,H
-78B3H  (54H) MOV D,H
-78B4H  (24H) INR H
-78B5H  (04H) INR B
-78B6H  (3FH) CMC
-78B7H  (44H) MOV B,H
-78B8H  (44H) MOV B,H
-78B9H  (20H) RIM
-78BAH  (3CH) INR A
-78BBH  (40H) MOV B,B
-78BCH  (40H) MOV B,B
-78BDH  (20H) RIM
-78BEH  (7CH) MOV A,H
-78BFH  (1CH) INR E
-78C0H  (20H) RIM
-78C1H  (40H) MOV B,B
-78C2H  (20H) RIM
-78C3H  (1CH) INR E
-78C4H  (3CH) INR A
-78C5H  (40H) MOV B,B
-78C6H  (38H) LDES 40H
-78C8H  (3CH) INR A
-78C9H  (44H) MOV B,H
-78CAH  (28H) LDEH 10H
-78CCH  (28H) LDEH 44H
-78CEH  (1CH) INR E
-78CFH  (A0H) ANA B
-78D0H  (A0H) ANA B
-78D1H  (90H) SUB B
-78D2H  (7CH) MOV A,H
-78D3H  (44H) MOV B,H
-78D4H  (64H) MOV H,H
-78D5H  (54H) MOV D,H
-78D6H  (4CH) MOV C,H
-78D7H  (44H) MOV B,H
-78D8H  (00H) NOP
-78D9H  (08H) DSUB
-78DAH  (36H) MVI M,41H
-78DCH  (41H) MOV B,C
-78DDH  (00H) NOP
-78DEH  (00H) NOP
-78DFH  (77H) MOV M,A
-78E0H  (00H) NOP
-78E1H  (00H) NOP
-78E2H  (41H) MOV B,C
-78E3H  (41H) MOV B,C
-78E4H  (36H) MVI M,08H
-78E6H  (00H) NOP
-78E7H  (02H) STAX B
-78E8H  (01H) LXI B,0402H
-78EBH  (02H) STAX B
-78ECH  (00H) NOP
-78EDH  (00H) NOP
-78EEH  (00H) NOP
-78EFH  (00H) NOP
-78F0H  (00H) NOP
-78F1H  (66H) MOV H,M
-78F2H  (77H) MOV M,A
-78F3H  (49H) MOV C,C
-78F4H  (49H) MOV C,C
-78F5H  (77H) MOV M,A
-78F6H  (66H) MOV H,M
-78F7H  (FCH) CM D786H
-78FAH  (EEH) XRI FCH
-78FCH  (00H) NOP
-78FDH  (7FH) MOV A,A
-78FEH  (63H) MOV H,E
-78FFH  (14H) INR D
-7900H  (08H) DSUB
-7901H  (14H) INR D
-7902H  (00H) NOP
-7903H  (78H) MOV A,B
-7904H  (76H) HLT
-7905H  (62H) MOV H,D
-7906H  (4AH) MOV C,D
-7907H  (0EH) MVI C,00H
-7909H  (EEH) XRI 44H
-790BH  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-790CH  DB   FFH
-790DH  (44H) MOV B,H
-790EH  (EEH) XRI 0CH
-7910H  (4CH) MOV C,H
-7911H  (7FH) MOV A,A
-7912H  (4CH) MOV C,H
-7913H  (0CH) INR C
-7914H  (00H) NOP
-7915H  (7CH) MOV A,H
-7916H  (56H) MOV D,M
-7917H  (7FH) MOV A,A
-7918H  (56H) MOV D,M
-7919H  (7CH) MOV A,H
-791AH  (00H) NOP
-791BH  (7DH) MOV A,L
-791CH  (77H) MOV M,A
-791DH  (47H) MOV B,A
-791EH  (77H) MOV M,A
-791FH  (7FH) MOV A,A
-7920H  (00H) NOP
-7921H  (02H) STAX B
-7922H  (7EH) MOV A,M
-7923H  (02H) STAX B
-7924H  (3EH) MVI A,42H
-7926H  (00H) NOP
-7927H  (10H) ASHR
-7928H  (20H) RIM
-7929H  (1CH) INR E
-792AH  (02H) STAX B
-792BH  (02H) STAX B
-792CH  (02H) STAX B
-792DH  (54H) MOV D,H
-792EH  (34H) INR M
-792FH  (1CH) INR E
-7930H  (16H) MVI D,15H
-7932H  (00H) NOP
-7933H  (41H) MOV B,C
-7934H  (63H) MOV H,E
-7935H  (55H) MOV D,L
-7936H  (49H) MOV C,C
-7937H  (63H) MOV H,E
-7938H  (00H) NOP
-7939H  (24H) INR H
-793AH  (12H) STAX D
-793BH  (12H) STAX D
-793CH  (24H) INR H
-793DH  (12H) STAX D
-793EH  (00H) NOP
-793FH  (44H) MOV B,H
-7940H  (44H) MOV B,H
-7941H  (5FH) MOV E,A
-7942H  (44H) MOV B,H
-7943H  (44H) MOV B,H
-7944H  (00H) NOP
-7945H  (00H) NOP
-7946H  (40H) MOV B,B
-7947H  (3EH) MVI A,01H
-7949H  (00H) NOP
-794AH  (00H) NOP
-794BH  (00H) NOP
-794CH  (08H) DSUB
-794DH  (1CH) INR E
-794EH  (3EH) MVI A,00H
-7950H  (00H) NOP
-7951H  (98H) SBB B
-7952H  (F4H) CP 1212H
-7955H  (F4H) CP F898H
-7958H  (94H) SUB H
-7959H  (12H) STAX D
-795AH  (12H) STAX D
-795BH  (94H) SUB H
-795CH  (F8H) RM
-795DH  (14H) INR D
-795EH  (22H) SHLD 227FH
-7961H  (14H) INR D
-7962H  (00H) NOP
-7963H  (A0H) ANA B
-7964H  (56H) MOV D,M
-7965H  (3DH) DCR A
-7966H  (56H) MOV D,M
-7967H  (A0H) ANA B
-7968H  (00H) NOP
-7969H  (4CH) MOV C,H
-796AH  (2AH) LHLD 2A1DH
-796DH  (48H) MOV C,B
-796EH  (00H) NOP
-796FH  (38H) LDES 28H
-7971H  (39H) DAD SP
-7972H  (05H) DCR B
-7973H  (03H) INX B
-7974H  (0FH) RRC
-7975H  (00H) NOP
-7976H  (16H) MVI D,3DH
-7978H  (16H) MVI D,00H
-797AH  (00H) NOP
-797BH  (42H) MOV B,D
-797CH  (25H) DCR H
-797DH  (15H) DCR D
-797EH  (28H) LDEH 54H
-7980H  (22H) SHLD 0204H
-7983H  (3FH) CMC
-7984H  (02H) STAX B
-7985H  (04H) INR B
-7986H  (00H) NOP
-7987H  (10H) ASHR
-7988H  (20H) RIM
-7989H  (7EH) MOV A,M
-798AH  (20H) RIM
-798BH  (10H) ASHR
-798CH  (00H) NOP
-798DH  (08H) DSUB
-798EH  (08H) DSUB
-798FH  (2AH) LHLD 081CH
-7992H  (00H) NOP
-7993H  (08H) DSUB
-7994H  (1CH) INR E
-7995H  (2AH) LHLD 0808H
-7998H  (00H) NOP
-7999H  (1CH) INR E
-799AH  (57H) MOV D,A
-799BH  (61H) MOV H,C
-799CH  (57H) MOV D,A
-799DH  (1CH) INR E
-799EH  (00H) NOP
-799FH  (08H) DSUB
-79A0H  (14H) INR D
-79A1H  (22H) SHLD 0814H
-79A4H  (00H) NOP
-79A5H  (1EH) MVI E,22H
-79A7H  (44H) MOV B,H
-79A8H  (22H) SHLD 001EH      ; Send a space to screen/printer
-79ABH  (1CH) INR E
-79ACH  (12H) STAX D
-79ADH  (71H) MOV M,C
-79AEH  (12H) STAX D
-79AFH  (1CH) INR E
-79B0H  (00H) NOP
-79B1H  (00H) NOP
-79B2H  (00H) NOP
-79B3H  (02H) STAX B
-79B4H  (01H) LXI B,0000H
-79B7H  (20H) RIM
-79B8H  (55H) MOV D,L
-79B9H  (56H) MOV D,M
-79BAH  (54H) MOV D,H
-79BBH  (78H) MOV A,B
-79BCH  (00H) NOP
-79BDH  (38H) LDES 44H
-79BFH  (C4H) CNZ 2844H
-79C2H  (00H) NOP
-79C3H  (64H) MOV H,H
-79C4H  (7FH) MOV A,A
-79C5H  (45H) MOV B,L
-79C6H  (45H) MOV B,L
-79C7H  (20H) RIM
-79C8H  (00H) NOP
-79C9H  (00H) NOP
-79CAH  (00H) NOP
-79CBH  (01H) LXI B,0002H
-79CEH  (00H) NOP
-79CFH  (FCH) CM 4040H
-79D2H  (3CH) INR A
-79D3H  (40H) MOV B,B
-79D4H  (00H) NOP
-79D5H  (00H) NOP
-79D6H  (02H) STAX B
-79D7H  (05H) DCR B
-79D8H  (02H) STAX B
-79D9H  (00H) NOP
-79DAH  (00H) NOP
-79DBH  (04H) INR B
-79DCH  (0CH) INR C
-79DDH  (1CH) INR E
-79DEH  (0CH) INR C
-79DFH  (04H) INR B
-79E0H  (00H) NOP
-79E1H  (00H) NOP
-79E2H  (04H) INR B
-79E3H  (7FH) MOV A,A
-79E4H  (04H) INR B
-79E5H  (00H) NOP
-79E6H  (00H) NOP
-79E7H  (1AH) LDAX D
-79E8H  (A5H) ANA L
-79E9H  (A5H) ANA L
-79EAH  (A5H) ANA L
-79EBH  (58H) MOV E,B
-79ECH  (00H) NOP
-79EDH  (7FH) MOV A,A
-79EEH  (41H) MOV B,C
-79EFH  (65H) MOV H,L
-79F0H  (51H) MOV D,C
-79F1H  (7FH) MOV A,A
-79F2H  (00H) NOP
-79F3H  (7FH) MOV A,A
-79F4H  (41H) MOV B,C
-79F5H  (5DH) MOV E,L
-79F6H  (49H) MOV C,C
-79F7H  (7FH) MOV A,A
-79F8H  (00H) NOP
-79F9H  (40H) MOV B,B
-79FAH  (2FH) CMA
-79FBH  (10H) ASHR
-79FCH  (68H) MOV L,B
-79FDH  (44H) MOV B,H
-79FEH  (E2H) JPO 3F15H
-7A01H  (10H) ASHR
-7A02H  (68H) MOV L,B
-7A03H  (44H) MOV B,H
-7A04H  (E2H) JPO 2F40H
-7A07H  (10H) ASHR
-7A08H  (08H) DSUB
-7A09H  (D4H) CNC 06B2H
-7A0CH  (09H) DAD B
-7A0DH  (7FH) MOV A,A
-7A0EH  (01H) LXI B,007FH
-7A11H  (29H) DAD H
-7A12H  (2AH) LHLD 2A7CH
-7A15H  (29H) DAD H
-7A16H  (00H) NOP
-7A17H  (78H) MOV A,B
-7A18H  (15H) DCR D
-7A19H  (12H) STAX D
-7A1AH  (15H) DCR D
-7A1BH  (78H) MOV A,B
-7A1CH  (00H) NOP
-7A1DH  (3CH) INR A
-7A1EH  (43H) MOV B,E
-7A1FH  (42H) MOV B,D
-7A20H  (43H) MOV B,E
-7A21H  (3CH) INR A
-7A22H  (00H) NOP
-7A23H  (3EH) MVI A,41H
-7A25H  (40H) MOV B,B
-7A26H  (41H) MOV B,C
-7A27H  (3EH) MVI A,00H
-7A29H  (1CH) INR E
-7A2AH  (22H) SHLD 227FH
-7A2DH  (14H) INR D
-7A2EH  (00H) NOP
-7A2FH  (02H) STAX B
-7A30H  (01H) LXI B,0201H
-7A33H  (01H) LXI B,2000H
-7A36H  (55H) MOV D,L
-7A37H  (54H) MOV D,H
-7A38H  (55H) MOV D,L
-7A39H  (78H) MOV A,B
-7A3AH  (00H) NOP
-7A3BH  (38H) LDES 45H
-7A3DH  (44H) MOV B,H
-7A3EH  (45H) MOV B,L
-7A3FH  (38H) LDES 00H
-7A41H  (3CH) INR A
-7A42H  (41H) MOV B,C
-7A43H  (40H) MOV B,B
-7A44H  (21H) LXI H,007CH
-7A47H  (80H) ADD B
-7A48H  (7CH) MOV A,H
-7A49H  (4AH) MOV C,D
-7A4AH  (4AH) MOV C,D
-7A4BH  (34H) INR M
-7A4CH  (00H) NOP
-7A4DH  (71H) MOV M,C
-7A4EH  (11H) LXI D,1167H
-7A51H  (71H) MOV M,C
-7A52H  (00H) NOP
-7A53H  (38H) LDES 54H
-7A55H  (56H) MOV D,M
-7A56H  (55H) MOV D,L
-7A57H  (18H) RLDE
-7A58H  (00H) NOP
-7A59H  (3CH) INR A
-7A5AH  (41H) MOV B,C
-7A5BH  (42H) MOV B,D
-7A5CH  (20H) RIM
-7A5DH  (7CH) MOV A,H
-7A5EH  (00H) NOP
-7A5FH  (38H) LDES 55H
-7A61H  (56H) MOV D,M
-7A62H  (54H) MOV D,H
-7A63H  (18H) RLDE
-7A64H  (00H) NOP
-7A65H  (00H) NOP
-7A66H  (01H) LXI B,0100H
-7A69H  (00H) NOP
-7A6AH  (00H) NOP
-7A6BH  (88H) ADC B
-7A6CH  (7EH) MOV A,M
-7A6DH  (09H) DAD B
-7A6EH  (09H) DAD B
-7A6FH  (02H) STAX B
-7A70H  (00H) NOP
-7A71H  (20H) RIM
-7A72H  (56H) MOV D,M
-7A73H  (55H) MOV D,L
-7A74H  (56H) MOV D,M
-7A75H  (78H) MOV A,B
-7A76H  (00H) NOP
-7A77H  (38H) LDES 56H
-7A79H  (55H) MOV D,L
-7A7AH  (56H) MOV D,M
-7A7BH  (18H) RLDE
-7A7CH  (00H) NOP
-7A7DH  (00H) NOP
-7A7EH  (4AH) MOV C,D
-7A7FH  (79H) MOV A,C
-7A80H  (42H) MOV B,D
-7A81H  (00H) NOP
-7A82H  (00H) NOP
-7A83H  (38H) LDES 46H
-7A85H  (45H) MOV B,L
-7A86H  (46H) MOV B,M
-7A87H  (38H) LDES 00H
-7A89H  (38H) LDES 42H
-7A8BH  (41H) MOV B,C
-7A8CH  (22H) SHLD 0078H
-7A8FH  (00H) NOP
-7A90H  (02H) STAX B
-7A91H  (01H) LXI B,0002H
-7A94H  (00H) NOP
-7A95H  (38H) LDES 55H
-7A97H  (54H) MOV D,H
-7A98H  (55H) MOV D,L
-7A99H  (18H) RLDE
-7A9AH  (00H) NOP
-7A9BH  (00H) NOP
-7A9CH  (45H) MOV B,L
-7A9DH  (7CH) MOV A,H
-7A9EH  (41H) MOV B,C
-7A9FH  (00H) NOP
-7AA0H  (00H) NOP
-7AA1H  (20H) RIM
-7AA2H  (54H) MOV D,H
-7AA3H  (56H) MOV D,M
-7AA4H  (55H) MOV D,L
-7AA5H  (78H) MOV A,B
-7AA6H  (00H) NOP
-7AA7H  (00H) NOP
-7AA8H  (48H) MOV C,B
-7AA9H  (7AH) MOV A,D
-7AAAH  (41H) MOV B,C
-7AABH  (00H) NOP
-7AACH  (00H) NOP
-7AADH  (30H) SIM
-7AAEH  (48H) MOV C,B
-7AAFH  (4AH) MOV C,D
-7AB0H  (49H) MOV C,C
-7AB1H  (30H) SIM
-7AB2H  (00H) NOP
-7AB3H  (3CH) INR A
-7AB4H  (40H) MOV B,B
-7AB5H  (42H) MOV B,D
-7AB6H  (21H) LXI H,007CH
-7AB9H  (00H) NOP
-7ABAH  (00H) NOP
-7ABBH  (7DH) MOV A,L
-7ABCH  (00H) NOP
-7ABDH  (00H) NOP
-7ABEH  (00H) NOP
-7ABFH  (7AH) MOV A,D
-7AC0H  (11H) LXI D,0A09H
-7AC3H  (71H) MOV M,C
-7AC4H  (00H) NOP
-7AC5H  (22H) SHLD 5555H
-7AC8H  (56H) MOV D,M
-7AC9H  (79H) MOV A,C
-7ACAH  (00H) NOP
-7ACBH  (3AH) LDA 4545H
-7ACEH  (46H) MOV B,M
-7ACFH  (39H) DAD SP
-7AD0H  (00H) NOP
-7AD1H  (7CH) MOV A,H
-7AD2H  (12H) STAX D
-7AD3H  (11H) LXI D,497FH
-7AD6H  (00H) NOP
-7AD7H  (24H) INR H
-7AD8H  (54H) MOV D,H
-7AD9H  (78H) MOV A,B
-7ADAH  (54H) MOV D,H
-7ADBH  (58H) MOV E,B
-7ADCH  (00H) NOP
-7ADDH  (78H) MOV A,B
-7ADEH  (14H) INR D
-7ADFH  (13H) INX D
-7AE0H  (14H) INR D
-7AE1H  (78H) MOV A,B
-7AE2H  (00H) NOP
-7AE3H  (20H) RIM
-7AE4H  (54H) MOV D,H
-7AE5H  (55H) MOV D,L
-7AE6H  (54H) MOV D,H
-7AE7H  (78H) MOV A,B
-7AE8H  (00H) NOP
-7AE9H  (3EH) MVI A,51H
-7AEBH  (49H) MOV C,C
-7AECH  (45H) MOV B,L
-7AEDH  (3EH) MVI A,00H
-7AEFH  (38H) LDES 64H
-7AF1H  (54H) MOV D,H
-7AF2H  (4CH) MOV C,H
-7AF3H  (38H) LDES 00H
-7AF5H  (7EH) MOV A,M
-7AF6H  (09H) DAD B
-7AF7H  (11H) LXI D,7D22H
-7AFAH  (00H) NOP
-7AFBH  (7CH) MOV A,H
-7AFCH  (54H) MOV D,H
-7AFDH  (56H) MOV D,M
-7AFEH  (55H) MOV D,L
-7AFFH  (44H) MOV B,H
-7B00H  (00H) NOP
-7B01H  (70H) MOV M,B
-7B02H  (28H) LDEH 26H
-7B04H  (29H) DAD H
-7B05H  (70H) MOV M,B
-7B06H  (00H) NOP
-7B07H  (00H) NOP
-7B08H  (44H) MOV B,H
-7B09H  (7EH) MOV A,M
-7B0AH  (45H) MOV B,L
-7B0BH  (00H) NOP
-7B0CH  (00H) NOP
-7B0DH  (38H) LDES 44H
-7B0FH  (46H) MOV B,M
-7B10H  (45H) MOV B,L
-7B11H  (38H) LDES 00H
-7B13H  (3CH) INR A
-7B14H  (40H) MOV B,B
-7B15H  (42H) MOV B,D
-7B16H  (41H) MOV B,C
-7B17H  (3CH) INR A
-7B18H  (00H) NOP
-7B19H  (30H) SIM
-7B1AH  (48H) MOV C,B
-7B1BH  (45H) MOV B,L
-7B1CH  (40H) MOV B,B
-7B1DH  (20H) RIM
-7B1EH  (00H) NOP
-7B1FH  (3CH) INR A
-7B20H  (41H) MOV B,C
-7B21H  (42H) MOV B,D
-7B22H  (40H) MOV B,B
-7B23H  (3CH) INR A
-7B24H  (00H) NOP
-7B25H  (7CH) MOV A,H
-7B26H  (55H) MOV D,L
-7B27H  (56H) MOV D,M
-7B28H  (54H) MOV D,H
-7B29H  (44H) MOV B,H
-7B2AH  (00H) NOP
-7B2BH  (70H) MOV M,B
-7B2CH  (29H) DAD H
-7B2DH  (26H) MVI H,28H
-7B2FH  (70H) MOV M,B
-7B30H  (00H) NOP
-7B31H  (00H) NOP
-7B32H  (00H) NOP
-7B33H  (00H) NOP
-7B34H  (00H) NOP
-7B35H  (00H) NOP
-7B36H  (00H) NOP
-7B37H  (0FH) RRC
-7B38H  (0FH) RRC
-7B39H  (0FH) RRC
-7B3AH  (00H) NOP
-7B3BH  (00H) NOP
-7B3CH  (00H) NOP
-7B3DH  (00H) NOP
-7B3EH  (00H) NOP
-7B3FH  (00H) NOP
-7B40H  (0FH) RRC
-7B41H  (0FH) RRC
-7B42H  (0FH) RRC
-7B43H  (F0H) RP
-7B44H  (F0H) RP
-7B45H  (F0H) RP
-7B46H  (00H) NOP
-7B47H  (00H) NOP
-7B48H  (00H) NOP
-7B49H  (00H) NOP
-7B4AH  (00H) NOP
-7B4BH  (00H) NOP
-7B4CH  (F0H) RP
-7B4DH  (F0H) RP
-7B4EH  (F0H) RP
-7B4FH  (0FH) RRC
-7B50H  (0FH) RRC
-7B51H  (0FH) RRC
-7B52H  (F0H) RP
-7B53H  (F0H) RP
-7B54H  (F0H) RP
-7B55H  (F0H) RP
-7B56H  (F0H) RP
-7B57H  (F0H) RP
-7B58H  (0FH) RRC
-7B59H  (0FH) RRC
-7B5AH  (0FH) RRC
-7B5BH  (0FH) RRC
-7B5CH  (0FH) RRC
-7B5DH  (0FH) RRC
-7B5EH  (0FH) RRC
-7B5FH  (0FH) RRC
-7B60H  (0FH) RRC
-7B61H  (F0H) RP
-7B62H  (F0H) RP
-7B63H  (F0H) RP
-7B64H  (F0H) RP
-7B65H  (F0H) RP
-7B66H  (F0H) RP
-7B67H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B68H  DB   FFH
-7B69H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B6AH  DB   00H
-7B6BH  (00H) NOP
-7B6CH  (00H) NOP
-7B6DH  (00H) NOP
-7B6EH  (00H) NOP
-7B6FH  (00H) NOP
-7B70H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B71H  DB   FFH
-7B72H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B73H  DB   FFH
-7B74H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B75H  DB   FFH
-7B76H  (0FH) RRC
-7B77H  (0FH) RRC
-7B78H  (0FH) RRC
-7B79H  (0FH) RRC
-7B7AH  (0FH) RRC
-7B7BH  (0FH) RRC
-7B7CH  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B7DH  DB   FFH
-7B7EH  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B7FH  DB   FFH
-7B80H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B81H  DB   FFH
-7B82H  (F0H) RP
-7B83H  (F0H) RP
-7B84H  (F0H) RP
-7B85H  (F0H) RP
-7B86H  (F0H) RP
-7B87H  (F0H) RP
-7B88H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B89H  DB   FFH
-7B8AH  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B8BH  DB   FFH
-7B8CH  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B8DH  DB   FFH
-7B8EH  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B8FH  DB   FFH
-7B90H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7B91H  DB   00H
-7B92H  (00H) NOP
-7B93H  (F8H) RM
-7B94H  (08H) DSUB
-7B95H  (08H) DSUB
-7B96H  (08H) DSUB
-7B97H  (08H) DSUB
-7B98H  (08H) DSUB
-7B99H  (08H) DSUB
-7B9AH  (08H) DSUB
-7B9BH  (08H) DSUB
-7B9CH  (08H) DSUB
-7B9DH  (08H) DSUB
-7B9EH  (08H) DSUB
-7B9FH  (F8H) RM
-7BA0H  (00H) NOP
-7BA1H  (00H) NOP
-7BA2H  (00H) NOP
-7BA3H  (08H) DSUB
-7BA4H  (08H) DSUB
-7BA5H  (F8H) RM
-7BA6H  (08H) DSUB
-7BA7H  (08H) DSUB
-7BA8H  (08H) DSUB
-7BA9H  (00H) NOP
-7BAAH  (00H) NOP
-7BABH  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7BACH  DB   08H
-7BADH  (08H) DSUB
-7BAEH  (08H) DSUB
-7BAFH  (00H) NOP
-7BB0H  (00H) NOP
-7BB1H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7BB2H  DB   00H
-7BB3H  (00H) NOP
-7BB4H  (00H) NOP
-7BB5H  (00H) NOP
-7BB6H  (00H) NOP
-7BB7H  (0FH) RRC
-7BB8H  (08H) DSUB
-7BB9H  (08H) DSUB
-7BBAH  (08H) DSUB
-7BBBH  (08H) DSUB
-7BBCH  (08H) DSUB
-7BBDH  (0FH) RRC
-7BBEH  (00H) NOP
-7BBFH  (00H) NOP
-7BC0H  (00H) NOP
-7BC1H  (08H) DSUB
-7BC2H  (08H) DSUB
-7BC3H  (0FH) RRC
-7BC4H  (08H) DSUB
-7BC5H  (08H) DSUB
-7BC6H  (08H) DSUB
-7BC7H  (08H) DSUB
-7BC8H  (08H) DSUB
-7BC9H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7BCAH  DB   00H
-7BCBH  (00H) NOP
-7BCCH  (00H) NOP
-7BCDH  (08H) DSUB
-7BCEH  (08H) DSUB
-7BCFH  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7BD0H  DB   08H
-7BD1H  (08H) DSUB
-7BD2H  (08H) DSUB
-7BD3H  (3FH) CMC
-7BD4H  (1FH) RAR
-7BD5H  (0FH) RRC
-7BD6H  (07H) RLC
-7BD7H  (03H) INX B
-7BD8H  (01H) LXI B,C080H
-7BDBH  (E0H) RPO
-7BDCH  (F0H) RP
-7BDDH  (F8H) RM
-7BDEH  (FCH) CM 0301H
-7BE1H  (07H) RLC
-7BE2H  (0FH) RRC
-7BE3H  (1FH) RAR
-7BE4H  (3FH) CMC
-7BE5H  (FCH) CM F0F8H
-7BE8H  (E0H) RPO
-7BE9H  (C0H) RNZ
-7BEAH  (80H) ADD B
-7BEBH  (55H) MOV D,L
-7BECH  (AAH) XRA D
-7BEDH  (55H) MOV D,L
-7BEEH  (AAH) XRA D
-7BEFH  (55H) MOV D,L
-7BF0H  (AAH) XRA D
-7BF1H  (7AH) MOV A,D
-7BF2H  (78H) MOV A,B
-7BF3H  (63H) MOV H,E
-7BF4H  (76H) HLT
-7BF5H  (62H) MOV H,D
-7BF6H  (6EH) MOV L,M
-7BF7H  (6DH) MOV L,L
-7BF8H  (6CH) MOV L,H
-7BF9H  (61H) MOV H,C
-7BFAH  (73H) MOV M,E
-7BFBH  (64H) MOV H,H
-7BFCH  (66H) MOV H,M
-7BFDH  (67H) MOV H,A
-7BFEH  (68H) MOV L,B
-7BFFH  (6AH) MOV L,D
-7C00H  (6BH) MOV L,E
-7C01H  (71H) MOV M,C
-7C02H  (77H) MOV M,A
-7C03H  (65H) MOV H,L
-7C04H  (72H) MOV M,D
-7C05H  (74H) MOV M,H
-7C06H  (79H) MOV A,C
-7C07H  (75H) MOV M,L
-7C08H  (69H) MOV L,C
-7C09H  (6FH) MOV L,A
-7C0AH  (70H) MOV M,B
-7C0BH  (5BH) MOV E,E
-7C0CH  (3BH) DCX SP
-7C0DH  (27H) DAA
-7C0EH  (2CH) INR L
-7C0FH  (2EH) MVI L,2FH
-7C11H  (31H) LXI SP,3332H
-7C14H  (34H) INR M
-7C15H  (35H) DCR M
-7C16H  (36H) MVI M,37H
-7C18H  (38H) LDES 39H
-7C1AH  (30H) SIM
-7C1BH  (2DH) DCR L
-7C1CH  (3DH) DCR A
-7C1DH  (5AH) MOV E,D
-7C1EH  (58H) MOV E,B
-7C1FH  (43H) MOV B,E
-7C20H  (56H) MOV D,M
-7C21H  (42H) MOV B,D
-7C22H  (4EH) MOV C,M
-7C23H  (4DH) MOV C,L
-7C24H  (4CH) MOV C,H
-7C25H  (41H) MOV B,C
-7C26H  (53H) MOV D,E
-7C27H  (44H) MOV B,H
-7C28H  (46H) MOV B,M
-7C29H  (47H) MOV B,A
-7C2AH  (48H) MOV C,B
-7C2BH  (4AH) MOV C,D
-7C2CH  (4BH) MOV C,E
-7C2DH  (51H) MOV D,C
-7C2EH  (57H) MOV D,A
-7C2FH  (45H) MOV B,L
-7C30H  (52H) MOV D,D
-7C31H  (54H) MOV D,H
-7C32H  (59H) MOV E,C
-7C33H  (55H) MOV D,L
-7C34H  (49H) MOV C,C
-7C35H  (4FH) MOV C,A
-7C36H  (50H) MOV D,B
-7C37H  (5DH) MOV E,L
-7C38H  (3AH) LDA 3C22H
-7C3BH  (3EH) MVI A,3FH
-7C3DH  (21H) LXI H,2340H
-7C40H  (24H) INR H
-7C41H  (25H) DCR H
-7C42H  (5EH) MOV E,M
-7C43H  (26H) MVI H,2AH
-7C45H  (28H) LDEH 29H
-7C47H  (5FH) MOV E,A
-7C48H  (2BH) DCX H
-7C49H  (00H) NOP
-7C4AH  (83H) ADD E
-7C4BH  (84H) ADD H
-7C4CH  (00H) NOP
-7C4DH  (95H) SUB L
-7C4EH  (96H) SUB M
-7C4FH  (81H) ADD C
-7C50H  (9AH) SBB D
-7C51H  (85H) ADD L
-7C52H  (8BH) ADC E
-7C53H  (00H) NOP
-7C54H  (82H) ADD D
-7C55H  (00H) NOP
-7C56H  (86H) ADD M
-7C57H  (00H) NOP
-7C58H  (9BH) SBB E
-7C59H  (93H) SUB E
-7C5AH  (94H) SUB H
-7C5BH  (8FH) ADC A
-7C5CH  (89H) ADC C
-7C5DH  (87H) ADD A
-7C5EH  (90H) SUB B
-7C5FH  (91H) SUB C
-7C60H  (8EH) ADC M
-7C61H  (98H) SBB B
-7C62H  (80H) ADD B
-7C63H  (60H) MOV H,B
-7C64H  (92H) SUB D
-7C65H  (8CH) ADC H
-7C66H  (99H) SBB C
-7C67H  (97H) SUB A
-7C68H  (8AH) ADC D
-7C69H  (88H) ADC B
-7C6AH  (9CH) SUB H
-7C6BH  (9DH) SBB L
-7C6CH  (9EH) SBB M
-7C6DH  (9FH) SBB A
-7C6EH  (B4H) ORA H
-7C6FH  (B0H) ORA B
-7C70H  (A3H) ANA E
-7C71H  (7BH) MOV A,E
-7C72H  (7DH) MOV A,L
-7C73H  (5CH) MOV E,H
-7C74H  (8DH) ADC L
-7C75H  (E0H) RPO
-7C76H  (EFH) RST 5          ; Determine type of last var used
-7C77H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-7C78H  DB   00H
-7C79H  (00H) NOP
-7C7AH  (00H) NOP
-7C7BH  (F6H) ORI F9H
-7C7DH  (EBH) XCHG
-7C7EH  (ECH) CPE EEEDH
-7C81H  (FDH) JX F4FBH
-7C84H  (FAH) JM E8E7H
-7C87H  (E9H) PCHL
+770BH  DB   02H,01H,00H,00H,01H,00H
 
-7C88H  (EAH) JPE FEFCH
-7C8BH  (F0H) RP
-7C8CH  (F3H) DI
-7C8DH  (F2H) JP 7EF1H
-7C90H  (F5H) PUSH PSW
-7C91H  (00H) NOP
-7C92H  (F8H) RM
-7C93H  (F7H) RST 6          ; Get sign of FAC1
-7C94H  (00H) NOP
-7C95H  (E1H) POP H
-7C96H  (E2H) JPO E4E3H
-7C99H  (E5H) PUSH H
-7C9AH  (E6H) ANI 00H
-7C9CH  (00H) NOP
-7C9DH  (00H) NOP
-7C9EH  (00H) NOP
-7C9FH  (7CH) MOV A,H
-7CA0H  (00H) NOP
-7CA1H  (A1H) ANA C
-7CA2H  (D1H) POP D
-7CA3H  (BDH) CMP L
-7CA4H  (CEH) ACI CFH
-7CA6H  (CDH) CALL CABCH
-7CA9H  (C8H) RZ
-7CAAH  (A9H) XRA C
-7CABH  (BBH) CMP E
-7CACH  (A2H) ANA D
-7CADH  (00H) NOP
-7CAEH  (00H) NOP
-7CAFH  (CBH) RSTV
-7CB0H  (C9H) RET
 
-7CB1H  (B6H) ORA M
-7CB2H  (D3H) OUT C6H
-7CB4H  (00H) NOP
-7CB5H  (00H) NOP
-7CB6H  (00H) NOP
-7CB7H  (B8H) CMP B
-7CB8H  (C7H) RST 0
-7CB9H  (B7H) ORA A
-7CBAH  (ACH) XRA H
-7CBBH  (B5H) ORA L
-7CBCH  (ADH) XRA L
-7CBDH  (A0H) ANA B
-7CBEH  (00H) NOP
-7CBFH  (D5H) PUSH D
-7CC0H  (AEH) XRA M
-7CC1H  (C0H) RNZ
-7CC2H  (00H) NOP
-7CC3H  (C1H) POP B
-7CC4H  (00H) NOP
-7CC5H  (00H) NOP
-7CC6H  (00H) NOP
-7CC7H  (C4H) CNZ C3C2H
-7CCAH  (AFH) XRA A
-7CCBH  (C5H) PUSH B
-7CCCH  (BEH) CMP M
-7CCDH  (DFH) RST 3          ; Compare DE and HL
-7CCEH  (D0H) RNC
-7CCFH  (DEH) SBI 00H
-7CD1H  (00H) NOP
-7CD2H  (D6H) SUI DDH
-7CD4H  (DAH) JC B9D8H
-7CD7H  (D7H) RST 2          ; Get next non-white char from M
-7CD8H  (BFH) CMP A
-7CD9H  (00H) NOP
-7CDAH  (00H) NOP
-7CDBH  (DBH) IN D9H
-7CDDH  (B1H) ORA C
-7CDEH  (D2H) JNC AA00H
-7CE1H  (BAH) CMP D
-7CE2H  (ABH) XRA E
-7CE3H  (B3H) ORA E
-7CE4H  (00H) NOP
-7CE5H  (B2H) ORA D
-7CE6H  (00H) NOP
-7CE7H  (A5H) ANA L
-7CE8H  (00H) NOP
-7CE9H  (A4H) ANA H
-7CEAH  (00H) NOP
-7CEBH  (D4H) CNC CCDCH
-7CEEH  (00H) NOP
-7CEFH  (00H) NOP
-7CF0H  (00H) NOP
-7CF1H  (00H) NOP
-7CF2H  (00H) NOP
-7CF3H  (00H) NOP
-7CF4H  (00H) NOP
-7CF5H  (00H) NOP
-7CF6H  (A6H) ANA M
-7CF7H  (A7H) ANA A
-7CF8H  (A8H) XRA B
-7CF9H  (6DH) MOV L,L
-7CFAH  (30H) SIM
-7CFBH  (6AH) MOV L,D
-7CFCH  (31H) LXI SP,326BH
-7CFFH  (6CH) MOV L,H
-7D00H  (33H) INX SP
-7D01H  (75H) MOV M,L
-7D02H  (34H) INR M
-7D03H  (69H) MOV L,C
-7D04H  (35H) DCR M
-7D05H  (6FH) MOV L,A
-7D06H  (36H) MVI M,01H
-7D08H  (06H) MVI B,14H
-7D0AH  (02H) STAX B
-7D0BH  (20H) RIM
-7D0CH  (7FH) MOV A,A
-7D0DH  (09H) DAD B
-7D0EH  (1BH) DCX D
-7D0FH  (8BH) ADC E
-7D10H  (88H) ADC B
-7D11H  (8AH) ADC D
-7D12H  (0DH) DCR C
-7D13H  (80H) ADD B
-7D14H  (81H) ADD C
-7D15H  (82H) ADD D
-7D16H  (83H) ADD E
-7D17H  (84H) ADD H
-7D18H  (85H) ADD L
-7D19H  (86H) ADD M
-7D1AH  (87H) ADD A
-7D1BH  (1DH) DCR E
-7D1CH  (1CH) INR E
-7D1DH  (1EH) MVI E,1FH
-7D1FH  (20H) RIM
-7D20H  (08H) DSUB
-7D21H  (09H) DAD B
-7D22H  (1BH) DCX D
-7D23H  (8BH) ADC E
-7D24H  (88H) ADC B
-7D25H  (89H) ADC C
-7D26H  (0DH) DCR C
-7D27H  (80H) ADD B
-7D28H  (81H) ADD C
-7D29H  (82H) ADD D
-7D2AH  (83H) ADD E
-7D2BH  (84H) ADD H
-7D2CH  (85H) ADD L
-7D2DH  (86H) ADD M
-7D2EH  (87H) ADD A
-7D2FH  (51H) MOV D,C
-7D30H  (52H) MOV D,D
-7D31H  (57H) MOV D,A
-7D32H  (5AH) MOV E,D
-7D33H  (31H) LXI SP,FCC0H    ; Start of Alt LCD character buffer
-7D36H  (3DH) DCR A
-7D37H  (C2H) JNZ 1BA8H
-7D3AH  (DBH) IN D8H
-7D3CH  (A7H) ANA A
-7D3DH  (F2H) JP 7D3AH
+; ======================================================
+; LCD char generator shape table (20H-7FH
+; ======================================================
+7711H  DB   00H,00H,00H,00H,00H,00H,00H,4FH
+7719H  DB   00H,00H,00H,07H,00H,07H,00H,14H
+7721H  DB   7FH,14H,7FH,14H,24H,2AH,7FH,2AH
+7729H  DB   12H,23H,13H,08H,64H,62H,3AH,45H
+7731H  DB   4AH,30H,28H,00H,04H,02H,01H,00H
+7739H  DB   00H,1CH,22H,41H,00H,00H,41H,22H
+7741H  DB   1CH,00H,22H,14H,7FH,14H,22H,08H
+7749H  DB   08H,3EH,08H,08H,00H,80H,60H,00H
+7751H  DB   00H,08H,08H,08H,08H,08H,00H,60H
+7759H  DB   60H,00H,00H,40H,20H,10H,08H,04H
+7761H  DB   3EH,51H,49H,45H,3EH,44H,42H,7FH
+7769H  DB   40H,40H,62H,51H,51H,49H,46H,22H
+7771H  DB   41H,49H,49H,36H,18H,14H,12H,7FH
+7779H  DB   10H,47H,45H,45H,29H,11H,3CH,4AH
+7781H  DB   49H,49H,30H,03H,01H,79H,05H,03H
+7789H  DB   36H,49H,49H,49H,36H,06H,49H,49H
+7791H  DB   29H,1EH,00H,00H,24H,00H,00H,00H
+7799H  DB   80H,64H,00H,00H,08H,1CH,36H,63H
+77A1H  DB   41H,14H,14H,14H,14H,14H,41H,63H
+77A9H  DB   36H,1CH,08H,02H,01H,51H,09H,06H
+77B1H  DB   32H,49H,79H,41H,3EH,7CH,12H,11H
+77B9H  DB   12H,7CH,7FH,49H,49H,49H,36H,3EH ; Different from M100
+77C1H  DB   41H,41H,41H,22H,7FH,41H,41H,41H ; Different from M100
+77C9H  DB   3EH,7FH,49H,49H,49H,41H,7FH,09H ; Different from M100
+77D1H  DB   09H,09H,01H,3EH,41H,49H,49H,3AH
+77D9H  DB   7FH,08H,08H,08H,7FH,00H,41H,7FH
+77E1H  DB   41H,00H,30H,40H,41H,3FH,01H,7FH
+77E9H  DB   08H,14H,22H,41H,7FH,40H,40H,40H
+77F1H  DB   40H,7FH,02H,0CH,02H,7FH,7FH,06H
+77F9H  DB   08H,30H,7FH,3EH,41H,41H,41H,3EH
+7801H  DB   7FH,09H,09H,09H,06H,3EH,41H,51H
+7809H  DB   21H,5EH,7FH,09H,19H,29H,46H,26H
+7811H  DB   49H,49H,49H,32H,01H,01H,7FH,01H
+7819H  DB   01H,3FH,40H,40H,40H,3FH,0FH,30H
+7821H  DB   40H,30H,0FH,7FH,20H,18H,20H,7FH
+7829H  DB   63H,14H,08H,14H,63H,07H,08H,78H
+7831H  DB   08H,07H,61H,51H,49H,45H,43H,00H
+7839H  DB   7FH,41H,41H,00H,04H,08H,10H,20H
+7841H  DB   40H,00H,41H,41H,7FH,00H,04H,02H
+7849H  DB   01H,02H,04H,40H,40H,40H,40H,40H
+7851H  DB   00H,01H,02H,04H,00H,20H,54H,54H
+7859H  DB   54H,78H,7FH,28H,44H,44H,38H,38H
+7861H  DB   44H,44H,44H,28H,38H,44H,44H,28H
+7869H  DB   7FH,38H,54H,54H,54H,18H,08H,08H
+7871H  DB   7EH,09H,0AH,18H,A4H,A4H,98H,7CH
+7879H  DB   7FH,04H,04H,04H,78H,00H,44H,7DH
+7881H  DB   40H,00H,40H,80H,84H,7DH,00H,00H
+7889H  DB   7FH,10H,28H,44H,00H,41H,7FH,40H
+7891H  DB   00H,7CH,04H,78H,04H,78H,7CH,08H
+7899H  DB   04H,04H,78H,38H,44H,44H,44H,38H
+78A1H  DB   FCH,28H,44H,44H,38H,38H,44H,44H ; Different from M100
+78A9H  DB   28H,FCH,7CH,08H,04H,04H,08H,48H ; Different from M100
+78B1H  DB   54H,54H,54H,24H,04H,3FH,44H,44H
+78B9H  DB   20H,3CH,40H,40H,20H,7CH,1CH,20H ; Different from M100
+78C1H  DB   40H,20H,1CH,3CH,40H,38H,40H,3CH
+78C9H  DB   44H,28H,10H,28H,44H,1CH,A0H,A0H
+78D1H  DB   90H,7CH,44H,64H,54H,4CH,44H,00H
+78D9H  DB   08H,36H,41H,41H,00H,00H,77H,00H
+78E1H  DB   00H,41H,41H,36H,08H,00H,02H,01H
+78E9H  DB   02H,04H,02H,00H,00H,00H,00H,00H
+
+
+; ======================================================
+; LCD char generator shape table (80H-FFH)
+; ======================================================
+78F1H  DB   66H,77H,49H,49H,77H,66H,FCH,86H
+78F9H  DB   D7H,EEH,FCH,00H,7FH,63H,14H,08H
+7901H  DB   14H,00H,78H,76H,62H,4AH,0EH,00H
+7909H  DB   EEH,44H,FFH,FFH,44H,EEH,0CH,4CH
+7911H  DB   7FH,4CH,0CH,00H,7CH,56H,7FH,56H
+7919H  DB   7CH,00H,7DH,77H,47H,77H,7FH,00H
+7921H  DB   02H,7EH,02H,3EH,42H,00H,10H,20H ; Different from M100
+7929H  DB   1CH,02H,02H,02H,54H,34H,1CH,16H
+7931H  DB   15H,00H,41H,63H,55H,49H,63H,00H
+7939H  DB   24H,12H,12H,24H,12H,00H,44H,44H
+7941H  DB   5FH,44H,44H,00H,00H,40H,3EH,01H
+7949H  DB   00H,00H,00H,08H,1CH,3EH,00H,00H
+7951H  DB   98H,F4H,12H,12H,F4H,98H,F8H,94H
+7959H  DB   12H,12H,94H,F8H,14H,22H,7FH,22H
+7961H  DB   14H,00H,A0H,56H,3DH,56H,A0H,00H
+7969H  DB   4CH,2AH,1DH,2AH,48H,00H,38H,28H
+7971H  DB   39H,05H,03H,0FH,00H,16H,3DH,16H
+7979H  DB   00H,00H,42H,25H,15H,28H,54H,22H
+7981H  DB   04H,02H,3FH,02H,04H,00H,10H,20H
+7989H  DB   7EH,20H,10H,00H,08H,08H,2AH,1CH
+7991H  DB   08H,00H,08H,1CH,2AH,08H,08H,00H
+7999H  DB   1CH,57H,61H,57H,1CH,00H,08H,14H
+79A1H  DB   22H,14H,08H,00H,1EH,22H,44H,22H
+79A9H  DB   1EH,00H,1CH,12H,71H,12H,1CH,00H
+79B1H  DB   00H,00H,02H,01H,00H,00H,20H,55H ; Different from M100
+79B9H  DB   56H,54H,78H,00H,38H,44H,C4H,44H ; Different from M100
+79C1H  DB   28H,00H,64H,7FH,45H,45H,20H,00H ; Different from M100
+79C9H  DB   00H,00H,01H,02H,00H,00H,FCH,40H ; Different from M100
+79D1H  DB   40H,3CH,40H,00H,00H,02H,05H,02H ; Different from M100
+79D9H  DB   00H,00H,04H,0CH,1CH,0CH,04H,00H
+79E1H  DB   00H,04H,7FH,04H,00H,00H,1AH,A5H ; Different from M100
+79E9H  DB   A5H,A5H,58H,00H,7FH,41H,65H,51H ; Different from M100
+79F1H  DB   7FH,00H,7FH,41H,5DH,49H,7FH,00H
+79F9H  DB   40H,2FH,10H,68H,44H,E2H,15H,3FH ; Different from M100
+7A01H  DB   10H,68H,44H,E2H,40H,2FH,10H,08H ; Different from M100
+7A09H  DB   D4H,B2H,06H,09H,7FH,01H,7FH,00H ; Different from M100
+7A11H  DB   29H,2AH,7CH,2AH,29H,00H,78H,15H ; Different from M100
+7A19H  DB   12H,15H,78H,00H,3CH,43H,42H,43H ; Different from M100
+7A21H  DB   3CH,00H,3EH,41H,40H,41H,3EH,00H ; Different from M100
+7A29H  DB   1CH,22H,7FH,22H,14H,00H,02H,01H ; Different from M100
+7A31H  DB   01H,02H,01H,00H,20H,55H,54H,55H ; Different from M100
+7A39H  DB   78H,00H,38H,45H,44H,45H,38H,00H ; Different from M100
+7A41H  DB   3CH,41H,40H,21H,7CH,00H,80H,7CH ; Different from M100
+7A49H  DB   4AH,4AH,34H,00H,71H,11H,67H,11H ; Different from M100
+7A51H  DB   71H,00H,38H,54H,56H,55H,18H,00H
+7A59H  DB   3CH,41H,42H,20H,7CH,00H,38H,55H
+7A61H  DB   56H,54H,18H,00H,00H,01H,00H,01H ; Different from M100
+7A69H  DB   00H,00H,88H,7EH,09H,09H,02H,00H ; Different from M100
+7A71H  DB   20H,56H,55H,56H,78H,00H,38H,56H ; Different from M100
+7A79H  DB   55H,56H,18H,00H,00H,4AH,79H,42H ; Different from M100
+7A81H  DB   00H,00H,38H,46H,45H,46H,38H,00H ; Different from M100
+7A89H  DB   38H,42H,41H,22H,78H,00H,00H,02H ; Different from M100
+7A91H  DB   01H,02H,00H,00H,38H,55H,54H,55H ; Different from M100
+7A99H  DB   18H,00H,00H,45H,7CH,41H,00H,00H ; Different from M100
+7AA1H  DB   20H,54H,56H,55H,78H,00H,00H,48H ; Different from M100
+7AA9H  DB   7AH,41H,00H,00H,30H,48H,4AH,49H ; Different from M100
+7AB1H  DB   30H,00H,3CH,40H,42H,21H,7CH,00H
+7AB9H  DB   00H,00H,7DH,00H,00H,00H,7AH,11H ; Different from M100
+7AC1H  DB   09H,0AH,71H,00H,22H,55H,55H,56H ; Different from M100
+7AC9H  DB   79H,00H,3AH,45H,45H,46H,39H,00H ; Different from M100
+7AD1H  DB   7CH,12H,11H,7FH,49H,00H,24H,54H ; Different from M100
+7AD9H  DB   78H,54H,58H,00H,78H,14H,13H,14H ; Different from M100
+7AE1H  DB   78H,00H,20H,54H,55H,54H,78H,00H ; Different from M100
+7AE9H  DB   3EH,51H,49H,45H,3EH,00H,38H,64H ; Different from M100
+7AF1H  DB   54H,4CH,38H,00H,7EH,09H,11H,22H ; Different from M100
+7AF9H  DB   7DH,00H,7CH,54H,56H,55H,44H,00H ; Different from M100
+7B01H  DB   70H,28H,26H,29H,70H,00H,00H,44H ; Different from M100
+7B09H  DB   7EH,45H,00H,00H,38H,44H,46H,45H ; Different from M100
+7B11H  DB   38H,00H,3CH,40H,42H,41H,3CH,00H ; Different from M100
+7B19H  DB   30H,48H,45H,40H,20H,00H,3CH,41H ; Different from M100
+7B21H  DB   42H,40H,3CH,00H,7CH,55H,56H,54H
+7B29H  DB   44H,00H,70H,29H,26H,28H,70H,00H ; Different from M100
+7B31H  DB   00H,00H,00H,00H,00H,00H,0FH,0FH
+7B39H  DB   0FH,00H,00H,00H,00H,00H,00H,0FH
+7B41H  DB   0FH,0FH,F0H,F0H,F0H,00H,00H,00H
+7B49H  DB   00H,00H,00H,F0H,F0H,F0H,0FH,0FH
+7B51H  DB   0FH,F0H,F0H,F0H,F0H,F0H,F0H,0FH
+7B59H  DB   0FH,0FH,0FH,0FH,0FH,0FH,0FH,0FH
+7B61H  DB   F0H,F0H,F0H,F0H,F0H,F0H,FFH,FFH
+7B69H  DB   FFH,00H,00H,00H,00H,00H,00H,FFH
+7B71H  DB   FFH,FFH,FFH,FFH,FFH,0FH,0FH,0FH
+7B79H  DB   0FH,0FH,0FH,FFH,FFH,FFH,FFH,FFH
+7B81H  DB   FFH,F0H,F0H,F0H,F0H,F0H,F0H,FFH
+7B89H  DB   FFH,FFH,FFH,FFH,FFH,FFH,FFH,FFH
+7B91H  DB   00H,00H,F8H,08H,08H,08H,08H,08H
+7B99H  DB   08H,08H,08H,08H,08H,08H,F8H,00H
+7BA1H  DB   00H,00H,08H,08H,F8H,08H,08H,08H
+7BA9H  DB   00H,00H,FFH,08H,08H,08H,00H,00H
+7BB1H  DB   FFH,00H,00H,00H,00H,00H,0FH,08H
+7BB9H  DB   08H,08H,08H,08H,0FH,00H,00H,00H
+7BC1H  DB   08H,08H,0FH,08H,08H,08H,08H,08H
+7BC9H  DB   FFH,00H,00H,00H,08H,08H,FFH,08H
+7BD1H  DB   08H,08H,3FH,1FH,0FH,07H,03H,01H
+7BD9H  DB   80H,C0H,E0H,F0H,F8H,FCH,01H,03H
+7BE1H  DB   07H,0FH,1FH,3FH,FCH,F8H,F0H,E0H
+7BE9H  DB   C0H,80H,55H,AAH,55H,AAH,55H,AAH
+
+
+; ======================================================
+; Keyboard conversion matrix
+; ======================================================
+7BF1H  DB   7AH,78H,63H,76H,62H,6EH,6DH,6CH
+7BF9H  DB   61H,73H,64H,66H,67H,68H,6AH,6BH
+7C01H  DB   71H,77H,65H,72H,74H,79H,75H,69H
+7C09H  DB   6FH,70H,5BH,3BH,27H,2CH,2EH,2FH
+7C11H  DB   31H,32H,33H,34H,35H,36H,37H,38H
+7C19H  DB   39H,30H,2DH,3DH,5AH,58H,43H,56H
+7C21H  DB   42H,4EH,4DH,4CH,41H,53H,44H,46H
+7C29H  DB   47H,48H,4AH,4BH,51H,57H,45H,52H
+7C31H  DB   54H,59H,55H,49H,4FH,50H,5DH,3AH
+7C39H  DB   22H,3CH,3EH,3FH,21H,40H,23H,24H
+7C41H  DB   25H,5EH,26H,2AH,28H,29H,5FH,2BH
+7C49H  DB   00H,83H,84H,00H,95H,96H,81H,9AH
+7C51H  DB   85H,8BH,00H,82H,00H,86H,00H,9BH
+7C59H  DB   93H,94H,8FH,89H,87H,90H,91H,8EH
+7C61H  DB   98H,80H,60H,92H,8CH,99H,97H,8AH
+7C69H  DB   88H,9CH,9DH,9EH,9FH,B4H,B0H,A3H
+7C71H  DB   7BH,7DH,5CH,8DH,E0H,EFH,FFH,00H
+7C79H  DB   00H,00H,F6H,F9H,EBH,ECH,EDH,EEH
+7C81H  DB   FDH,FBH,F4H,FAH,E7H,E8H,E9H,EAH
+7C89H  DB   FCH,FEH,F0H,F3H,F2H,F1H,7EH,F5H
+7C91H  DB   00H,F8H,F7H,00H,E1H,E2H,E3H,E4H
+7C99H  DB   E5H,E6H,00H,00H,00H,00H,7CH,00H
+7CA1H  DB   A1H,D1H,BDH,CEH,CFH,CDH,BCH,CAH ; Different from M100
+7CA9H  DB   C8H,A9H,BBH,A2H,00H,00H,CBH,C9H ; Different from M100
+7CB1H  DB   B6H,D3H,C6H,00H,00H,00H,B8H,C7H ; Different from M100
+7CB9H  DB   B7H,ACH,B5H,ADH,A0H,00H,D5H,AEH ; Different from M100
+7CC1H  DB   C0H,00H,C1H,00H,00H,00H,C4H,C2H
+7CC9H  DB   C3H,AFH,C5H,BEH,DFH,D0H,DEH,00H ; Different from M100
+7CD1H  DB   00H,D6H,DDH,DAH,D8H,B9H,D7H,BFH ; Different from M100
+7CD9H  DB   00H,00H,DBH,D9H,B1H,D2H,00H,AAH ; Different from M100
+7CE1H  DB   BAH,ABH,B3H,00H,B2H,00H,A5H,00H ; Different from M100
+7CE9H  DB   A4H,00H,D4H,DCH,CCH,00H,00H,00H ; Different from M100
+7CF1H  DB   00H,00H,00H,00H,00H,A6H,A7H,A8H ; Different from M100
+7CF9H  DB   6DH,30H,6AH,31H,6BH,32H,6CH,33H
+7D01H  DB   75H,34H,69H,35H,6FH,36H,01H,06H
+7D09H  DB   14H,02H,20H,7FH,09H,1BH,8BH,88H
+7D11H  DB   8AH,0DH,80H,81H,82H,83H,84H,85H
+7D19H  DB   86H,87H,1DH,1CH,1EH,1FH,20H,08H
+7D21H  DB   09H,1BH,8BH,88H,89H,0DH,80H,81H
+7D29H  DB   82H,83H,84H,85H,86H,87H,51H,52H
+7D31H  DB   57H,5AH
+
+
+; ======================================================
+; Boot routine
+; ======================================================
+7D33H  (31H) LXI SP,FCC0H   ; Different from M100: Start of Alt LCD character buffer
+7D36H  (3DH) DCR A          ; Different from M100
+7D37H  (C2H) JNZ 1BA8H      ; Different from M100
+7D3AH  (DBH) IN D8H         ; Different from M100
+7D3CH  (A7H) ANA A          ; Different from M100
+7D3DH  (F2H) JP 7D3AH       ; Different from M100
 7D40H  (3EH) MVI A,43H
 7D42H  (D3H) OUT B8H
 7D44H  (3EH) MVI A,ECH
@@ -20982,23 +19432,23 @@
 7D4EH  (E6H) ANI 82H
 7D50H  (3EH) MVI A,EDH
 7D52H  (D3H) OUT BAH
-7D54H  (CAH) JZ 7DE7H
-7D57H  (2AH) LHLD F5F0H    ; Active system signature -- Warm vs Cold boot
+7D54H  (CAH) JZ 7DE7H       ; Cold boot routine
+7D57H  (2AH) LHLD F5F0H     ; Active system signature -- Warm vs Cold boot
 7D5AH  (11H) LXI D,8A4DH
 7D5DH  (DFH) RST 3          ; Compare DE and HL
-7D5EH  (C2H) JNZ 7DE7H
+7D5EH  (C2H) JNZ 7DE7H      ; Cold boot routine
 7D61H  (3AH) LDA FAC1H
 7D64H  (57H) MOV D,A
-7D65H  (CDH) CALL 7EE1H
+7D65H  (CDH) CALL 7EE1H     ; Calculate physical RAM available
 7D68H  (BAH) CMP D
-7D69H  (C2H) JNZ 7DE7H
+7D69H  (C2H) JNZ 7DE7H      ; Cold boot routine
 7D6CH  (CDH) CALL F605H
 7D6FH  (3EH) MVI A,00H
 7D71H  (C2H) JNZ 7D75H
 7D74H  (3DH) DCR A
-7D75H  (21H) LXI H,F62AH
+7D75H  (21H) LXI H,F62AH    ; Option ROM flag
 7D78H  (BEH) CMP M
-7D79H  (C2H) JNZ 7DE7H
+7D79H  (C2H) JNZ 7DE7H      ; Cold boot routine
 7D7CH  (2AH) LHLD F5F2H
 7D7FH  (EBH) XCHG
 7D80H  (21H) LXI H,0000H
@@ -21016,7 +19466,7 @@
 7D9EH  (E1H) POP H
 7D9FH  (7CH) MOV A,H
 7DA0H  (A7H) ANA A
-7DA1H  (CAH) JZ 14EDH      ; Pop AF), BC), DE), HL from stack
+7DA1H  (CAH) JZ 14EDH       ; Pop AF), BC), DE), HL from stack
 7DA4H  (F9H) SPHL
 7DA5H  (C3H) JMP 7435H
 
@@ -21026,7 +19476,7 @@
 7DAFH  (CDH) CALL 7DD0H
 7DB2H  (CDH) CALL 5D53H
 7DB5H  (CDH) CALL 4601H
-7DB8H  (C3H) JMP 5FDDH
+7DB8H  (C3H) JMP 5FDDH      ; Main TEXT edit loop
 
 7DBBH  (21H) LXI H,FAAFH    ; Start of IPL filename
 7DBEH  (22H) SHLD F62CH
@@ -21037,28 +19487,28 @@
 7DCBH  (21H) LXI H,5797H
 7DCEH  (E5H) PUSH H
 7DCFH  (F6H) ORI AFH
-7DD1H  (CDH) CALL 6CE0H
+7DD1H  (CDH) CALL 6CE0H     ; Warm start reset entry
 7DD4H  (AFH) XRA A
 7DD5H  (32H) STA F656H      ; Power off exit condition switch
-7DD8H  (3AH) LDA FF43H
+7DD8H  (3AH) LDA FF43H      ; RS232 initialization status
 7DDBH  (A7H) ANA A
 7DDCH  (C8H) RZ
 7DDDH  (21H) LXI H,F65AH    ; RS232 auto linefeed switch
 7DE0H  (D7H) RST 2          ; Get next non-white char from M
 7DE1H  (D4H) CNC 3457H
-7DE4H  (C3H) JMP 17E6H     ; Set RS232 parameters from string at M
+7DE4H  (C3H) JMP 17E6H      ; Set RS232 parameters from string at M
 
 
 ; ======================================================
 ; Cold boot routine
 ; ======================================================
 7DE7H  (31H) LXI SP,F5E6H
-7DEAH  (CDH) CALL 7EE1H
+7DEAH  (CDH) CALL 7EE1H     ; Calculate physical RAM available
 7DEDH  (06H) MVI B,90H
 7DEFH  (11H) LXI D,F5F0H    ; Active system signature -- Warm vs Cold boot
-7DF2H  (21H) LXI H,035AH
+7DF2H  (21H) LXI H,035AH    ; Initialization image loaded to F5F0H
 7DF5H  (CDH) CALL 2542H     ; Move B bytes from M to (DE)
-7DF8H  (CDH) CALL 7EC6H
+7DF8H  (CDH) CALL 7EC6H     ; Initialize RST 38H RAM vector table
 7DFBH  (3EH) MVI A,0CH
 7DFDH  (32H) STA F930H
 7E00H  (3EH) MVI A,64H
@@ -21067,8 +19517,8 @@
 7E08H  (CDH) CALL 5A7CH     ; Set new function key table
 7E0BH  (CDH) CALL 6C93H     ; Copy BASIC Function key table to key definition area
 7E0EH  (06H) MVI B,58H
-7E10H  (11H) LXI D,6BF1H
-7E13H  (21H) LXI H,F962H
+7E10H  (11H) LXI D,6BF1H    ; ROM programs catalog entries
+7E13H  (21H) LXI H,F962H    ; Start of RAM directory
 7E16H  (CDH) CALL 3469H     ; Move B bytes from (DE) to M with increment
 7E19H  (06H) MVI B,D1H
 7E1BH  (AFH) XRA A
@@ -21077,10 +19527,10 @@
 7E1EH  (05H) DCR B
 7E1FH  (C2H) JNZ 7E1CH
 7E22H  (36H) MVI M,FFH
-7E24H  (CDH) CALL F605H
+7E24H  (CDH) CALL F605H     ; Detect Option ROM
 7E27H  (C2H) JNZ 7E43H
 7E2AH  (3DH) DCR A
-7E2BH  (32H) STA F62AH
+7E2BH  (32H) STA F62AH      ; Option ROM flag
 7E2EH  (21H) LXI H,F9BAH
 7E31H  (36H) MVI M,F0H
 7E33H  (23H) INX H
@@ -21095,10 +19545,10 @@
 7E43H  (AFH) XRA A
 7E44H  (32H) STA F787H
 7E47H  (32H) STA FCA7H
-7E4AH  (CDH) CALL 1A96H
+7E4AH  (CDH) CALL 1A96H     ; Erase current IPL program
 7E4DH  (32H) STA F932H
 7E50H  (3EH) MVI A,3AH
-7E52H  (32H) STA F680H    ; End of statement marker
+7E52H  (32H) STA F680H      ; End of statement marker
 7E55H  (21H) LXI H,FBD4H
 7E58H  (22H) SHLD FBD9H
 7E5BH  (22H) SHLD F678H     ; BASIC string buffer pointer
@@ -21126,15 +19576,23 @@
 7E8BH  (21H) LXI H,F999H
 7E8EH  (22H) SHLD FA8CH
 7E91H  (CDH) CALL 20FFH
-7E94H  (CDH) CALL 6CD6H
+7E94H  (CDH) CALL 6CD6H     ; Re-initialize system without destroying files
 7E97H  (21H) LXI H,0000H
-7E9AH  (22H) SHLD F92DH
-7E9DH  (21H) LXI H,7F01H
+7E9AH  (22H) SHLD F92DH     ; Year (ones)
+7E9DH  (21H) LXI H,7F01H    ; Initial clock chip register values
 7EA0H  (CDH) CALL 732AH     ; Update clock chip regs from M
 7EA3H  (C3H) JMP 5797H      ; MENU Program
 
-7EA6H  (21H) LXI H,7FA4H
+
+; ======================================================
+; Display TRS-80 Model number & Free bytes on LCD
+; ======================================================
+7EA6H  (21H) LXI H,7FA4H    ; TRS-80 model number string
 7EA9H  (CDH) CALL 27B1H     ; Print buffer at M until NULL or '"'
+
+; ======================================================
+; Display number of free bytes on LCD
+; ======================================================
 7EACH  (2AH) LHLD FBB2H     ; Start of variable data pointer
 7EAFH  (EBH) XCHG
 7EB0H  (2AH) LHLD F678H     ; BASIC string buffer pointer
@@ -21147,10 +19605,14 @@
 7EB9H  (01H) LXI B,FFF2H
 7EBCH  (09H) DAD B
 7EBDH  (CDH) CALL 39D4H     ; Print binary number in HL at current position
-7EC0H  (21H) LXI H,7F98H
-7EC3H  (C3H) JMP 27B1H     ; Print buffer at M until NULL or '"'
+7EC0H  (21H) LXI H,7F98H    ; MENU Text Strings
+7EC3H  (C3H) JMP 27B1H      ; Print buffer at M until NULL or '"'
 
-7EC6H  (21H) LXI H,FADAH
+
+; ======================================================
+; Initialize RST 38H RAM vector table
+; ======================================================
+7EC6H  (21H) LXI H,FADAH    ; Start of RST 38H vector table
 7EC9H  (01H) LXI B,1D02H
 7ECCH  (11H) LXI D,7FF3H
 7ECFH  (73H) MOV M,E
@@ -21165,6 +19627,10 @@
 7EDDH  (C2H) JNZ 7ECFH
 7EE0H  (C9H) RET
 
+
+; ======================================================
+; Calculate physical RAM available
+; ======================================================
 7EE1H  (21H) LXI H,C000H
 7EE4H  (7EH) MOV A,M
 7EE5H  (2FH) CMA
@@ -21185,18 +19651,15 @@
 7EFDH  (22H) SHLD FAC0H     ; Lowest RAM address used by system
 7F00H  (C9H) RET
 
-7F01H  DB   00H
-7F02H  DB   00H
-7F03H  DB   00H
-7F04H  DB   00H
-7F05H  DB   00H
-7F06H  DB   00H
-7F07H  (01H) LXI B,0000H
-7F0AH  (01H) LXI B,9DCFH
-7F0DH  (CFH) RST 1          ; Compare next byte with M
-7F0EH  DB   DDH
+
+; ======================================================
+; Initial clock chip register values
+; ======================================================
+7F01H  DB   00H,00H,00H,00H,00H,00H,01H,00H
+7F09H  DB   00H,01H,CFH,9DH,CFH,DDH
+
 7F0FH  (CDH) CALL 112EH     ; Evaluate expression at M-1
-7F12H  (C2H) JNZ 0446H       ; Generate Syntax error
+7F12H  (C2H) JNZ 0446H      ; Generate Syntax error
 7F15H  (FEH) CPI 10H
 7F17H  (D2H) JNC 08DBH      ; Generate FC error
 7F1AH  (22H) SHLD FB99H     ; Address of last variable assigned
@@ -21281,22 +19744,30 @@
 7F94H  (22H) SHLD FC87H
 7F97H  (C9H) RET
 
+
+; ======================================================
+; MENU Text Strings
+; ======================================================
 7F98H  DB   " Bytes free",00H
 7FA4H  DB   "TRS-80 Model 100 Software",0DH,0AH
 7FBFH  DB   "Copr. 1983 Microsoft",0DH,0AH,00H
 
+
+; ======================================================
+; RST 38H RAM vector driver routine
+; ======================================================
 7FD6H  (E3H) XTHL
 7FD7H  (F5H) PUSH PSW
 7FD8H  (7EH) MOV A,M
-7FD9H  (32H) STA FAC9H
+7FD9H  (32H) STA FAC9H      ; Offset of last RST 38H call
 7FDCH  (F1H) POP PSW
 7FDDH  (23H) INX H
 7FDEH  (E3H) XTHL
 7FDFH  (E5H) PUSH H
 7FE0H  (C5H) PUSH B
 7FE1H  (F5H) PUSH PSW
-7FE2H  (21H) LXI H,FADAH
-7FE5H  (3AH) LDA FAC9H
+7FE2H  (21H) LXI H,FADAH    ; Start of RST 38H vector table
+7FE5H  (3AH) LDA FAC9H      ; Offset of last RST 38H call
 7FE8H  (4FH) MOV C,A
 7FE9H  (06H) MVI B,00H
 7FEBH  (09H) DAD B
@@ -21310,9 +19781,8 @@
 7FF3H  (C9H) RET
 
 7FF4H  (CDH) CALL 35BAH     ; CDBL function
-7FF7H  (C3H) JMP 31B5H     ; Move FAC1 to FAC2
+7FF7H  (C3H) JMP 31B5H      ; Move FAC1 to FAC2
 
-7FFAH  (21H) LXI H,F684H
-7FFDH  (36H) MVI M,2CH
-7FFFH  (C9H) RET
-
+7FFAH  (21H) LXI H,F684H    ; Different from M100
+7FFDH  (36H) MVI M,2CH      ; Different from M100
+7FFFH  (C9H) RET            ; Different from M100
