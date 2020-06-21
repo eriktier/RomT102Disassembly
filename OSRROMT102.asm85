@@ -19002,10 +19002,12 @@ L746D:             ; TODO: find a better name
     POP PSW
     MOV A,M
     LXI H,FFECH    ; Cursor bit pattern storage
-    JNZ 7497H      ; calling address half way into an instruction???
+    JNZ L7497
     CMA
     ANA M
-    MVI B,B6H      ; TODO: Figure out call to 7467H (which is the address of the B6 in this line)
+    DB 06H         ; Opcode for MVI, together with the next byte (at 7497h) forms 'MVI B,B6H', which is the instruction at 7496h.  
+L7497:
+    ORA M          ; first instruction of L7497, called at 7497h. When execution reaches 7496h, this is the 'B6h' operand for MVI B,B6H
     MOV M,A
     MOV B,D
     MVI E,01H
