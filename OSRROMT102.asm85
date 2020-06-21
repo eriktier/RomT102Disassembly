@@ -48,7 +48,7 @@
 ; ======================================================
 ; 0020H: Send character in A to screen/printer
 ; ======================================================
-    JMP 4B44H      ; Send A to screen or printer
+    JMP LCD      ; Send A to screen or printer
     NOP
 
 ; ======================================================
@@ -2937,160 +2937,173 @@ ERRSYN:
 
 
 ; ======================================================
-; Wait for key from keyboard
+; 12CBH: Wait and get character from keyboard.
+; Entry conditions: none
+; Exit conditions:  A = character code
+;           Carry -- set if special character
+;                 -- reset if normal character
+; (<F1> - <F8> return preprogrammed strings)
 ; ======================================================
-12CBH  (E5H) PUSH H
-12CCH  (D5H) PUSH D
-12CDH  (C5H) PUSH B
-12CEH  (CDH) CALL 12D4H
-12D1H  (C3H) JMP 14EEH
+CHGET:
+    PUSH H         ; Preserve HL on stack
+    PUSH D         ; Preserve DE on stack
+    PUSH B         ; Preserve BC on stack
+    CALL WAITKY    ; Call routine to wait for key
+    JMP 14EEH
+WAITKY:            ; Wait for key from keyboard - no reg PUSH
+    RST 7          ; Jump to RST 38H Vector entry of following byte
+    DB   04H       ; CHGET Hook
+; Process next byte of FKey text to "inject" the keys
+    LHLD F62CH     ; Get MSB of pointer to FKey text (from FKey table) for selected FKey
+    INR H          ; Prepare to test if MSB of address is zero
+    DCR H          ; Test for zero
+    JZ PPBINJ      ; Jump to process paste buffer injection if no FKey selected
+    MOV B,M        ; Get next byte from selected FKey text
+    MOV A,B        ; Prepare to test if at end of FKey text
+    ORA A          ; Test for NULL termination
+    JZ L12EA       ; Jump ahead of at end of text
+    INX H          ; Look ahead to the next byte to see if we are at the end of the FKey text
+    MOV A,M        ; Get the byte after this one
+    ORA A          ; And test for zero
+    JNZ L12EB      ; Jump to save updated FKey address if not at end
+L12EA:
+    MOV H,A        ; Load zero into H to indicate FKey no longer active
+L12EB:
+    SHLD F62CH     ; Save updated address of active FKey text
+    MOV A,B        ; Get the next byte of the FKey text as our "Key"
+    RET
+PPASTE:            ; Process PASTE key from keyboard
+    LDA F650H
+    ADD A
+    RC
+    LXI H,0000H    ; Initialize index of next byte to paste from paste buffer
+    SHLD F62EH     ; Save as index of next byte to paste from paste buffer
+    MVI A,0DH      ; Prepare to initialize "last paste char" as ENTER
+    STA FAA1H      ; Initialize "last paste char" as ENTER
+PPBINJ:            ; Jump to process paste buffer injection if no FKey selected
+    LHLD F62EH     ; Get index into paste buffer
+    MOV A,L        ; Get LSB of length?
+    ANA H          ; And with MSB
+    INR A          ; Increment to test for FFFFH
+    JZ TKEYCH      ; Jump if not actively pasting from paste buffer
+    PUSH H         ; PUSH index to stack
+    LDA FAA1H      ; Get value of last paste character
+    CPI 0DH        ; Test if it was ENTER
+    CZ 2146H       ; Update system pointers for .DO), .CO), vars), etc.
+    LHLD F9A5H     ; Start of Paste Buffer
+    POP D          ; Restore index of next byte in paste buffer
+    DAD D          ; Point to next byte to paste from paste buffer
+    MOV A,M        ; Get the next byte to paste
+    STA FAA1H      ; Store it as the "last paste character"
+    MOV B,A        ; Save byte in B
+    CPI 1AH        ; Test for end of paste buffer marker maybe
+    MVI A,00H      ; Replace EOL marker with zero in case of match
+    JZ ENDPBF      ; Jump if end of paste buffer
+    CALL 7270H     ; Check keyboard queue for pending characters
+    JC ENDPBF      ; If there is keyboard action, halt the paste operation perhaps?
+    INX H          ; Point to next byte in paste buffer
+    MOV A,M        ; Peek the next byte in paste buffer to see if at end
+    XCHG           ; Put index into paste buffer into HL
+    INX H          ; Increment the index count
+    SHLD F62EH     ; Save as index into paste buffer of next byte to paste
+    CPI 1AH        ; Test if next byte past current byte is end of buffer marker
+    MOV A,B        ; Restore the byte to be pasted from B
+    STC            ; Set the C flag
+    CMC            ; And now clear it
+    RNZ            ; And return if not at end of paste buffer
+ENDPBF:            ; At end of paste buffer.  
+    LXI H,FFFFH    ; Load value indication paste is "inactive"
+    SHLD F62EH     ; And store it as the active index of paste from paste buffer
+    RET            ; Now return the next byte from the paste buffer to "inject"
+TKEYCH:            ; Test for actual keystroke characters to process
+    CALL 13DBH     ; Check keyboard queue for pending characters
+    JNZ L1358
+    CALL CONIOB
+    MVI A,FFH
+    STA F656H      ; Power off exit condition switch
+CKQPDL:            ; Check keyboard queue loop
+    CALL 13DBH     ; Check keyboard queue for pending characters
+    JZ CKQPDL
+    XRA A
+    STA F656H      ; Power off exit condition switch
+    CALL COFIOB    ; Turn cursor back off if it was off before
+L1358:
+    LXI H,F932H
+    MOV A,M
+    ANA A
+    JNZ L13B5
+    CALL 1BB1H     ; Renew automatic power-off counter
+    CALL KYREAD    ; Scan keyboard for character (CTRL-BREAK ==> CTRL-C)
+    RNC
+    SUI 0BH        ; Test for PASTE key
+    JZ PPASTE      ; Jump to process PASTE key if zero
+    JNC L13C0
+    INR A          ; Test for SHIFT-PRINT key
+    JZ PKYSEQ      ; Jump to process special "Paste" of SHIFT-PRINT key sequence
+    INR A
+    JZ 1E5EH       ; LCOPY statement
+    INR A          ; Test for LABEL key
+    JZ TOGLAB      ; Toggle function key label line
+    MOV E,A
+    LDA F650H
+    ADD A          ;
+    ADD A          ;
+    MOV A,E        ;
+    RC             ;
+    MVI D,FFH      ;
+    XCHG           ;   KDP: TODO: This is calculating the FKey table entry or FKeys somehow!
+    DAD H          ;
+    DAD H          ;
+    DAD H          ;
+    DAD H          ;
+    LXI D,F809H    ;
+    DAD D          ;
+    LDA F650H      ;
+    ANA A          ;
+    JP SHLPAT      ;
+    INX H
+    INX H
+    INX H
+    INX H
+SHLPAT:            ; Set HL as pointer to text to be "PASTED" / injected as keystrokes
+    SHLD F62CH     ; Points to text for selected FKey from FKey table
+    JMP WAITKY     ; Wait for key from keyboard
+PKYSEQ:            ; Process paste of key sequence defined for SHIFT-PRINT key
+    LHLD F88AH     ; Load pointer to SHIFT-PRINT key sequence for this mode
+    JMP SHLPAT     ; Jump to set HL as pointer to PASTE sequence
 
-12D4H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-12D5H  DB   04H
-12D6H  (2AH) LHLD F62CH
-12D9H  (24H) INR H
-12DAH  (25H) DCR H
-12DBH  (CAH) JZ 1300H
-12DEH  (46H) MOV B,M
-12DFH  (78H) MOV A,B
-12E0H  (B7H) ORA A
-12E1H  (CAH) JZ 12EAH
-12E4H  (23H) INX H
-12E5H  (7EH) MOV A,M
-12E6H  (B7H) ORA A
-12E7H  (C2H) JNZ 12EBH
-12EAH  (67H) MOV H,A
-12EBH  (22H) SHLD F62CH
-12EEH  (78H) MOV A,B
-12EFH  (C9H) RET
-
-12F0H  (3AH) LDA F650H
-12F3H  (87H) ADD A
-12F4H  (D8H) RC
-12F5H  (21H) LXI H,0000H
-12F8H  (22H) SHLD F62EH
-12FBH  (3EH) MVI A,0DH
-12FDH  (32H) STA FAA1H
-1300H  (2AH) LHLD F62EH
-1303H  (7DH) MOV A,L
-1304H  (A4H) ANA H
-1305H  (3CH) INR A
-1306H  (CAH) JZ 133DH
-1309H  (E5H) PUSH H
-130AH  (3AH) LDA FAA1H
-130DH  (FEH) CPI 0DH
-130FH  (CCH) CZ 2146H       ; Update system pointers for .DO), .CO), vars), etc.
-1312H  (2AH) LHLD F9A5H     ; Start of Paste Buffer
-1315H  (D1H) POP D
-1316H  (19H) DAD D
-1317H  (7EH) MOV A,M
-1318H  (32H) STA FAA1H
-131BH  (47H) MOV B,A
-131CH  (FEH) CPI 1AH
-131EH  (3EH) MVI A,00H
-1320H  (CAH) JZ 1336H
-1323H  (CDH) CALL 7270H     ; Check keyboard queue for pending characters
-1326H  (DAH) JC 1336H
-1329H  (23H) INX H
-132AH  (7EH) MOV A,M
-132BH  (EBH) XCHG
-132CH  (23H) INX H
-132DH  (22H) SHLD F62EH
-1330H  (FEH) CPI 1AH
-1332H  (78H) MOV A,B
-1333H  (37H) STC
-1334H  (3FH) CMC
-1335H  (C0H) RNZ
-1336H  (21H) LXI H,FFFFH
-1339H  (22H) SHLD F62EH
-133CH  (C9H) RET
-
-133DH  (CDH) CALL 13DBH     ; Check keyboard queue for pending characters
-1340H  (C2H) JNZ 1358H
-1343H  (CDH) CALL 13C2H
-1346H  (3EH) MVI A,FFH
-1348H  (32H) STA F656H      ; Power off exit condition switch
-134BH  (CDH) CALL 13DBH     ; Check keyboard queue for pending characters
-134EH  (CAH) JZ 134BH
-1351H  (AFH) XRA A
-1352H  (32H) STA F656H      ; Power off exit condition switch
-1355H  (CDH) CALL 13D0H
-1358H  (21H) LXI H,F932H
-135BH  (7EH) MOV A,M
-135CH  (A7H) ANA A
-135DH  (C2H) JNZ 13B5H
-1360H  (CDH) CALL 1BB1H     ; Renew automatic power-off counter
-1363H  (CDH) CALL 7242H     ; Scan keyboard for character (CTRL-BREAK ==> CTRL-C)
-1366H  (D0H) RNC
-1367H  (D6H) SUI 0BH
-1369H  (CAH) JZ 12F0H
-136CH  (D2H) JNC 13C0H
-136FH  (3CH) INR A
-1370H  (CAH) JZ 139FH
-1373H  (3CH) INR A
-1374H  (CAH) JZ 1E5EH       ; LCOPY statement
-1377H  (3CH) INR A
-1378H  (CAH) JZ 13A5H       ; Toggle function key label line
-137BH  (5FH) MOV E,A
-137CH  (3AH) LDA F650H
-137FH  (87H) ADD A
-1380H  (87H) ADD A
-1381H  (7BH) MOV A,E
-1382H  (D8H) RC
-1383H  (16H) MVI D,FFH
-1385H  (EBH) XCHG
-1386H  (29H) DAD H
-1387H  (29H) DAD H
-1388H  (29H) DAD H
-1389H  (29H) DAD H
-138AH  (11H) LXI D,F809H
-138DH  (19H) DAD D
-138EH  (3AH) LDA F650H
-1391H  (A7H) ANA A
-1392H  (F2H) JP 1399H
-1395H  (23H) INX H
-1396H  (23H) INX H
-1397H  (23H) INX H
-1398H  (23H) INX H
-1399H  (22H) SHLD F62CH
-139CH  (C3H) JMP 12D4H
-
-139FH  (2AH) LHLD F88AH
-13A2H  (C3H) JMP 1399H
-
-
-; ======================================================
-; Toggle function key label line
-; ======================================================
-13A5H  (3AH) LDA FAADH      ; Label line enable flag
-13A8H  (A7H) ANA A
-13A9H  (C8H) RZ
-13AAH  (3AH) LDA F63DH      ; Label line protect status
-13ADH  (EEH) XRI FFH
-13AFH  (CAH) JZ 428AH       ; Erase function key display
-13B2H  (C3H) JMP 42A8H      ; Display function key line
-
-13B5H  (F3H) DI
-13B6H  (36H) MVI M,00H
-13B8H  (3AH) LDA F657H
-13BBH  (2BH) DCX H
-13BCH  (77H) MOV M,A
-13BDH  (CDH) CALL 143FH     ; Turn off computer
-13C0H  (AFH) XRA A
-13C1H  (C9H) RET
-
-13C2H  (3AH) LDA F63FH      ; Cursor status (0 = off)
-13C5H  (32H) STA FACBH
-13C8H  (A7H) ANA A
-13C9H  (C0H) RNZ
-13CAH  (CDH) CALL 4249H     ; Turn the cursor on
-13CDH  (C3H) JMP 4262H      ; Send ESC X
-
-13D0H  (3AH) LDA FACBH
-13D3H  (A7H) ANA A
-13D4H  (C0H) RNZ
-13D5H  (CDH) CALL 424EH     ; Turn the cursor off
-13D8H  (C3H) JMP 4262H      ; Send ESC X
+TOGLAB:            ; Toggle function key label line
+    LDA FAADH      ; Label line enable flag
+    ANA A          ; Test if Label line is enabled
+    RZ             ; Return if not enabled
+    LDA F63DH      ; Label line protect status
+    XRI FFH        ; Test if Label Line is on or off
+; Erase or Display function key line based on Z flag
+    JZ 428AH       ; Erase function key display
+    JMP 42A8H      ; Display function key line
+L13B5:
+    DI             ; Disable interrupts for power-down
+    MVI M,00H
+    LDA F657H      ; Load power-down time (1/10th of a minute)
+    DCX H          ; Point to power-down count-down
+    MOV M,A        ; Update power-down count-down for next power-up
+    CALL 143FH     ; Turn off computer
+L13C0:
+    XRA A
+    RET
+CONIOB:            ; Turn cursor on if not already during program pause
+    LDA F63FH      ; Cursor status (0 = off)
+    STA FACBH      ; Storage if cursor was on before BASIC CTRL-S
+    ANA A
+    RNZ
+    CALL CURSON    ; Turn the cursor on
+    JMP 4262H      ; Send ESC X
+COFIOB:            ; Turn cursor back off if it was off before
+    LDA FACBH
+    ANA A
+    RNZ
+    CALL CUROFF    ; Turn the cursor off
+    JMP 4262H      ; Send ESC X
 
 
 ; ======================================================
@@ -3116,16 +3129,18 @@ ERRSYN:
 13F3H  (CDH) CALL 7283H     ; Check for break or wait (CTRL-S)
 13F6H  (C8H) RZ
 13F7H  (FEH) CPI 03H
-13F9H  (CAH) JZ 1412H
+13F9H  (CAH) JZ L1412
 13FCH  (FEH) CPI 13H
 13FEH  (C0H) RNZ
-13FFH  (CDH) CALL 13C2H
+13FFH  (CDH) CALL CONIOB
+L1402:
 1402H  (CDH) CALL 7283H     ; Check for break or wait (CTRL-S)
 1405H  (FEH) CPI 13H
-1407H  (CAH) JZ 13D0H
+1407H  (CAH) JZ COFIOB
 140AH  (FEH) CPI 03H
-140CH  (C2H) JNZ 1402H
-140FH  (CDH) CALL 13D0H
+140CH  (C2H) JNZ L1402
+140FH  (CDH) CALL COFIOB
+L1412:
 1412H  (AFH) XRA A
 1413H  (32H) STA FFAAH      ; Keyboard buffer count
 1416H  (C3H) JMP 409AH      ; STOP statement
@@ -4555,7 +4570,7 @@ ERRSYN:
 1BC2H  (0EH) MVI C,04H
 1BC4H  (CDH) CALL 1BD3H
 1BC7H  (CDH) CALL 1BD3H
-1BCAH  (CDH) CALL 4222H     ; Send CRLF to screen or printer
+1BCAH  (CDH) CALL CRLF     ; Send CRLF to screen or printer
 1BCDH  (0DH) DCR C
 1BCEH  (C2H) JNZ 1BC4H
 1BD1H  (E1H) POP H
@@ -4653,7 +4668,7 @@ ERRSYN:
 1C5AH  (0FH) RRC
 1C5BH  (E5H) PUSH H
 1C5CH  (F5H) PUSH PSW
-1C5DH  (DCH) CC 744CH       ; Plot (set) point (D),E) on the LCD
+1C5DH  (DCH) CC PLOT       ; Plot (set) point (D),E) on the LCD
 1C60H  (F1H) POP PSW
 1C61H  (D4H) CNC 744DH      ; Clear (reset) point (D),E) on the LCD
 1C64H  (E1H) POP H
@@ -4681,7 +4696,7 @@ ERRSYN:
 1C79H  DB   D1H
 1C7AH  (CDH) CALL 1D2EH     ; Get (X),Y) coordinate from tokenized string at M
 1C7DH  (D5H) PUSH D
-1C7EH  (11H) LXI D,744CH
+1C7EH  (11H) LXI D,PLOT
 1C81H  (CAH) JZ 1C94H
 1C84H  (D5H) PUSH D
 1C85H  (CFH) RST 1          ; Compare next byte with M
@@ -4869,7 +4884,7 @@ ERRSYN:
 1D81H  (BBH) CMP E
 1D82H  (DAH) JC 08DBH       ; Generate FC error
 1D85H  (EBH) XCHG
-1D86H  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+1D86H  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 1D89H  (7CH) MOV A,H
 1D8AH  (3DH) DCR A
 1D8BH  (32H) STA F788H      ; Horiz. position of cursor (0-39)
@@ -5233,7 +5248,7 @@ ERRSYN:
 1F83H  (E1H) POP H
 1F84H  (0DH) DCR C
 1F85H  (C2H) JNZ 1F51H
-1F88H  (CDH) CALL 4222H     ; Send CRLF to screen or printer
+1F88H  (CDH) CALL CRLF     ; Send CRLF to screen or printer
 1F8BH  (CDH) CALL 13F3H
 1F8EH  (C3H) JMP 1F45H
 
@@ -6166,7 +6181,7 @@ ERRSYN:
 2567H  (C4H) CNZ F660H
 256AH  (C3H) JMP 5797H      ; MENU Program
 
-256DH  (CDH) CALL 4229H     ; BEEP statement
+256DH  (CDH) CALL BEEP     ; BEEP statement
 2570H  (C3H) JMP 5797H      ; MENU Program
 
 2573H  (D7H) RST 2          ; Get next non-white char from M
@@ -6376,7 +6391,7 @@ ERRSYN:
 26F2H  (32H) STA FCA2H
 26F5H  (21H) LXI H,FC9CH    ; Filename of last program loaded from tape
 26F8H  (CDH) CALL 27B1H     ; Print buffer at M until NULL or '"'
-26FBH  (C3H) JMP 425DH      ; Erase from cursor to end of line
+26FBH  (C3H) JMP ERABOL      ; Erase from cursor to end of line
 
 26FEH  DB   "Found:",00H
 2705H  DB   "Skip :",00H
@@ -10873,136 +10888,150 @@ ERRSYN:
 
 
 ; ======================================================
-; Send CRLF to screen or printer
+; 4222H: Generate a Carriage Return and Line Feed
 ; ======================================================
-4222H  (3EH) MVI A,0DH
-4224H  (E7H) RST 4          ; Send character in A to screen/printer
-
-; ======================================================
-; Send LF to screen or printer
-; ======================================================
-4225H  (3EH) MVI A,0AH
-4227H  (E7H) RST 4          ; Send character in A to screen/printer
-4228H  (C9H) RET
+CRLF:
+    MVI A,0DH      ; Send CR to screen or printer
+    RST 4          ; Send character in A to screen/printer
+    MVI A,0AH      ; Send LF to screen or printer
+    RST 4          ; Send character in A to screen/printer
+    RET
 
 
 ; ======================================================
-; BEEP statement
+; 4229H: BEEP statement
 ; ======================================================
-4229H  (3EH) MVI A,07H
-422BH  (E7H) RST 4          ; Send character in A to screen/printer
-422CH  (C9H) RET
+BEEP:
+    MVI A,07H
+    RST 4          ; Send character in A to screen/printer
+    RET
 
 
 ; ======================================================
-; Home cursor
+; 422DH: Move cursor to home position (1,1)
 ; ======================================================
-422DH  (3EH) MVI A,0BH
-422FH  (E7H) RST 4          ; Send character in A to screen/printer
-4230H  (C9H) RET
+HOME:
+    MVI A,0BH
+    RST 4          ; Send character in A to screen/printer
+    RET
 
 
 ; ======================================================
-; CLS statement
+; 4231H: Clears display
 ; ======================================================
-4231H  (3EH) MVI A,0CH
-4233H  (E7H) RST 4          ; Send character in A to screen/printer
-4234H  (C9H) RET
+CLS:
+    MVI A,0CH
+    RST 4          ; Send character in A to screen/printer
+    RET
 
 
 ; ======================================================
-; Protect line 8.  An ESC T is printed
+; 4235H: Sets system line (lock line 8, LABEL)
 ; ======================================================
-4235H  (3EH) MVI A,54H
-4237H  (C3H) JMP 4270H      ; End escape sequence
+SETSYS:
+    MVI A,54H     ; ESC T
+    JMP ESCA      ; End escape sequence
 
 
 ; ======================================================
-; Unprotect line 8.  An ESC U is printed
+; 423AH: Reset system line (unlock line 8, LABEL)
 ; ======================================================
-423AH  (3EH) MVI A,55H
-423CH  (C3H) JMP 4270H      ; End escape sequence
+RSTSYS:
+    MVI A,55H     ; ESC U
+    JMP ESCA      ; End escape sequence
 
 
 ; ======================================================
-; Stop automatic scrolling
+; 423FH: Lock display (no scrolling)
 ; ======================================================
-423FH  (3EH) MVI A,56H
-4241H  (C3H) JMP 4270H      ; End escape sequence
+LOCK:
+    MVI A,56H     ; ESC Y
+    JMP ESCA      ; End escape sequence
 
 
 ; ======================================================
-; Resume automatic scrolling
+; 4244H: Unlock display (scrolling)
 ; ======================================================
-4244H  (3EH) MVI A,57H
-4246H  (C3H) JMP 4270H      ; End escape sequence
+UNLOCK:
+    MVI A,57H     ; ESC W
+    JMP ESCA      ; End escape sequence
 
 
 ; ======================================================
-; Turn the cursor on
+; 4249H: Turn on cursor
 ; ======================================================
-4249H  (3EH) MVI A,50H
-424BH  (C3H) JMP 4270H      ; End escape sequence
+CURSON:
+    MVI A,50H     ; ESC P
+    JMP ESCA      ; End escape sequence
 
 
 ; ======================================================
-; Turn the cursor off
+; 424EH: Turn off cursor
 ; ======================================================
-424EH  (3EH) MVI A,51H
-4250H  (C3H) JMP 4270H      ; End escape sequence
+CUROFF
+    MVI A,51H     ; ESC Q
+    JMP ESCA      ; End escape sequence
 
 
 ; ======================================================
-; Delete current line on screen
+; 4253H: Delete line at current cursor position
 ; ======================================================
-4253H  (3EH) MVI A,4DH
-4255H  (C3H) JMP 4270H      ; End escape sequence
+DELLIN:
+    MVI A,4DH     ; ESC M
+    JMP ESCA      ; End escape sequence
 
 
 ; ======================================================
-; Insert line a current line
+; 4258H: Insert a blank line at cursor position
 ; ======================================================
-4258H  (3EH) MVI A,4CH
-425AH  (C3H) JMP 4270H      ; End escape sequence
+INSLIN:
+    MVI A,4CH     ; ESC L
+    JMP ESCA      ; End escape sequence
 
 
 ; ======================================================
-; Erase from cursor to end of line
+; 425DH: Erase from cursor to end of line
 ; ======================================================
-425DH  (3EH) MVI A,4BH
-425FH  (C3H) JMP 4270H      ; End escape sequence
+ERABOL:
+    MVI A,4BH     ; ESC K
+    JMP ESCA      ; End escape sequence
 
 
 ; ======================================================
 ; Send ESC X
 ; ======================================================
 4262H  (3EH) MVI A,58H
-4264H  (C3H) JMP 4270H      ; End escape sequence
+4264H  (C3H) JMP ESCA      ; End escape sequence
 
 4267H  (B6H) ORA M
 4268H  (C8H) RZ
 
 ; ======================================================
-; Start inverse character mode
+; 4269H: Set Reverse character mode
 ; ======================================================
-4269H  (3EH) MVI A,70H
-426BH  (C3H) JMP 4270H      ; End escape sequence
+ENTREV:
+    MVI A,70H     ; ESC p
+    JMP ESCA      ; End escape sequence
 
 
 ; ======================================================
-; Cancel inverse character mode
+; 426EH: Turn off Reverse character mode
 ; ======================================================
-426EH  (3EH) MVI A,71H
+EXTREF:
+    MVI A,71H     ; ESC q
 
 ; ======================================================
-; End escape sequence
+; 4270H: Send specified Escape Code Sequence
+; Entry conditions: A = escape code
+; Exit conditions:  none
 ; ======================================================
-4270H  (F5H) PUSH PSW
-4271H  (3EH) MVI A,1BH
-4273H  (E7H) RST 4          ; Send character in A to screen/printer
-4274H  (F1H) POP PSW
-4275H  (E7H) RST 4          ; Send character in A to screen/printer
-4276H  (C9H) RET
+ESCA:
+    PUSH PSW
+    MVI A,1BH
+    RST 4          ; Send character in A to screen/printer
+    POP PSW
+    RST 4          ; Send character in A to screen/printer
+    RET
 
 
 ; ======================================================
@@ -11012,17 +11041,21 @@ ERRSYN:
 427AH  (26H) MVI H,01H
 
 ; ======================================================
-; Set the current cursor position (H=Row),L=Col)
+; 427CH: Set cursor position
+; Entry conditions: H = column number (1-40)
+;                   L = row number (1-8)
+; Exit conditions:  none
 ; ======================================================
-427CH  (3EH) MVI A,59H
-427EH  (CDH) CALL 4270H     ; End escape sequence
-4281H  (7DH) MOV A,L
-4282H  (C6H) ADI 1FH
-4284H  (E7H) RST 4          ; Send character in A to screen/printer
-4285H  (7CH) MOV A,H
-4286H  (C6H) ADI 1FH
-4288H  (E7H) RST 4          ; Send character in A to screen/printer
-4289H  (C9H) RET
+POSIT:
+    MVI A,59H
+    CALL ESCA      ; End escape sequence
+    MOV A,L
+    ADI 1FH
+    RST 4          ; Send character in A to screen/printer
+    MOV A,H
+    ADI 1FH
+    RST 4          ; Send character in A to screen/printer
+    RET
 
 
 ; ======================================================
@@ -11031,13 +11064,13 @@ ERRSYN:
 428AH  (3AH) LDA F63DH      ; Label line protect status
 428DH  (A7H) ANA A
 428EH  (C8H) RZ
-428FH  (CDH) CALL 423AH     ; Unprotect line 8.  An ESC U is printed
+428FH  (CDH) CALL RSTSYS     ; Unprotect line 8.  An ESC U is printed
 4292H  (2AH) LHLD F639H     ; Cursor row (1-8)
 4295H  (E5H) PUSH H
 4296H  (CDH) CALL 4277H     ; Send cursor to lower left of CRT
-4299H  (CDH) CALL 425DH     ; Erase from cursor to end of line
+4299H  (CDH) CALL ERABOL     ; Erase from cursor to end of line
 429CH  (E1H) POP H
-429DH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+429DH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 42A0H  (CDH) CALL 4262H     ; Send ESC X
 42A3H  (AFH) XRA A
 42A4H  (C9H) RET
@@ -11058,18 +11091,18 @@ ERRSYN:
 42B2H  (E5H) PUSH H
 42B3H  (CDH) CALL 45EDH
 42B6H  (2EH) MVI L,01H
-42B8H  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
-42BBH  (CDH) CALL 4253H     ; Delete current line on screen
+42B8H  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
+42BBH  (CDH) CALL DELLIN     ; Delete current line on screen
 42BEH  (E1H) POP H
 42BFH  (2DH) DCR L
 42C0H  (E5H) PUSH H
-42C1H  (CDH) CALL 423AH     ; Unprotect line 8.  An ESC U is printed
+42C1H  (CDH) CALL RSTSYS     ; Unprotect line 8.  An ESC U is printed
 42C4H  (CDH) CALL 4277H     ; Send cursor to lower left of CRT
 42C7H  (21H) LXI H,F789H    ; Function key definition area
 42CAH  (1EH) MVI E,08H
 42CCH  (3AH) LDA F648H      ; Reverse video switch
 42CFH  (F5H) PUSH PSW
-42D0H  (CDH) CALL 426EH     ; Cancel inverse character mode
+42D0H  (CDH) CALL EXTREF     ; Cancel inverse character mode
 42D3H  (3AH) LDA F63CH      ; Active columns count (1-40)
 42D6H  (FEH) CPI 28H
 42D8H  (01H) LXI B,040CH
@@ -11086,17 +11119,17 @@ ERRSYN:
 42F0H  (E1H) POP H
 42F1H  (CDH) CALL 1BE0H     ; Send B characters from M to the screen
 42F4H  (09H) DAD B
-42F5H  (CDH) CALL 426EH     ; Cancel inverse character mode
+42F5H  (CDH) CALL EXTREF     ; Cancel inverse character mode
 42F8H  (1DH) DCR E
 42F9H  (C4H) CNZ 001EH      ; Send a space to screen/printer
 42FCH  (C2H) JNZ 42D3H
-42FFH  (CDH) CALL 425DH     ; Erase from cursor to end of line
-4302H  (CDH) CALL 4235H     ; Protect line 8.  An ESC T is printed
+42FFH  (CDH) CALL ERABOL     ; Erase from cursor to end of line
+4302H  (CDH) CALL SETSYS     ; Protect line 8.  An ESC T is printed
 4305H  (F1H) POP PSW
 4306H  (A7H) ANA A
-4307H  (C4H) CNZ 4269H      ; Start inverse character mode
+4307H  (C4H) CNZ ENTREV      ; Start inverse character mode
 430AH  (E1H) POP H
-430BH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+430BH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 430EH  (CDH) CALL 4262H     ; Send ESC X
 4311H  (AFH) XRA A
 4312H  (C9H) RET
@@ -11133,7 +11166,7 @@ ERRSYN:
 4338H  (CDH) CALL 434CH     ; Character plotting level 5. Handle ESC sequences & call level 6
 433BH  (2AH) LHLD F639H     ; Cursor row (1-8)
 433EH  (EBH) XCHG
-433FH  (CDH) CALL 7440H
+433FH  (CDH) CALL SETCUR
 4342H  (3AH) LDA F63FH      ; Cursor status (0 = off)
 4345H  (A7H) ANA A
 4346H  (C8H) RZ
@@ -11524,7 +11557,7 @@ ERRSYN:
 
 451FH  (3AH) LDA F648H      ; Reverse video switch
 4522H  (F5H) PUSH PSW
-4523H  (CDH) CALL 426EH     ; Cancel inverse character mode
+4523H  (CDH) CALL EXTREF     ; Cancel inverse character mode
 4526H  (3EH) MVI A,08H
 4528H  (E7H) RST 4          ; Send character in A to screen/printer
 4529H  (3EH) MVI A,20H
@@ -11534,7 +11567,7 @@ ERRSYN:
 452FH  (F1H) POP PSW
 4530H  (A7H) ANA A
 4531H  (C8H) RZ
-4532H  (C3H) JMP 4269H      ; Start inverse character mode
+4532H  (C3H) JMP ENTREV      ; Start inverse character mode
 
 
 ; ======================================================
@@ -11748,7 +11781,7 @@ ERRSYN:
 464DH  (32H) STA FACAH
 4650H  (11H) LXI D,F685H    ; Keyboard buffer
 4653H  (06H) MVI B,01H
-4655H  (CDH) CALL 12CBH     ; Wait for key from keyboard
+4655H  (CDH) CALL CHGET     ; Wait for key from keyboard
 4658H  (21H) LXI H,4655H
 465BH  (E5H) PUSH H
 465CH  (D8H) RC
@@ -11783,7 +11816,7 @@ ERRSYN:
 4687H  (E7H) RST 4          ; Send character in A to screen/printer
 4688H  (3EH) MVI A,43H
 468AH  (E7H) RST 4          ; Send character in A to screen/printer
-468BH  (CDH) CALL 4222H     ; Send CRLF to screen or printer
+468BH  (CDH) CALL CRLF     ; Send CRLF to screen or printer
 468EH  (21H) LXI H,F685H    ; Keyboard buffer
 4691H  (36H) MVI M,00H
 4693H  (2BH) DCX H
@@ -11795,7 +11828,7 @@ ERRSYN:
 ; Input routine ENTER handler
 ; ======================================================
 4696H  (E1H) POP H
-4697H  (CDH) CALL 4222H     ; Send CRLF to screen or printer
+4697H  (CDH) CALL CRLF     ; Send CRLF to screen or printer
 469AH  (AFH) XRA A
 469BH  (12H) STAX D
 469CH  (C3H) JMP 7FFAH      ; Different from M100
@@ -11852,7 +11885,7 @@ ERRSYN:
 46D3H  (C9H) RET
 
 46D4H  (05H) DCR B
-46D5H  (C3H) JMP 4229H      ; BEEP statement
+46D5H  (C3H) JMP BEEP      ; BEEP statement
 
 46D8H  (C5H) PUSH B
 46D9H  (3AH) LDA FACAH
@@ -11895,10 +11928,10 @@ ERRSYN:
 4719H  (34H) INR M
 471AH  (7EH) MOV A,M
 471BH  (0FH) RRC
-471CH  (D4H) CNC 4269H      ; Start inverse character mode
+471CH  (D4H) CNC ENTREV      ; Start inverse character mode
 471FH  (21H) LXI H,5593H
 4722H  (CDH) CALL 27B1H     ; Print buffer at M until NULL or '"'
-4725H  (CDH) CALL 426EH     ; Cancel inverse character mode
+4725H  (CDH) CALL EXTREF     ; Cancel inverse character mode
 4728H  (E1H) POP H
 4729H  (22H) SHLD FC8CH
 472CH  (06H) MVI B,00H
@@ -11932,7 +11965,7 @@ ERRSYN:
 4766H  (CDH) CALL 4F45H
 4769H  (3EH) MVI A,0DH
 476BH  (E7H) RST 4          ; Send character in A to screen/printer
-476CH  (CDH) CALL 425DH     ; Erase from cursor to end of line
+476CH  (CDH) CALL ERABOL     ; Erase from cursor to end of line
 476FH  (3AH) LDA FC92H
 4772H  (A7H) ANA A
 4773H  (CAH) JZ 477CH
@@ -12540,23 +12573,27 @@ ERRSYN:
 4B3BH  (7AH) MOV A,D
 4B3CH  (B7H) ORA A
 4B3DH  (3EH) MVI A,2BH
-4B3FH  (C4H) CNZ 4B44H      ; Send A to screen or printer
+4B3FH  (C4H) CNZ LCD      ; Send A to screen or printer
 4B42H  (F1H) POP PSW
 4B43H  (C9H) RET
 
 
 ; ======================================================
-; Send A to screen or printer
+; 4B44H: Displays a character on the LCD at current 
+;        cursor position. (Also RST 4)
+; Entry conditions: A = character to be displayed
+; Exit conditions:  none
 ; ======================================================
-4B44H  (F5H) PUSH PSW
-4B45H  (E5H) PUSH H
-4B46H  (CDH) CALL 421AH
-4B49H  (C2H) JNZ 4E52H
-4B4CH  (E1H) POP H
-4B4DH  (3AH) LDA F675H      ; Output device for RST 20H (0=screen)
-4B50H  (B7H) ORA A
-4B51H  (CAH) JZ 4BAAH
-4B54H  (F1H) POP PSW
+LCD:
+    PUSH PSW
+    PUSH H
+    CALL 421AH
+    JNZ 4E52H
+    POP H
+    LDA F675H      ; Output device for RST 20H (0=screen)
+    ORA A
+    JZ 4BAAH
+    POP PSW
 
 ; ======================================================
 ; Print A to printer), expanding tabs if necessary
@@ -12665,7 +12702,7 @@ ERRSYN:
 4BEBH  (E5H) PUSH H
 4BECH  (CDH) CALL 13DBH     ; Check keyboard queue for pending characters
 4BEFH  (CAH) JZ 4BFEH
-4BF2H  (CDH) CALL 12CBH     ; Wait for key from keyboard
+4BF2H  (CDH) CALL CHGET     ; Wait for key from keyboard
 4BF5H  (F5H) PUSH PSW
 4BF6H  (CDH) CALL 275BH
 4BF9H  (F1H) POP PSW
@@ -13148,7 +13185,7 @@ ERRSYN:
 4ECCH  (F1H) POP PSW
 4ECDH  (F5H) PUSH PSW
 4ECEH  (CAH) JZ 4EF6H
-4ED1H  (CDH) CALL 12CBH     ; Wait for key from keyboard
+4ED1H  (CDH) CALL CHGET     ; Wait for key from keyboard
 4ED4H  (FEH) CPI 03H
 4ED6H  (CAH) JZ 4EEBH
 4ED9H  (77H) MOV M,A
@@ -13556,12 +13593,12 @@ ERRSYN:
 ; ======================================================
 ; TELCOM Entry point
 ; ======================================================
-5146H  (CDH) CALL 4244H     ; Resume automatic scrolling
+5146H  (CDH) CALL UNLOCK     ; Resume automatic scrolling
 5149H  (21H) LXI H,51A4H
 514CH  (CDH) CALL 42A5H     ; Set and display function keys (M has key table)
 514FH  (C3H) JMP 51C7H      ; Print current STAT settings
 
-5152H  (CDH) CALL 4229H     ; BEEP statement
+5152H  (CDH) CALL BEEP     ; BEEP statement
 5155H  (21H) LXI H,51A4H
 5158H  (CDH) CALL 5A7CH     ; Set new function key table
 
@@ -13710,7 +13747,7 @@ ERRSYN:
 5265H  (CDH) CALL 5DC5H
 5268H  (CDH) CALL 5284H
 526BH  (C4H) CNZ 5292H
-526EH  (CDH) CALL 4222H     ; Send CRLF to screen or printer
+526EH  (CDH) CALL CRLF     ; Send CRLF to screen or printer
 5271H  (CDH) CALL 5C7FH
 5274H  (CAH) JZ 515BH       ; Re-entry point for TELCOM commands
 5277H  (FEH) CPI 43H
@@ -14028,7 +14065,7 @@ ERRSYN:
 5483H  (CDH) CALL 5556H
 5486H  (CDH) CALL 5562H
 5489H  (CDH) CALL 42A8H     ; Display function key line
-548CH  (CDH) CALL 4249H     ; Turn the cursor on
+548CH  (CDH) CALL CURSON     ; Turn the cursor on
 548FH  (CDH) CALL 5D5DH
 5492H  (21H) LXI H,54EFH
 5495H  (22H) SHLD F652H
@@ -14042,13 +14079,13 @@ ERRSYN:
 54A7H  (DCH) CC 5562H
 54AAH  (CDH) CALL 13DBH     ; Check keyboard queue for pending characters
 54ADH  (CAH) JZ 54C6H
-54B0H  (CDH) CALL 12CBH     ; Wait for key from keyboard
+54B0H  (CDH) CALL CHGET     ; Wait for key from keyboard
 54B3H  (DAH) JC 54FCH       ; TELCOM "dispatcher" routine
 54B6H  (47H) MOV B,A
 54B7H  (3AH) LDA F658H      ; Full/Half duplex switch
 54BAH  (A7H) ANA A
 54BBH  (78H) MOV A,B
-54BCH  (CCH) CZ 4B44H       ; Send A to screen or printer
+54BCH  (CCH) CZ LCD       ; Send A to screen or printer
 54BFH  (A7H) ANA A
 54C0H  (C4H) CNZ 6E32H      ; Send character in A to serial port using XON/XOFF
 54C3H  (DAH) JC 54E2H
@@ -14071,7 +14108,7 @@ ERRSYN:
 54E9H  (DAH) JC 54E6H
 54ECH  (C3H) JMP 548FH
 
-54EFH  (CDH) CALL 4229H     ; BEEP statement
+54EFH  (CDH) CALL BEEP     ; BEEP statement
 54F2H  (AFH) XRA A
 54F3H  (32H) STA F659H
 54F6H  (CDH) CALL 5556H
@@ -14112,13 +14149,13 @@ ERRSYN:
 ; TELCOM PREV function routine
 ; ======================================================
 5523H  (CDH) CALL 43A2H
-5526H  (CDH) CALL 424EH     ; Turn the cursor off
+5526H  (CDH) CALL CUROFF     ; Turn the cursor off
 5529H  (CDH) CALL 461FH
 552CH  (CDH) CALL 13DBH     ; Check keyboard queue for pending characters
 552FH  (CAH) JZ 552CH
-5532H  (CDH) CALL 12CBH     ; Wait for key from keyboard
+5532H  (CDH) CALL CHGET     ; Wait for key from keyboard
 5535H  (CDH) CALL 4601H
-5538H  (CDH) CALL 4249H     ; Turn the cursor on
+5538H  (CDH) CALL CURSON     ; Turn the cursor on
 553BH  (C3H) JMP 4262H      ; Send ESC X
 
 
@@ -14262,11 +14299,11 @@ ERRSYN:
 5653H  (23H) INX H
 5654H  (CDH) CALL 13DBH     ; Check keyboard queue for pending characters
 5657H  (CAH) JZ 5606H
-565AH  (CDH) CALL 12CBH     ; Wait for key from keyboard
+565AH  (CDH) CALL CHGET     ; Wait for key from keyboard
 565DH  (FEH) CPI 03H
 565FH  (CAH) JZ 566CH
 5662H  (FEH) CPI 13H
-5664H  (CCH) CZ 12CBH       ; Wait for key from keyboard
+5664H  (CCH) CZ CHGET       ; Wait for key from keyboard
 5667H  (FEH) CPI 03H
 5669H  (C2H) JNZ 5606H
 566CH  (AFH) XRA A
@@ -14385,7 +14422,7 @@ ERRSYN:
 573EH  (67H) MOV H,A
 573FH  (22H) SHLD FAC2H
 5742H  (CDH) CALL 6ECBH     ; Deactivate RS232 or modem
-5745H  (CDH) CALL 424EH     ; Turn the cursor off
+5745H  (CDH) CALL CUROFF     ; Turn the cursor off
 5748H  (CDH) CALL 52BBH     ; Disconnect phone line and disable modem carrier
 574BH  (CDH) CALL 6370H
 574EH  (C3H) JMP 5146H      ; TELCOM Entry point
@@ -14413,10 +14450,10 @@ ERRSYN:
 57A0H  (CDH) CALL 6ECBH     ; Deactivate RS232 or modem
 57A3H  (CDH) CALL 6370H
 57A6H  (CDH) CALL 2146H     ; Update system pointers for .DO), .CO), vars), etc.
-57A9H  (CDH) CALL 426EH     ; Cancel inverse character mode
-57ACH  (CDH) CALL 424EH     ; Turn the cursor off
+57A9H  (CDH) CALL EXTREF     ; Cancel inverse character mode
+57ACH  (CDH) CALL CUROFF     ; Turn the cursor off
 57AFH  (CDH) CALL 428AH     ; Erase function key display
-57B2H  (CDH) CALL 423FH     ; Stop automatic scrolling
+57B2H  (CDH) CALL LOCK     ; Stop automatic scrolling
 57B5H  (3AH) LDA F638H      ; New Console device flag
 57B8H  (32H) STA FDFAH
 57BBH  (3EH) MVI A,FFH
@@ -14431,7 +14468,7 @@ ERRSYN:
 57D3H  (CDH) CALL 5A79H     ; Clear function key definition table
 57D6H  (CDH) CALL 5A12H     ; Print time), day and date on first line of screen
 57D9H  (21H) LXI H,1C01H
-57DCH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+57DCH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 57DFH  (21H) LXI H,5B0DH
 57E2H  (CDH) CALL 5A58H     ; Print NULL terminated string at M
 57E5H  (21H) LXI H,FDA1H    ; Map of MENU entry positions to RAM directory positions
@@ -14477,7 +14514,7 @@ ERRSYN:
 582AH  (6FH) MOV L,A
 582BH  (CDH) CALL 59E5H
 582EH  (21H) LXI H,1808H
-5831H  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+5831H  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 5834H  (CDH) CALL 7EACH     ; Display number of free bytes on LCD
 
 ; ======================================================
@@ -14487,11 +14524,11 @@ ERRSYN:
 583AH  (21H) LXI H,5906H
 583DH  (22H) SHLD F652H
 5840H  (21H) LXI H,0108H
-5843H  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+5843H  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 5846H  (21H) LXI H,5B24H
 5849H  (CDH) CALL 5A58H     ; Print NULL terminated string at M
 584CH  (21H) LXI H,0908H
-584FH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+584FH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 5852H  (97H) SUB A
 5853H  (32H) STA FDEDH      ; Flag to indicate MENU entry location or command entry
 5856H  (21H) LXI H,FDD9H
@@ -14500,7 +14537,7 @@ ERRSYN:
 ; ======================================================
 ; MENU Program command loop
 ; ======================================================
-585AH  (CCH) CZ 4229H       ; BEEP statement
+585AH  (CCH) CZ BEEP       ; BEEP statement
 585DH  (CDH) CALL 5D70H     ; Print time on top line until key pressed
 5860H  (CDH) CALL 5D64H     ; Wait for char from keyboard & convert to uppercase
 5863H  (FEH) CPI 0DH
@@ -14567,7 +14604,7 @@ ERRSYN:
 58D1H  (6AH) MOV L,D
 58D2H  (CDH) CALL 59E5H
 58D5H  (E1H) POP H
-58D6H  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+58D6H  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 58D9H  (E1H) POP H
 58DAH  (C9H) RET
 
@@ -14607,7 +14644,7 @@ ERRSYN:
 58FEH  (36H) MVI M,00H
 5900H  (CDH) CALL 5AB1H
 5903H  (C2H) JNZ 5921H
-5906H  (CDH) CALL 4229H     ; BEEP statement
+5906H  (CDH) CALL BEEP     ; BEEP statement
 5909H  (C3H) JMP 5837H      ; Handle CTRL-U key from MENU command loop
 
 590CH  (3AH) LDA FDEEH      ; Current MENU directory location
@@ -14621,8 +14658,8 @@ ERRSYN:
 
 591EH  (CDH) CALL 5AE4H
 5921H  (E5H) PUSH H
-5922H  (CDH) CALL 4231H     ; CLS statement
-5925H  (CDH) CALL 4244H     ; Resume automatic scrolling
+5922H  (CDH) CALL CLS     ; CLS statement
+5925H  (CDH) CALL UNLOCK     ; Resume automatic scrolling
 5928H  (3AH) LDA FDFAH
 592BH  (CDH) CALL 1E3CH
 592EH  (3EH) MVI A,0CH
@@ -14752,7 +14789,7 @@ ERRSYN:
 59DCH  (14H) INR D
 59DDH  (14H) INR D
 59DEH  (EBH) XCHG
-59DFH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+59DFH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 59E2H  (E1H) POP H
 59E3H  (D1H) POP D
 59E4H  (C9H) RET
@@ -14768,7 +14805,7 @@ ERRSYN:
 59F4H  (2AH) LHLD F639H     ; Cursor row (1-8)
 59F7H  (CDH) CALL 45CBH
 59FAH  (EBH) XCHG
-59FBH  (CDH) CALL 7440H
+59FBH  (CDH) CALL SETCUR
 59FEH  (F3H) DI
 59FFH  (CDH) CALL 73A9H     ; Blink the cursor
 5A02H  (FBH) EI
@@ -14786,7 +14823,7 @@ ERRSYN:
 ; ======================================================
 ; Print time), day and date on first line of screen
 ; ======================================================
-5A12H  (CDH) CALL 4231H     ; CLS statement
+5A12H  (CDH) CALL CLS     ; CLS statement
 
 ; ======================================================
 ; Print time),day),date on first line w/o CLS
@@ -15023,8 +15060,8 @@ ERRSYN:
 5B85H  (22H) SHLD FDEEH     ; Current MENU directory location
 5B88H  (21H) LXI H,5B88H
 5B8BH  (22H) SHLD F652H
-5B8EH  (CDH) CALL 4231H     ; CLS statement
-5B91H  (CDH) CALL 4229H     ; BEEP statement
+5B8EH  (CDH) CALL CLS       ; CLS statement
+5B91H  (CDH) CALL BEEP      ; BEEP statement
 5B94H  (2AH) LHLD FDEEH     ; Current MENU directory location
 5B97H  (CDH) CALL 5A58H     ; Print NULL terminated string at M
 5B9AH  (21H) LXI H,5CD6H
@@ -15034,7 +15071,7 @@ ERRSYN:
 5BA6H  (C3H) JMP 5797H      ; MENU Program
 
 5BA9H  (22H) SHLD FDD7H
-5BACH  (CDH) CALL 4231H     ; CLS statement
+5BACH  (CDH) CALL CLS     ; CLS statement
 5BAFH  (21H) LXI H,5D0AH
 5BB2H  (CDH) CALL 42A5H     ; Set and display function keys (M has key table)
 5BB5H  (21H) LXI H,5BE2H
@@ -15059,7 +15096,7 @@ ERRSYN:
 5BE2H  (97H) SUB A
 5BE3H  (32H) STA F675H      ; Output device for RST 20H (0=screen)
 5BE6H  (CDH) CALL 4BB8H     ; Move LCD to blank line (send CRLF if needed)
-5BE9H  (CDH) CALL 4229H     ; BEEP statement
+5BE9H  (CDH) CALL BEEP     ; BEEP statement
 5BECH  (21H) LXI H,5D0AH
 5BEFH  (CDH) CALL 5A7CH     ; Set new function key table
 5BF2H  (C3H) JMP 5BBBH
@@ -15183,7 +15220,7 @@ ERRSYN:
 5CA8H  (21H) LXI H,5D0AH
 5CABH  (C3H) JMP 5C8DH
 
-5CAEH  (CDH) CALL 12CBH     ; Wait for key from keyboard
+5CAEH  (CDH) CALL CHGET     ; Wait for key from keyboard
 5CB1H  (F5H) PUSH PSW
 5CB2H  (97H) SUB A
 5CB3H  (32H) STA F62DH
@@ -15274,7 +15311,7 @@ ERRSYN:
 ; ======================================================
 ; Wait for char from keyboard & convert to uppercase
 ; ======================================================
-5D64H  (CDH) CALL 12CBH     ; Wait for key from keyboard
+5D64H  (CDH) CALL CHGET     ; Wait for key from keyboard
 5D67H  (C3H) JMP 0FE9H      ; Convert A to uppercase
 
 
@@ -15282,7 +15319,7 @@ ERRSYN:
 ; Home cursor
 ; ======================================================
 5D6AH  (21H) LXI H,0101H
-5D6DH  (C3H) JMP 427CH      ; Set the current cursor position (H=Row),L=Col)
+5D6DH  (C3H) JMP POSIT      ; Set the current cursor position (H=Row),L=Col)
 
 
 ; ======================================================
@@ -15297,7 +15334,7 @@ ERRSYN:
 5D7CH  (F1H) POP PSW
 5D7DH  (E1H) POP H
 5D7EH  (F5H) PUSH PSW
-5D7FH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+5D7FH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 5D82H  (F1H) POP PSW
 5D83H  (E1H) POP H
 5D84H  (CAH) JZ 5D70H       ; Print time on top line until key pressed
@@ -15371,7 +15408,7 @@ ERRSYN:
 5DF4H  (21H) LXI H,5E22H    ; TEXT Function key table - empty
 5DF7H  (CDH) CALL 5A7CH     ; Set new function key table
 5DFAH  (AFH) XRA A
-5DFBH  (C4H) CNZ 4229H      ; BEEP statement
+5DFBH  (C4H) CNZ BEEP      ; BEEP statement
 5DFEH  (CDH) CALL 5D53H
 5E01H  (21H) LXI H,5E15H
 5E04H  (CDH) CALL 27B1H     ; Print buffer at M until NULL or '"'
@@ -15451,7 +15488,7 @@ ERRSYN:
 5EB5H  (16H) MVI D,F8H
 5EB7H  (C3H) JMP 4D9EH
 
-5EBAH  (CDH) CALL 4231H     ; CLS statement
+5EBAH  (CDH) CALL CLS     ; CLS statement
 5EBDH  (AFH) XRA A
 5EBEH  (32H) STA F651H
 5EC1H  (6FH) MOV L,A
@@ -15501,7 +15538,7 @@ ERRSYN:
 5F0CH  (21H) LXI H,60B1H
 5F0FH  (CAH) JZ 5F15H
 5F12H  (21H) LXI H,5F38H
-5F15H  (CDH) CALL 4231H     ; CLS statement
+5F15H  (CDH) CALL CLS     ; CLS statement
 5F18H  (CDH) CALL 27B1H     ; Print buffer at M until NULL or '"'
 5F1BH  (21H) LXI H,5F60H
 5F1EH  (CDH) CALL 5F24H
@@ -15516,7 +15553,7 @@ ERRSYN:
 ; ======================================================
 ; Wait for a space to be entered on keyboard
 ; ======================================================
-5F2FH  (CDH) CALL 12CBH     ; Wait for key from keyboard
+5F2FH  (CDH) CALL CHGET     ; Wait for key from keyboard
 5F32H  (FEH) CPI 20H
 5F34H  (C2H) JNZ 5F2FH      ; Wait for a space to be entered on keyboard
 5F37H  (C9H) RET
@@ -15540,10 +15577,10 @@ ERRSYN:
 5F6EH  (21H) LXI H,5797H
 5F71H  (32H) STA F921H
 5F74H  (22H) SHLD F765H
-5F77H  (CDH) CALL 426EH     ; Cancel inverse character mode
+5F77H  (CDH) CALL EXTREF     ; Cancel inverse character mode
 5F7AH  (CDH) CALL 428AH     ; Erase function key display
-5F7DH  (CDH) CALL 423FH     ; Stop automatic scrolling
-5F80H  (CDH) CALL 424EH     ; Turn the cursor off
+5F7DH  (CDH) CALL LOCK     ; Stop automatic scrolling
+5F80H  (CDH) CALL CUROFF     ; Turn the cursor off
 5F83H  (CDH) CALL 65B9H
 5F86H  (21H) LXI H,5E2AH
 5F89H  (CDH) CALL 5A7CH     ; Set new function key table
@@ -15640,11 +15677,11 @@ ERRSYN:
 6061H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
 6062H  DB   38H
 6063H  (CDH) CALL 65B9H
-6066H  (CDH) CALL 4244H     ; Resume automatic scrolling
+6066H  (CDH) CALL UNLOCK     ; Resume automatic scrolling
 6069H  (CDH) CALL 428AH     ; Erase function key display
 606CH  (CDH) CALL 63DBH
-606FH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
-6072H  (CDH) CALL 4222H     ; Send CRLF to screen or printer
+606FH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
+6072H  (CDH) CALL CRLF     ; Send CRLF to screen or printer
 6075H  (CDH) CALL 6383H
 6078H  (2AH) LHLD F765H
 607BH  (E9H) PCHL
@@ -15682,7 +15719,7 @@ ERRSYN:
 60A7H  (21H) LXI H,60B1H
 60AAH  (CDH) CALL 65AEH
 60ADH  (E1H) POP H
-60AEH  (C3H) JMP 427CH      ; Set the current cursor position (H=Row),L=Col)
+60AEH  (C3H) JMP POSIT      ; Set the current cursor position (H=Row),L=Col)
 
 60B1H  DB   "Memory full",07H,00H
 
@@ -15807,7 +15844,7 @@ ERRSYN:
 6170H  (D8H) RC
 6171H  (2DH) DCR L
 6172H  (CCH) CZ 631DH
-6175H  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+6175H  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 6178H  (A7H) ANA A
 6179H  (C9H) RET
 
@@ -15868,7 +15905,7 @@ ERRSYN:
 61CCH  (EBH) XCHG
 61CDH  (CDH) CALL 6230H
 61D0H  (E1H) POP H
-61D1H  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+61D1H  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 61D4H  (C3H) JMP 62A0H
 
 
@@ -15905,7 +15942,7 @@ ERRSYN:
 ; ======================================================
 61FDH  (3AH) LDA F63CH      ; Active columns count (1-40)
 6200H  (67H) MOV H,A
-6201H  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+6201H  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 6204H  (CDH) CALL 6AF9H
 6207H  (CDH) CALL 6AA3H
 620AH  (01H) LXI B,0126H
@@ -15917,7 +15954,7 @@ ERRSYN:
 ; ======================================================
 6210H  (2AH) LHLD F767H
 6213H  (CDH) CALL 6236H
-6216H  (CDH) CALL 422DH     ; Home cursor
+6216H  (CDH) CALL HOME     ; Home cursor
 6219H  (C3H) JMP 62A0H
 
 
@@ -15983,8 +16020,8 @@ ERRSYN:
 6277H  (F2H) JP 6264H
 627AH  (C9H) RET
 
-627BH  (CDH) CALL 422DH     ; Home cursor
-627EH  (CDH) CALL 4253H     ; Delete current line on screen
+627BH  (CDH) CALL HOME     ; Home cursor
+627EH  (CDH) CALL DELLIN     ; Delete current line on screen
 6281H  (CDH) CALL 63CDH
 6284H  (87H) ADD A
 6285H  (47H) MOV B,A
@@ -16035,7 +16072,7 @@ ERRSYN:
 62D7H  (EBH) XCHG
 62D8H  (D5H) PUSH D
 62D9H  (26H) MVI H,01H
-62DBH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+62DBH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 62DEH  (CDH) CALL 6A45H
 62E1H  (79H) MOV A,C
 62E2H  (F5H) PUSH PSW
@@ -16062,7 +16099,7 @@ ERRSYN:
 6305H  (D4H) CNC 6312H
 6308H  (D2H) JNC 62FFH
 630BH  (CDH) CALL 6AA3H
-630EH  (C3H) JMP 427CH      ; Set the current cursor position (H=Row),L=Col)
+630EH  (C3H) JMP POSIT      ; Set the current cursor position (H=Row),L=Col)
 
 6311H  (2DH) DCR L
 6312H  (F5H) PUSH PSW
@@ -16075,8 +16112,8 @@ ERRSYN:
 631EH  (F5H) PUSH PSW
 631FH  (E5H) PUSH H
 6320H  (CDH) CALL 65DFH
-6323H  (CDH) CALL 422DH     ; Home cursor
-6326H  (CDH) CALL 4258H     ; Insert line a current line
+6323H  (CDH) CALL HOME     ; Home cursor
+6326H  (CDH) CALL INSLIN     ; Insert line a current line
 6329H  (CDH) CALL 6A55H
 632CH  (D5H) PUSH D
 632DH  (CDH) CALL 6A3EH
@@ -16225,7 +16262,7 @@ ERRSYN:
 63EAH  (32H) STA FAADH      ; Label line enable flag
 63EDH  (3AH) LDA F63DH      ; Label line protect status
 63F0H  (F5H) PUSH PSW
-63F1H  (CDH) CALL 12CBH     ; Wait for key from keyboard
+63F1H  (CDH) CALL CHGET     ; Wait for key from keyboard
 63F4H  (C1H) POP B
 63F5H  (E1H) POP H
 63F6H  (F5H) PUSH PSW
@@ -16260,7 +16297,7 @@ ERRSYN:
 6427H  (AFH) XRA A
 6428H  (32H) STA F6E1H
 642BH  (E1H) POP H
-642CH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+642CH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 642FH  (F1H) POP PSW
 6430H  (C9H) RET
 
@@ -16485,7 +16522,7 @@ ERRSYN:
 65B6H  (CDH) CALL 27B1H     ; Print buffer at M until NULL or '"'
 65B9H  (CDH) CALL 13DBH     ; Check keyboard queue for pending characters
 65BCH  (C8H) RZ
-65BDH  (CDH) CALL 12CBH     ; Wait for key from keyboard
+65BDH  (CDH) CALL CHGET     ; Wait for key from keyboard
 65C0H  (C3H) JMP 65B9H
 
 
@@ -16508,9 +16545,9 @@ ERRSYN:
 65DFH  (E5H) PUSH H
 65E0H  (CDH) CALL 63DBH
 65E3H  (26H) MVI H,01H
-65E5H  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+65E5H  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 65E8H  (E1H) POP H
-65E9H  (C3H) JMP 425DH      ; Erase from cursor to end of line
+65E9H  (C3H) JMP ERABOL      ; Erase from cursor to end of line
 
 65ECH  (21H) LXI H,F6E1H
 65EFH  (AFH) XRA A
@@ -16531,7 +16568,7 @@ ERRSYN:
 660DH  (E1H) POP H
 660EH  (E5H) PUSH H
 660FH  (CDH) CALL 27B1H     ; Print buffer at M until NULL or '"'
-6612H  (CDH) CALL 12CBH     ; Wait for key from keyboard
+6612H  (CDH) CALL CHGET     ; Wait for key from keyboard
 6615H  (DAH) JC 6612H
 6618H  (A7H) ANA A
 6619H  (CAH) JZ 6612H
@@ -16542,15 +16579,15 @@ ERRSYN:
 6623H  (CDH) CALL 63DBH
 6626H  (3AH) LDA FACAH
 6629H  (67H) MOV H,A
-662AH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
-662DH  (CDH) CALL 425DH     ; Erase from cursor to end of line
+662AH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
+662DH  (CDH) CALL ERABOL     ; Erase from cursor to end of line
 6630H  (F1H) POP PSW
 6631H  (11H) LXI D,F685H    ; Keyboard buffer
 6634H  (06H) MVI B,01H
 6636H  (A7H) ANA A
 6637H  (C3H) JMP 663DH
 
-663AH  (CDH) CALL 12CBH     ; Wait for key from keyboard
+663AH  (CDH) CALL CHGET     ; Wait for key from keyboard
 663DH  (21H) LXI H,663AH
 6640H  (E5H) PUSH H
 6641H  (D8H) RC
@@ -16593,7 +16630,7 @@ ERRSYN:
 6682H  (D6H) SUI 09H
 6684H  (21H) LXI H,F63AH    ; Cursor column (1-40)
 6687H  (BEH) CMP M
-6688H  (DAH) JC 4229H       ; BEEP statement
+6688H  (DAH) JC BEEP       ; BEEP statement
 668BH  (79H) MOV A,C
 668CH  (04H) INR B
 668DH  (E7H) RST 4          ; Send character in A to screen/printer
@@ -16633,7 +16670,7 @@ ERRSYN:
 66CCH  (CDH) CALL 65C3H     ; Copy NULL terminated string at M to (DE)
 66CFH  (3CH) INR A
 66D0H  (32H) STA F920H
-66D3H  (CDH) CALL 4222H     ; Send CRLF to screen or printer
+66D3H  (CDH) CALL CRLF     ; Send CRLF to screen or printer
 66D6H  (2AH) LHLD F767H
 66D9H  (EBH) XCHG
 66DAH  (CDH) CALL 6A0DH
@@ -16644,7 +16681,7 @@ ERRSYN:
 66E3H  (CDH) CALL 66FEH
 66E6H  (CDH) CALL 65F3H
 66E9H  (2AH) LHLD F6E7H
-66ECH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+66ECH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 66EFH  (C3H) JMP 5FDDH      ; Main TEXT edit loop
 
 66F2H  (CDH) CALL 66FEH
@@ -17017,18 +17054,18 @@ ERRSYN:
 69B6H  (CAH) JZ 69CAH
 69B9H  (6FH) MOV L,A
 69BAH  (26H) MVI H,01H
-69BCH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+69BCH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 69BFH  (CDH) CALL 6A10H
 69C2H  (7AH) MOV A,D
 69C3H  (A3H) ANA E
 69C4H  (3CH) INR A
 69C5H  (C1H) POP B
-69C6H  (CAH) JZ 425DH       ; Erase from cursor to end of line
+69C6H  (CAH) JZ ERABOL       ; Erase from cursor to end of line
 69C9H  (C5H) PUSH B
 69CAH  (F1H) POP PSW
 69CBH  (6FH) MOV L,A
 69CCH  (26H) MVI H,01H
-69CEH  (CDH) CALL 427CH     ; Set the current cursor position (H=Row),L=Col)
+69CEH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 69D1H  (CDH) CALL 6A45H
 69D4H  (7BH) MOV A,E
 69D5H  (A2H) ANA D
@@ -17054,8 +17091,8 @@ ERRSYN:
 
 69FEH  (CDH) CALL 6A2EH
 6A01H  (CAH) JZ 69F7H
-6A04H  (CDH) CALL 425DH     ; Erase from cursor to end of line
-6A07H  (CDH) CALL 4222H     ; Send CRLF to screen or printer
+6A04H  (CDH) CALL ERABOL     ; Erase from cursor to end of line
+6A07H  (CDH) CALL CRLF     ; Send CRLF to screen or printer
 6A0AH  (C3H) JMP 69FEH
 
 6A0DH  (CDH) CALL 67DFH
@@ -17069,7 +17106,7 @@ ERRSYN:
 6A1BH  (C2H) JNZ 6A17H
 6A1EH  (3AH) LDA F920H
 6A21H  (A7H) ANA A
-6A22H  (CCH) CZ 426EH       ; Cancel inverse character mode
+6A22H  (CCH) CZ EXTREF       ; Cancel inverse character mode
 6A25H  (D1H) POP D
 6A26H  (C9H) RET
 
@@ -18501,34 +18538,58 @@ ERRSYN:
 
 
 ; ======================================================
-; Scan keyboard for character (CTRL-BREAK ==> CTRL-C)
+; 7242H: Scan keyboard for a key. Return with or without 
+;        one. (CTRL-BREAK ==> CTRL-C)
+; Entry conditions: none
+; Exit conditions:  A = Character, if any
+;           Z Flag -- set if no key found
+;                  -- reset if key found
+;           Carry  -- set (character in code table below)
+;                  -- reset (normal characther set code)
+; When Carry is set (1), Register A will contain one of 
+; the following:
+;           Register A  Key pressed
+;           ----------  -------------
+;             0            F1
+;             1            F2
+;             2            F3
+;             3            F4
+;             4            F5
+;             5            F6
+;             6            F7
+;             7            F8
+;             8          LABEL
+;             9          PRINT
+;            10          SHIFT-PRINT
+;            11          PASTE
 ; ======================================================
-7242H  (CDH) CALL 765CH     ; Set interrupt to 1DH
-7245H  (3AH) LDA FFAAH      ; Keyboard buffer count
-7248H  (B7H) ORA A
-7249H  (CAH) JZ 726AH       ; Enable interrupts as normal
-724CH  (21H) LXI H,FFACH
-724FH  (7EH) MOV A,M
-7250H  (C6H) ADI 02H
-7252H  (2BH) DCX H
-7253H  (7EH) MOV A,M
-7254H  (F5H) PUSH PSW
-7255H  (2BH) DCX H
-7256H  (35H) DCR M
-7257H  (7EH) MOV A,M
-7258H  (07H) RLC
-7259H  (4FH) MOV C,A
-725AH  (23H) INX H
-725BH  (11H) LXI D,FFADH
-725EH  (0DH) DCR C
-725FH  (FAH) JM 7269H
-7262H  (1AH) LDAX D
-7263H  (77H) MOV M,A
-7264H  (23H) INX H
-7265H  (13H) INX D
-7266H  (C3H) JMP 725EH
-
-7269H  (F1H) POP PSW
+KYREAD:
+    CALL 765CH     ; Set interrupt to 1DH
+    LDA FFAAH      ; Keyboard buffer count
+    ORA A
+    JZ 726AH       ; Enable interrupts as normal
+    LXI H,FFACH
+    MOV A,M
+    ADI 02H
+    DCX H
+    MOV A,M
+    PUSH PSW
+    DCX H
+    DCR M
+    MOV A,M
+    RLC
+    MOV C,A
+    INX H
+    LXI D,FFADH
+L725E:              ; TODO: find a better name
+    DCR C
+    JM 7269H
+    LDAX D
+    MOV M,A
+    INX H
+    INX D
+    JMP L725E
+    POP PSW
 
 ; ======================================================
 ; Enable interrupts as normal
@@ -18868,67 +18929,80 @@ ERRSYN:
 743EH  (30H) SIM
 743FH  (C9H) RET
 
-7440H  (CDH) CALL 765CH     ; Set interrupt to 1DH
-7443H  (15H) DCR D
-7444H  (1DH) DCR E
-7445H  (EBH) XCHG
-7446H  (22H) SHLD FFF4H
-7449H  (C3H) JMP 743CH
+; ======================================================
+; 7440H: Move Cursor to specified location.
+; Entry conditions: D = column number (1-40)
+;                   E = row number (1-8)
+; Exit conditions:  None
+; ======================================================
+SETCUR:
+    CALL 765CH     ; Set interrupt to 1DH
+    DCR D
+    DCR E
+    XCHG
+    SHLD FFF4H
+    JMP 743CH
 
 
 ; ======================================================
-; Plot (set) point (D),E) on the LCD
+; 744CH: Turn on pixel at specified location.
+; Entry conditions: D = x coordinate (0-239)
+;                   E = y coordinate (0-63)
+; Exit conditions:  None
 ; ======================================================
-744CH  (F6H) ORI AFH
-744EH  (F5H) PUSH PSW
-744FH  (CDH) CALL 765CH     ; Set interrupt to 1DH
-7452H  (D5H) PUSH D
-7453H  (0EH) MVI C,FEH
-7455H  (7AH) MOV A,D
-7456H  (0CH) INR C
-7457H  (0CH) INR C
-7458H  (57H) MOV D,A
-7459H  (D6H) SUI 32H
-745BH  (D2H) JNC 7456H
-745EH  (06H) MVI B,00H
-7460H  (21H) LXI H,7643H    ; 8155 PIO chip bit patterns for Lower LCD drivers
-7463H  (7BH) MOV A,E
-7464H  (17H) RAL
-7465H  (17H) RAL
-7466H  (17H) RAL
-7467H  (D2H) JNC 746DH
-746AH  (21H) LXI H,764DH
-746DH  (09H) DAD B
-746EH  (47H) MOV B,A
-746FH  (CDH) CALL 753BH
-7472H  (78H) MOV A,B
-7473H  (E6H) ANI C0H
-7475H  (B2H) ORA D
-7476H  (47H) MOV B,A
-7477H  (1EH) MVI E,01H
-7479H  (21H) LXI H,FFECH    ; Cursor bit pattern storage
-747CH  (CDH) CALL 74F5H
-747FH  (D1H) POP D
-7480H  (50H) MOV D,B
-7481H  (7BH) MOV A,E
-7482H  (E6H) ANI 07H
-7484H  (87H) ADD A
-7485H  (4FH) MOV C,A
-7486H  (06H) MVI B,00H
-7488H  (21H) LXI H,7643H    ; 8155 PIO chip bit patterns for Lower LCD drivers
-748BH  (09H) DAD B
-748CH  (F1H) POP PSW
-748DH  (7EH) MOV A,M
-748EH  (21H) LXI H,FFECH    ; Cursor bit pattern storage
-7491H  (C2H) JNZ 7497H
-7494H  (2FH) CMA
-7495H  (A6H) ANA M
-7496H  (06H) MVI B,B6H
-7498H  (77H) MOV M,A
-7499H  (42H) MOV B,D
-749AH  (1EH) MVI E,01H
-749CH  (CDH) CALL 74F6H
-749FH  (C3H) JMP 743CH
+PLOT:
+    ORI AFH        ;TODO: figure out how this works: 744D is the entry point for UNPLOT, but this is in the second byte of this opcode (the AFh)
+    PUSH PSW
+    CALL 765CH     ; Set interrupt to 1DH
+    PUSH D
+    MVI C,FEH
+    MOV A,D
+L7456:
+    INR C
+    INR C
+    MOV D,A
+    SUI 32H
+    JNC L7456
+    MVI B,00H
+    LXI H,7643H    ; 8155 PIO chip bit patterns for Lower LCD drivers
+    MOV A,E
+    RAL
+    RAL
+    RAL
+    JNC L746D
+    LXI H,764DH
+L746D:             ; TODO: find a better name
+    DAD B
+    MOV B,A
+    CALL 753BH
+    MOV A,B
+    ANI C0H
+    ORA D
+    MOV B,A
+    MVI E,01H
+    LXI H,FFECH    ; Cursor bit pattern storage
+    CALL 74F5H
+    POP D
+    MOV D,B
+    MOV A,E
+    ANI 07H
+    ADD A
+    MOV C,A
+    MVI B,00H
+    LXI H,7643H    ; 8155 PIO chip bit patterns for Lower LCD drivers
+    DAD B
+    POP PSW
+    MOV A,M
+    LXI H,FFECH    ; Cursor bit pattern storage
+    JNZ 7497H      ; calling address half way into an instruction???
+    CMA
+    ANA M
+    MVI B,B6H      ; TODO: Figure out call to 7467H (which is the address of the B6 in this line)
+    MOV M,A
+    MOV B,D
+    MVI E,01H
+    CALL 74F6H
+    JMP 743CH
 
 
 ; ======================================================
