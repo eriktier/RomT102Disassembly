@@ -4670,7 +4670,7 @@ L1412:
 1C5CH  (F5H) PUSH PSW
 1C5DH  (DCH) CC PLOT       ; Plot (set) point (D),E) on the LCD
 1C60H  (F1H) POP PSW
-1C61H  (D4H) CNC 744DH      ; Clear (reset) point (D),E) on the LCD
+1C61H  (D4H) CNC UNPLOT      ; Clear (reset) point (D),E) on the LCD
 1C64H  (E1H) POP H
 1C65H  (C9H) RET
 
@@ -4705,7 +4705,7 @@ L1412:
 1C8AH  (D1H) POP D
 1C8BH  (0FH) RRC
 1C8CH  (DAH) JC 1C92H
-1C8FH  (11H) LXI D,744DH
+1C8FH  (11H) LXI D,UNPLOT
 1C92H  (2BH) DCX H
 1C93H  (D7H) RST 2          ; Get next non-white char from M
 1C94H  (EBH) XCHG
@@ -18951,7 +18951,15 @@ SETCUR:
 ; Exit conditions:  None
 ; ======================================================
 PLOT:
-    ORI AFH        ;TODO: figure out how this works: 744D is the entry point for UNPLOT, but this is in the second byte of this opcode (the AFh)
+    DB F6H         ; Opcode for ORI, together with the next byte (at 744Dh) forms 'ORI AF', which is the first instruction of PLOT.  
+; ======================================================
+; 744DH: Turn off pixel at specified location.
+; Entry conditions: D = x coordinate (0-239)
+;                   E = y coordinate (0-63)
+; Exit conditions:  None
+; ======================================================
+UNPLOT:
+    XRA A          ; first instruction of UNPLOT, called at 744Dh. When PLOT is called at 744Ch, this is the 'AF' operand for ORI AF
     PUSH PSW
     CALL 765CH     ; Set interrupt to 1DH
     PUSH D
