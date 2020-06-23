@@ -3112,13 +3112,13 @@ CONIOB:            ; Turn cursor on if not already during program pause
     ANA A
     RNZ
     CALL CURSON    ; Turn the cursor on
-    JMP 4262H      ; Send ESC X
+    JMP SDESCX      ; Send ESC X
 COFIOB:            ; Turn cursor back off if it was off before
     LDA FACBH
     ANA A
     RNZ
     CALL CUROFF    ; Turn the cursor off
-    JMP 4262H      ; Send ESC X
+    JMP SDESCX      ; Send ESC X
 
 
 ; ======================================================
@@ -11017,13 +11017,16 @@ ERABOL:
 
 
 ; ======================================================
-; Send ESC X
+; 4262H: Send ESC X
+; Entry conditions: none
+; Exit conditions:  none
 ; ======================================================
-4262H  (3EH) MVI A,58H
-4264H  (C3H) JMP ESCA      ; End escape sequence
-
-4267H  (B6H) ORA M
-4268H  (C8H) RZ
+SDESCX:
+    MVI A,58H     ; ESC X
+    JMP ESCA      ; End escape sequence
+L4267:            ; TODO find better name
+    ORA M
+    RZ
 
 ; ======================================================
 ; 4269H: Set Reverse character mode
@@ -11093,7 +11096,7 @@ ERAFNK:
     CALL ERABOL    ; Erase from cursor to end of line
     POP H
     CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
-    CALL 4262H     ; Send ESC X
+    CALL SDESCX     ; Send ESC X
     XRA A
     RET
 
@@ -11148,7 +11151,7 @@ L42E1:
     DCR A
     DCX H
 L42ED:
-    CZ 4267H
+    CZ L4267
     POP H
     CALL 1BE0H     ; Send B characters from M to the screen
     DAD B
@@ -11163,7 +11166,7 @@ L42ED:
     CNZ ENTREV      ; Start inverse character mode
     POP H
     CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
-    CALL 4262H     ; Send ESC X
+    CALL SDESCX     ; Send ESC X
     XRA A
     RET
 
@@ -14222,7 +14225,7 @@ LCD:
 5532H  (CDH) CALL CHGET     ; Wait for key from keyboard
 5535H  (CDH) CALL 4601H
 5538H  (CDH) CALL CURSON     ; Turn the cursor on
-553BH  (C3H) JMP 4262H      ; Send ESC X
+553BH  (C3H) JMP SDESCX      ; Send ESC X
 
 
 ; ======================================================
