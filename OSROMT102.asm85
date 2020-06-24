@@ -12658,7 +12658,7 @@ LCD:
     POP H
     LDA F675H      ; Output device for RST 20H (0=screen)
     ORA A
-    JZ 4BAAH
+    JZ DCHSTK
     POP PSW
 
 ; ======================================================
@@ -12714,7 +12714,11 @@ LCD:
 4BA6H  (32H) STA F674H      ; Line printer head position
 4BA9H  (C9H) RET
 
-4BAAH  (F1H) POP PSW
+; ======================================================
+; 4BAAH: Restore char to send to LCD from stack and display it
+; ======================================================
+DCHSTK:
+    POP PSW
 
 ; ======================================================
 ; LCD character output routine
