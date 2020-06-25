@@ -582,7 +582,7 @@ ERRSYN:
 ; ======================================================
 ; Vector to BASIC ready - print Ok
 ; ======================================================
-0502H  (CDH) CALL 4B92H     ; Reinitialize output back to LCD
+0502H  (CDH) CALL ROTLCD     ; Reinitialize output back to LCD
 0505H  (CDH) CALL 4F45H
 0508H  (CDH) CALL 4BB8H     ; Move LCD to blank line (send CRLF if needed)
 050BH  (21H) LXI H,03F6H    ; Load pointer to "Ok" text
@@ -3233,22 +3233,25 @@ ICTRLC:
 
 
 ; ======================================================
-; Output character to printer
+; 1470H: Print character without expanding tab characters
+; Entry conditions: A = character to be printed
+; Exit conditions:  none
 ; ======================================================
-1470H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
-1471H  DB   0AH
-1472H  (CDH) CALL 6D3FH     ; Send character in A to the printer
-1475H  (D2H) JNC 147FH
-1478H  (AFH) XRA A
-1479H  (32H) STA FACDH
-147CH  (C3H) JMP 1494H      ; Generate I/O error
-
-147FH  (F5H) PUSH PSW
-1480H  (3EH) MVI A,FFH
-1482H  (32H) STA FACDH
-1485H  (CDH) CALL 1BB1H     ; Renew automatic power-off counter
-1488H  (F1H) POP PSW
-1489H  (C9H) RET
+PNOTAB:
+    RST 7          ; Jump to RST 38H Vector entry of following byte
+    DB   0AH
+    CALL PRINTR     ; Send character in A to the printer
+    JNC L147F
+    XRA A
+    STA FACDH
+    JMP 1494H      ; Generate I/O error
+L147F:
+    PUSH PSW
+    MVI A,FFH
+    STA FACDH
+    CALL 1BB1H     ; Renew automatic power-off counter
+    POP PSW
+    RET
 
 
 ; ======================================================
@@ -3804,7 +3807,7 @@ ICTRLC:
 ; ======================================================
 175AH  (F1H) POP PSW
 175BH  (F5H) PUSH PSW
-175CH  (CDH) CALL 4B55H     ; Print A to printer), expanding tabs if necessary
+175CH  (CDH) CALL PRTTAB     ; Print A to printer), expanding tabs if necessary
 175FH  (C3H) JMP 14EAH
 
 
@@ -5093,26 +5096,34 @@ ICTRLC:
 
 
 ; ======================================================
-; LCOPY statement
+; 1E5EH: LCOPY statement: Print contents of LCD
+; Entry conditions: none
+; Exit conditions:  none
 ; ======================================================
-1E5EH  (E5H) PUSH H
-1E5FH  (CDH) CALL 4BA0H
-1E62H  (21H) LXI H,FE00H    ; Start of LCD character buffer
-1E65H  (1EH) MVI E,08H
-1E67H  (16H) MVI D,28H
-1E69H  (7EH) MOV A,M
-1E6AH  (CDH) CALL 1470H     ; Output character to printer
-1E6DH  (23H) INX H
-1E6EH  (15H) DCR D
-1E6FH  (C2H) JNZ 1E69H
-1E72H  (CDH) CALL 4BA0H
-1E75H  (1DH) DCR E
-1E76H  (C2H) JNZ 1E67H
-1E79H  (E1H) POP H
-1E7AH  (C9H) RET
+PRTLCD:
+    PUSH H
+    CALL L4BA0
+    LXI H,FE00H    ; Start of LCD character buffer
+    MVI E,08H
+L1E67:
+    MVI D,28H
+L1E69:
+    MOV A,M
+    CALL PNOTAB     ; Output character to printer
+    INX H
+    DCR D
+    JNZ L1E69
+    CALL L4BA0
+    DCR E
+    JNZ L1E67
+    POP H
+    RET
 
+; ======================================================
+; Handle RUN "RAM:file" processing
+; ======================================================
 1E7BH  (E5H) PUSH H
-1E7CH  (CDH) CALL 2146H     ; Update system pointers for .DO), .CO), vars), etc.
+1E7CH  (CDH) CALL 2146H     ; Update system pointers for .DO, .CO, vars, etc.
 1E7FH  (2AH) LHLD FC99H
 1E82H  (11H) LXI D,2020H
 1E85H  (DFH) RST 3          ; Compare DE and HL
@@ -5199,7 +5210,7 @@ ICTRLC:
 1F18H  (C2H) JNZ 08DBH      ; Generate FC error
 1F1BH  (CDH) CALL 20A6H
 1F1EH  (C4H) CNZ 2017H
-1F21H  (CDH) CALL 2146H     ; Update system pointers for .DO), .CO), vars), etc.
+1F21H  (CDH) CALL 2146H     ; Update system pointers for .DO, .CO, vars, etc.
 1F24H  (CDH) CALL 20E4H
 1F27H  (22H) SHLD FA8CH
 1F2AH  (3EH) MVI A,80H
@@ -10441,7 +10452,7 @@ ICTRLC:
 3F78H  (F9H) SPHL
 3F79H  (21H) LXI H,FB6BH
 3F7CH  (22H) SHLD FB69H
-3F7FH  (CDH) CALL 4B92H     ; Reinitialize output back to LCD
+3F7FH  (CDH) CALL ROTLCD     ; Reinitialize output back to LCD
 3F82H  (CDH) CALL 0C39H
 3F85H  (AFH) XRA A
 3F86H  (67H) MOV H,A
@@ -10683,7 +10694,7 @@ ICTRLC:
 40C1H  (22H) SHLD FBAAH     ; Line where break), END), or STOP occurred
 40C4H  (2AH) LHLD FB9BH     ; Most recent or currenly running line pointer
 40C7H  (22H) SHLD FBACH     ; Address where program stopped on last break), END), or STOP
-40CAH  (CDH) CALL 4B92H     ; Reinitialize output back to LCD
+40CAH  (CDH) CALL ROTLCD     ; Reinitialize output back to LCD
 40CDH  (CDH) CALL 4BB8H     ; Move LCD to blank line (send CRLF if needed)
 40D0H  (F1H) POP PSW
 40D1H  (21H) LXI H,03FBH
@@ -12651,74 +12662,86 @@ NOBEXE:
 ; Exit conditions:  none
 ; ======================================================
 LCD:
-    PUSH PSW
+    PUSH PSW       ; Preserve character on stack
     PUSH H
-    CALL 421AH
-    JNZ 4E52H
+    CALL 421AH     ; Test for output to a file
+    JNZ 4E52H      ; Jump to send to file instead if enabled
     POP H
     LDA F675H      ; Output device for RST 20H (0=screen)
+    ORA A          ; Test for output to LCD or LPT
+    JZ DCHSTK      ; Jump if output to LCD
+    POP PSW        ; Restore char to be sent to LPT
+
+; ======================================================
+; 4B55H: Print a character expanding tabs to spaces
+; Entry conditions: A = character to be printed
+; Exit conditions:  none
+; ======================================================
+PRTTAB:
+    PUSH PSW       ; Save character on stack
+    CPI 09H        ; Test for TAB char
+    JNZ SNTABC     ; Jump if not TAB to send to LPT
+LSNDSP:
+    MVI A,20H      ; Prepare to send spaces
+    CALL PRTTAB    ; Print A to printer, expanding tabs if necessary
+    LDA F674H      ; Line printer head position
+    ANI 07H        ; Test if col is factor of 8
+    JNZ LSNDSP     ; Jump to send more spaces
+    POP PSW        ; Restore character
+    RET
+; ======================================================
+; 4B6AH: Send non-TAB character to printer
+; ======================================================
+SNTABC:
+    SUI 0DH        ; Test for CR
+    JZ ISCRCH      ; Jump if CR character
+    JC NCRCHA       ; Jump if not LF character
+    LDA F674H      ; Line printer head position
+    INR A          ; Increment printer line (LF detected)
+ISCRCH:
+    STA F674H      ; Line printer head position
+NCRCHA:
+    POP PSW        ; Restore character from stack
+L4B7A:
+    CPI 0AH        ; Test for LF
+    JNZ L4B88      ; Jump to skip CRLF test if not LF
+    PUSH B         ; Preserve BC on stack
+    MOV B,A        ; Save char in B
+    LDA FAACH      ; Last char sent to printer
+    CPI 0DH        ; Test if 0Ah following 0Dh
+    MOV A,B        ; Restore character
+    POP B          ; Restore BC
+L4B88:
+    STA FAACH      ; Last char sent to printer
+    RZ             ; Don't send 0Ah if last char was 0Dh
+    CPI 1AH        ; Test for EOF char
+    RZ             ; Return if EOF character
+    JMP PNOTAB      ; Output character to printer
+
+; ======================================================
+; 4B92H: Reinitialize output back to LCD
+; ======================================================
+ROTLCD:
+    XRA A          ; Zero out A
+    STA F675H      ; Output device for RST 20H (0=screen)
+    LDA F674H      ; Line printer head position
     ORA A
-    JZ DCHSTK
-    POP PSW
-
-; ======================================================
-; Print A to printer), expanding tabs if necessary
-; ======================================================
-4B55H  (F5H) PUSH PSW
-4B56H  (FEH) CPI 09H
-4B58H  (C2H) JNZ 4B6AH
-4B5BH  (3EH) MVI A,20H
-4B5DH  (CDH) CALL 4B55H     ; Print A to printer), expanding tabs if necessary
-4B60H  (3AH) LDA F674H      ; Line printer head position
-4B63H  (E6H) ANI 07H
-4B65H  (C2H) JNZ 4B5BH
-4B68H  (F1H) POP PSW
-4B69H  (C9H) RET
-
-4B6AH  (D6H) SUI 0DH
-4B6CH  (CAH) JZ 4B76H
-4B6FH  (DAH) JC 4B79H
-4B72H  (3AH) LDA F674H      ; Line printer head position
-4B75H  (3CH) INR A
-4B76H  (32H) STA F674H      ; Line printer head position
-4B79H  (F1H) POP PSW
-4B7AH  (FEH) CPI 0AH
-4B7CH  (C2H) JNZ 4B88H
-4B7FH  (C5H) PUSH B
-4B80H  (47H) MOV B,A
-4B81H  (3AH) LDA FAACH      ; Last char sent to printer
-4B84H  (FEH) CPI 0DH
-4B86H  (78H) MOV A,B
-4B87H  (C1H) POP B
-4B88H  (32H) STA FAACH      ; Last char sent to printer
-4B8BH  (C8H) RZ
-4B8CH  (FEH) CPI 1AH
-4B8EH  (C8H) RZ
-4B8FH  (C3H) JMP 1470H      ; Output character to printer
-
-
-; ======================================================
-; Reinitialize output back to LCD
-; ======================================================
-4B92H  (AFH) XRA A
-4B93H  (32H) STA F675H      ; Output device for RST 20H (0=screen)
-4B96H  (3AH) LDA F674H      ; Line printer head position
-4B99H  (B7H) ORA A
-4B9AH  (C8H) RZ
-4B9BH  (3AH) LDA FACDH
-4B9EH  (B7H) ORA A
-4B9FH  (C8H) RZ
-4BA0H  (3EH) MVI A,0DH
-4BA2H  (CDH) CALL 4B7AH
-4BA5H  (AFH) XRA A
-4BA6H  (32H) STA F674H      ; Line printer head position
-4BA9H  (C9H) RET
+    RZ
+    LDA FACDH
+    ORA A
+    RZ
+L4BA0:
+    MVI A,0DH
+    CALL L4B7A
+    XRA A
+    STA F674H      ; Line printer head position
+    RET
 
 ; ======================================================
 ; 4BAAH: Restore char to send to LCD from stack and display it
 ; ======================================================
 DCHSTK:
-    POP PSW
+    POP PSW        ; Pop char to display from stack
 
 ; ======================================================
 ; LCD character output routine
@@ -14171,7 +14194,7 @@ DCHSTK:
 54D4H  (3AH) LDA F659H
 54D7H  (A7H) ANA A
 54D8H  (78H) MOV A,B
-54D9H  (C4H) CNZ 4B55H      ; Print A to printer), expanding tabs if necessary
+54D9H  (C4H) CNZ PRTTAB      ; Print A to printer), expanding tabs if necessary
 54DCH  (CDH) CALL 56C5H
 54DFH  (C3H) JMP 548FH
 
@@ -17720,16 +17743,22 @@ FNKSB:
 
 
 ; ======================================================
-; Send character in A to the printer
+; 6D3FH: Send a character to the line printer
+; Entry conditions: A = character to be printed
+; Exit conditions:
+;       Carry -- set if cancelled
+;             -- reset if normal return
 ; ======================================================
-6D3FH  (C5H) PUSH B
+PRINTR:
+    PUSH B
 6D40H  (4FH) MOV C,A
-6D41H  (CDH) CALL CHSHBR     ; Check if SHIFT-BREAK is being pressed
-6D44H  (DAH) JC 6D6AH
+L6D41:
+    CALL CHSHBR     ; Check if SHIFT-BREAK is being pressed
+6D44H  (DAH) JC L6D6A
 6D47H  (DBH) IN BBH
 6D49H  (E6H) ANI 06H
 6D4BH  (EEH) XRI 02H
-6D4DH  (C2H) JNZ 6D41H
+6D4DH  (C2H) JNZ L6D41
 6D50H  (CDH) CALL 765CH     ; Set interrupt to 1DH
 6D53H  (79H) MOV A,C
 6D54H  (D3H) OUT B9H
@@ -17740,11 +17769,13 @@ FNKSB:
 6D5EH  (78H) MOV A,B
 6D5FH  (D3H) OUT E8H
 6D61H  (06H) MVI B,24H
-6D63H  (05H) DCR B
-6D64H  (C2H) JNZ 6D63H
+L6D63:
+    DCR B
+6D64H  (C2H) JNZ L6D63
 6D67H  (3EH) MVI A,09H
 6D69H  (30H) SIM
-6D6AH  (79H) MOV A,C
+L6D6A:
+    MOV A,C
 6D6BH  (C1H) POP B
 6D6CH  (C9H) RET
 
