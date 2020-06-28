@@ -1,39 +1,49 @@
+#ifndef MemVars
+#include	"MemVar.asm85"
+#endif
+
+    org 0000H
 ; ======================================================
-; 0000H: Reset Vector
+; Reset Vector
 ; ======================================================
     JMP 1BA7H      ; Different from M100: Jump to boot routine
 
+    org 0003H
     DB   "MENU",00H
 
-
+    org 0008H
 ; ======================================================
-; 0008H: Compare next byte with M
+; Compare next byte with M
 ; ======================================================
-    MOV A,M
-    XTHL
-    CMP M
-    JNZ ERRSYN      ; Generate Syntax error
-    INX H
-    XTHL
+    MOV A,M        ; Get byte from (HL)
+    XTHL           ; Get address of next inst. from stack
+    CMP M          ; Compare with expected code byte
+    JNZ ERRSYN     ; Generate Syntax error if no match
+    INX H          ; Increment past the compare byte
+    XTHL           ; Put new return address on stack
 
 ; Fall through to get next BASIC instruction. The code above is
 ; used to parse the validity of BASIC statements.
 
+    org 0010H
 ; ======================================================
-; 0010H: Get next non-white char from M
+; Get next non-white char from M
 ; ======================================================
     JMP 0858H      ; RST 10H routine with pre-increment of HL
 
 
+    org 0010H
 ; ======================================================
-; 0013H: Load pointer to Storage of TEXT Line Starts in DE
+; Load pointer to Storage of TEXT Line Starts in DE
 ; ======================================================
     XCHG
     LHLD F6EBH     ; Storage of TEXT Line Starts
     XCHG
 
+
+    org 0010H
 ; ======================================================
-; 0018H: Compare DE and HL
+; Compare DE and HL
 ; ======================================================
     MOV A,H        ; Compare MSB first to test <>
     SUB D          ; Compare with D
@@ -42,66 +52,79 @@
     SUB E          ; Compare with E
     RET
 
-
+    org 001EH
 ; ======================================================
-; 001EH: Send a space to screen/printer
+; VRVIDFSend a space to screen/printer
 ; ======================================================
     MVI A,20H      ; Load SPACE into A
 
+
+    org 0020H
 ; ======================================================
-; 0020H: Send character in A to screen/printer
+; Send character in A to screen/printer
 ; ======================================================
     JMP LCD      ; Send A to screen or printer
-
     NOP
 
+
+    org 0024H
 ; ======================================================
-; 0024H: Power down TRAP
+; Power down TRAP
 ; ======================================================
-    JMP F602H      ; RAM vector for TRAP interrupt
+    JMP VLPSIH      ; RAM vector for TRAP interrupt
     NOP
 
+
+    org 0028H
 ; ======================================================
-; 0028H: Determine type of last var used
+; Determine type of last var used
 ; ======================================================
     JMP 1069H      ; RST 28H routine
     NOP
 
+
+    org 002CH
 ; ======================================================
-; 002CH: RST 5.5 -- Bar Code Reader
+; RST 5.5 -- Bar Code Reader
 ; ======================================================
     DI
-    JMP F5F9H      ; RST 5.5 RAM Vector
+    JMP VBCRIH      ; RST 5.5 RAM Vector
 
 
+    org 0030H
 ; ======================================================
-; 0030H: Get sign of FAC1
+; Get sign of FAC1
 ; ======================================================
     JMP 33DCH      ; RST 30H routine
     NOP
 
+    org 0034H
 ; ======================================================
-; 0034H: RST 6.5 -- RS232 character pending
+; RST 6.5 -- RS232 character pending
 ; ======================================================
     DI
     JMP 6DACH      ; RST 6.5 routine (RS232 receive interrupt)
 
 
+    org 0038H
 ; ======================================================
-; 0038H: RAM vector table driver
+; RAM vector table driver
 ; ======================================================
     JMP 7FD6H      ; RST 38H RAM vector driver routine
     NOP
 
+
+    org 003CH
 ; ======================================================
-; 003CH: RST 7.5 -- Timer background task
+; RST 7.5 -- Timer background task
 ; ======================================================
     DI
     JMP 1B32H      ; RST 7.5 interrupt routine
 
 
+    org 0040H
 ; ======================================================
-; 0040H: Function vector table for SGN to MID$
+; Function vector table for SGN to MID$
 ; ======================================================
     DW   3407H,3654H,33F2H,2B4CH
     DW   1100H,10C8H,10CEH,305AH
@@ -112,9 +135,9 @@
     DW   273AH,2A07H,294FH,295FH
     DW   298EH,29ABH,29DCH,29E6H
 
-
+    org 0080H
 ; ======================================================
-; 0080H: BASIC statement keyword table END to NEW
+; BASIC statement keyword table END to NEW
 ; ======================================================
     DB   80H or 'E',"ND"        ; 0
     DB   80H or 'F',"OR"
@@ -181,9 +204,9 @@
     DB   80H or 'S',"CREEN"
     DB   80H or 'N',"EW"
 
-
+    org 018FH
 ; ======================================================
-; 018FH: Function keyword table TAB to <
+; Function keyword table TAB to <
 ; ======================================================
     DB   80H or 'T',"AB("
     DB   80H or 'T',"O"         ; 65
@@ -217,9 +240,9 @@
     DB   80H or '='
     DB   80H or '<'
 
-
+    org 01F0H
 ; ======================================================
-; 01F0H: Function keyword table SGN to MID$
+; Function keyword table SGN to MID$
 ; ======================================================
     DB   80H or 'S',"GN"        ; 95
     DB   80H or 'I',"NT"
@@ -256,8 +279,9 @@
     DB   80H or "'"             ; 127
     DB   80H
 
+    org 0262H
 ; ======================================================
-; 0262H: BASIC statement vector table for END to NEW
+; BASIC statement vector table for END to NEW
 ; ======================================================
     DW   409FH,0726H,4174H,099EH
     DW   0CA3H,478BH,0CD9H,09C3H
@@ -276,18 +300,18 @@
     DW   1419H,1DFAH,5797H,1A78H
     DW   2037H,1F91H,1E22H,20FEH
 
-
+    org 02E2H
 ; ======================================================
-; 02E2H: Operator order of precedence table
+; Operator order of precedence table
 ; ======================================================
     DB   79H, 79H, 7CH, 7CH
     DB   7FH, 50H, 46H, 3CH
     DB   32H, 28H, 7AH, 7BH
     DB   BAH, 35H, 00H, 00H
 
-
+    org 02F2H
 ; ======================================================
-; 02F2H: Vector table for math operations
+; Vector table for math operations
 ; ======================================================
     DW   3501H,35D9H
     DW   352AH,2B78H,2B69H,2CFFH
@@ -296,9 +320,9 @@
     DW   3498H,3704H,36F8H,3725H
     DW   0F0DH,3DF7H,34C2H
 
-
+    org 031CH
 ; ======================================================
-; 031CH: BASIC error message text
+; BASIC error message text
 ; ======================================================
     DB   "NF"
     DB   "SN"
@@ -335,29 +359,30 @@
 ; ======================================================
 ; 035AH: Initialization image loaded to F5F0H
 ; ======================================================
-    DB   4DH            ; LSB of COLD vs WARM boot marker (at address F5F0H)
+    DB   4DH            ; LSB of COLD vs WARM boot marker (at address VSSYS)
     DB   8AH            ; MSB of COLD vs WARM boot marker
-    DB   00H            ; Auto PowerDown signature LSB (at address F5F2H)
+    DB   00H            ; Auto PowerDown signature LSB (at address VSPOPD)
     DB   00H            ; Auto PowerDown signature MSB
-    DB   F0H            ; LSB of HIMEM (F5F4H)
+    DB   F0H            ; LSB of HIMEM (VHIMEM)
     DB   F5H            ; MSB of HIMEM
-    RET                 ; This RET can be changed to JMP to hook Boot-up (F5F6H)
+    RET                 ; This RET can be changed to JMP to hook Boot-up (VPWONH)
     NOP                 ; Space for address for JMP
     NOP
-    EI                  ; This is the hook for WAND (F5F9H) (RST 5.5)
+    EI                  ; This is the hook for WAND (VBCRIH) (RST 5.5)
     RET                 ; Replace EI, RET, NOP with a JMP instruction
     NOP
-    RET                 ; This is the RST 6.5 routine (RS232 receive interrupt) hook (F5FCH)
+    RET                 ; This is the RST 6.5 routine (RS232 receive interrupt) hook (VUARTH)
     NOP                 ; Replace RET, NOP, NOP with a JMP instruction
     NOP
-    RET                 ; This is the RST 7.5 hook (Background tick)  (F5FFH)
+    RET                 ; This is the RST 7.5 hook (Background tick)  (VTLINH)
     NOP
     NOP
-    JMP 1431H           ; Normal TRAP (low power) interrupt routine - Hook at F602H
+    JMP 1431H           ; Normal TRAP (low power) interrupt routine - Hook at VLPSIH
 
 
+    org 036FH
 ; ======================================================
-; 036FH: External ROM detect image loaded at F605H
+; External ROM detect image loaded at F605H
 ; ======================================================
     DB   3EH,01H,D3H,E8H,21H,40H,00H,11H  ; F605H - MVI A,01H;  OUT E8H; LXI H,0040H;  LXI D,FAA4H
     DB   A4H,FAH,7EH,12H,23H,13H,7DH,D6H  ; F60DH - MVI A,M;    STAX D;  INX H; INX D; MOV A,L; SUI 48H
@@ -377,8 +402,9 @@
     DB   FCH,00H,00H
 
 
+    org 03EAH
 ; ======================================================
-; 03EAH: BASIC message strings
+; BASIC message strings
 ; ======================================================
     DB   " Error",00H
     DB   " in ",00H
@@ -718,7 +744,7 @@ ERRSYN:
 ; ======================================================
 ; Update line addresses for current BASIC program
 ; ======================================================
-05F0H  (2AH) LHLD F67CH     ; Get Start of BASIC program pointer
+05F0H  (2AH) LHLD VBASPP     ; Get Start of BASIC program pointer
 05F3H  (EBH) XCHG           ; Put start of program in DE
 
 ; ======================================================
@@ -767,7 +793,7 @@ ERRSYN:
 ; ======================================================
 ; Find line number in DE
 ; ======================================================
-0628H  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+0628H  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 
 ; ======================================================
 ; Find line number in DE starting at HL
@@ -1701,7 +1727,7 @@ ERRSYN:
 ; LPRINT statement
 ; ======================================================
 0B4EH  (3EH) MVI A,01H
-0B50H  (32H) STA F675H      ; Output device for RST 20H (0=screen)
+0B50H  (32H) STA VOUTSW      ; Output device for RST 20H (0=screen)
 0B53H  (C3H) JMP 0B60H
 
 
@@ -1738,15 +1764,15 @@ ERRSYN:
 0B92H  (CDH) CALL 421AH
 0B95H  (C2H) JNZ 0BC2H
 0B98H  (2AH) LHLD FC1AH     ; Start of FAC1 for integers
-0B9BH  (3AH) LDA F675H      ; Output device for RST 20H (0=screen)
+0B9BH  (3AH) LDA VOUTSW      ; Output device for RST 20H (0=screen)
 0B9EH  (B7H) ORA A
 0B9FH  (CAH) JZ 0BABH
-0BA2H  (3AH) LDA F674H      ; Line printer head position
+0BA2H  (3AH) LDA VLPPCL      ; Line printer head position
 0BA5H  (86H) ADD M
 0BA6H  (FEH) CPI FFH
 0BA8H  (C3H) JMP 0BB9H
 
-0BABH  (3AH) LDA F63CH      ; Active columns count (1-40)
+0BABH  (3AH) LDA VACTCC      ; Active columns count (1-40)
 0BAEH  (47H) MOV B,A
 0BAFH  (3CH) INR A
 0BB0H  (CAH) JZ 0BC2H
@@ -1769,10 +1795,10 @@ ERRSYN:
 0BD4H  (CDH) CALL 421AH
 0BD7H  (7EH) MOV A,M
 0BD8H  (C2H) JNZ 0BF8H
-0BDBH  (3AH) LDA F675H      ; Output device for RST 20H (0=screen)
+0BDBH  (3AH) LDA VOUTSW      ; Output device for RST 20H (0=screen)
 0BDEH  (B7H) ORA A
 0BDFH  (CAH) JZ 0BEAH
-0BE2H  (3AH) LDA F674H      ; Line printer head position
+0BE2H  (3AH) LDA VLPPCL      ; Line printer head position
 0BE5H  (FEH) CPI EEH
 0BE7H  (C3H) JMP 0BF2H
 
@@ -1802,10 +1828,10 @@ ERRSYN:
 0C0FH  (CDH) CALL 421AH
 0C12H  (7EH) MOV A,M
 0C13H  (C2H) JNZ 0C26H
-0C16H  (3AH) LDA F675H      ; Output device for RST 20H (0=screen)
+0C16H  (3AH) LDA VOUTSW      ; Output device for RST 20H (0=screen)
 0C19H  (B7H) ORA A
 0C1AH  (CAH) JZ 0C23H
-0C1DH  (3AH) LDA F674H      ; Line printer head position
+0C1DH  (3AH) LDA VLPPCL      ; Line printer head position
 0C20H  (C3H) JMP 0C26H
 
 0C23H  (3AH) LDA F788H      ; Horiz. position of cursor (0-39)
@@ -1823,7 +1849,7 @@ ERRSYN:
 0C36H  (C3H) JMP 0B65H
 
 0C39H  (AFH) XRA A
-0C3AH  (32H) STA F675H      ; Output device for RST 20H (0=screen)
+0C3AH  (32H) STA VOUTSW      ; Output device for RST 20H (0=screen)
 0C3DH  (E5H) PUSH H
 0C3EH  (67H) MOV H,A
 0C3FH  (6FH) MOV L,A
@@ -2577,7 +2603,7 @@ ERRSYN:
 ; ======================================================
 ; LPOS function
 ; ======================================================
-10C8H  (3AH) LDA F674H      ; Line printer head position
+10C8H  (3AH) LDA VLPPCL      ; Line printer head position
 10CBH  (C3H) JMP 10D1H      ; Load integer in A into FAC1
 
 
@@ -2692,7 +2718,7 @@ ERRSYN:
 ; LLIST statement
 ; ======================================================
 113BH  (3EH) MVI A,01H
-113DH  (32H) STA F675H      ; Output device for RST 20H (0=screen)
+113DH  (32H) STA VOUTSW      ; Output device for RST 20H (0=screen)
 
 ; ======================================================
 ; LIST statement
@@ -2741,7 +2767,7 @@ ERRSYN:
 1182H  (3EH) MVI A,20H
 1184H  (E7H) RST 4          ; Send character in A to screen/printer
 1185H  (CDH) CALL 11AAH
-1188H  (21H) LXI H,F685H    ; Keyboard buffer
+1188H  (21H) LXI H,VKYBBF    ; Keyboard buffer
 118BH  (CDH) CALL 11A2H     ; Send buffer at M to screen
 118EH  (CDH) CALL 4BCBH
 1191H  (C3H) JMP 114AH
@@ -2765,7 +2791,7 @@ ERRSYN:
 11A6H  (23H) INX H
 11A7H  (C3H) JMP 11A2H      ; Send buffer at M to screen
 
-11AAH  (01H) LXI B,F685H    ; Keyboard buffer
+11AAH  (01H) LXI B,VKYBBF    ; Keyboard buffer
 11ADH  (16H) MVI D,FFH
 11AFH  (AFH) XRA A
 11B0H  (32H) STA FB66H
@@ -3035,12 +3061,12 @@ TKEYCH:            ; Test for actual keystroke characters to process
     JNZ L1358
     CALL CONIOB
     MVI A,FFH
-    STA F656H      ; Power off exit condition switch
+    STA VPROFS      ; Power off exit condition switch
 CKQPDL:            ; Check keyboard queue loop
     CALL CHSNS     ; Check keyboard queue for pending characters
     JZ CKQPDL
     XRA A
-    STA F656H      ; Power off exit condition switch
+    STA VPROFS      ; Power off exit condition switch
     CALL COFIOB    ; Turn cursor back off if it was off before
 L1358:
     LXI H,F932H
@@ -3091,7 +3117,7 @@ TOGLAB:            ; Toggle function key label line
     LDA FAADH      ; Label line enable flag
     ANA A          ; Test if Label line is enabled
     RZ             ; Return if not enabled
-    LDA F63DH      ; Label line protect status
+    LDA VLABLF      ; Label line protect status
     XRI FFH        ; Test if Label Line is on or off
 ; Erase or Display function key line based on Z flag
     JZ ERAFNK       ; Erase function key display
@@ -3099,7 +3125,7 @@ TOGLAB:            ; Toggle function key label line
 L13B5:
     DI             ; Disable interrupts for power-down
     MVI M,00H
-    LDA F657H      ; Load power-down time (1/10th of a minute)
+    LDA VPROFT      ; Load power-down time (1/10th of a minute)
     DCX H          ; Point to power-down count-down
     MOV M,A        ; Update power-down count-down for next power-up
     CALL 143FH     ; Turn off computer
@@ -3186,10 +3212,10 @@ ICTRLC:
 ; Normal TRAP (low power) interrupt routine
 ; ======================================================
 1431H  (F5H) PUSH PSW
-1432H  (3AH) LDA F656H      ; Power off exit condition switch
+1432H  (3AH) LDA VPROFS      ; Power off exit condition switch
 1435H  (A7H) ANA A
 1436H  (3EH) MVI A,01H
-1438H  (32H) STA F656H      ; Power off exit condition switch
+1438H  (32H) STA VPROFS      ; Power off exit condition switch
 143BH  (C2H) JNZ 1451H
 143EH  (F1H) POP PSW
 
@@ -3205,7 +3231,7 @@ ICTRLC:
 1447H  (39H) DAD SP
 1448H  (22H) SHLD FABEH     ; SP save area for power up/down
 144BH  (21H) LXI H,9C0BH
-144EH  (22H) SHLD F5F2H
+144EH  (22H) SHLD VSPOPD
 1451H  (F3H) DI
 1452H  (DBH) IN BAH
 1454H  (F6H) ORI 10H
@@ -3227,7 +3253,7 @@ ICTRLC:
 1461H  (CDH) CALL 112EH     ; Evaluate expression at M-1
 1464H  (FEH) CPI 0AH
 1466H  (DAH) JC 08DBH       ; Generate FC error
-1469H  (32H) STA F657H
+1469H  (32H) STA VPROFT
 146CH  (32H) STA F931H
 146FH  (C9H) RET
 
@@ -3982,7 +4008,7 @@ L147F:
 1856H  (2BH) DCX H
 1857H  (2BH) DCX H
 1858H  (2BH) DCX H
-1859H  (11H) LXI D,F65BH    ; RS232 parameter setting table
+1859H  (11H) LXI D,VISTAT    ; RS232 parameter setting table
 185CH  (06H) MVI B,05H
 185EH  (7EH) MOV A,M
 185FH  (DAH) JC 1864H
@@ -4075,7 +4101,7 @@ L147F:
 18E1H  (A7H) ANA A
 18E2H  (C8H) RZ
 18E3H  (EBH) XCHG
-18E4H  (2AH) LHLD F678H     ; BASIC string buffer pointer
+18E4H  (2AH) LHLD VTPRAM     ; BASIC string buffer pointer
 18E7H  (EBH) XCHG
 18E8H  (DFH) RST 3          ; Compare DE and HL
 18E9H  (D0H) RNC
@@ -4497,7 +4523,7 @@ L147F:
 ; ======================================================
 ; RST 7.5 interrupt routine
 ; ======================================================
-1B32H  (CDH) CALL F5FFH     ; RST 7.5 RAM Vector
+1B32H  (CDH) CALL VTLINH     ; RST 7.5 RAM Vector
 1B35H  (E5H) PUSH H
 1B36H  (D5H) PUSH D
 1B37H  (C5H) PUSH B
@@ -4556,7 +4582,7 @@ L147F:
 1B96H  (3CH) INR A
 1B97H  (C9H) RET
 
-1B98H  (2AH) LHLD F639H     ; Cursor row (1-8)
+1B98H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 1B9BH  (22H) SHLD F6E7H
 1B9EH  (21H) LXI H,66E6H
 1BA1H  (22H) SHLD F652H
@@ -4572,7 +4598,7 @@ L147F:
 ; ======================================================
 ; Renew automatic power-off counter
 ; ======================================================
-1BB1H  (3AH) LDA F657H
+1BB1H  (3AH) LDA VPROFT
 1BB4H  (32H) STA F931H
 1BB7H  (C9H) RET
 
@@ -4710,7 +4736,7 @@ L147F:
 ; ======================================================
 1C6DH  (FEH) CPI D1H
 1C6FH  (EBH) XCHG
-1C70H  (2AH) LHLD F64EH     ; X coord of last point plotted
+1C70H  (2AH) LHLD VXPIXS     ; X coord of last point plotted
 1C73H  (EBH) XCHG
 1C74H  (C4H) CNZ 1D2EH      ; Get (X),Y) coordinate from tokenized string at M
 1C77H  (D5H) PUSH D
@@ -4863,7 +4889,7 @@ L147F:
 1D43H  (F1H) POP PSW
 1D44H  (57H) MOV D,A
 1D45H  (EBH) XCHG
-1D46H  (22H) SHLD F64EH     ; X coord of last point plotted
+1D46H  (22H) SHLD VXPIXS     ; X coord of last point plotted
 1D49H  (EBH) XCHG
 1D4AH  (7EH) MOV A,M
 1D4BH  (FEH) CPI 29H
@@ -4887,7 +4913,7 @@ L147F:
 1D63H  DB   2CH
 1D64H  (E5H) PUSH H
 1D65H  (EBH) XCHG
-1D66H  (3AH) LDA F63CH      ; Active columns count (1-40)
+1D66H  (3AH) LDA VACTCC      ; Active columns count (1-40)
 1D69H  (2FH) CMA
 1D6AH  (3CH) INR A
 1D6BH  (4FH) MOV C,A
@@ -4897,11 +4923,11 @@ L147F:
 1D70H  (55H) MOV D,L
 1D71H  (09H) DAD B
 1D72H  (DAH) JC 1D6FH
-1D75H  (3AH) LDA F63CH      ; Active columns count (1-40)
+1D75H  (3AH) LDA VACTCC      ; Active columns count (1-40)
 1D78H  (14H) INR D
 1D79H  (BAH) CMP D
 1D7AH  (DAH) JC 08DBH       ; Generate FC error
-1D7DH  (3AH) LDA F63BH      ; Active rows count (1-8)
+1D7DH  (3AH) LDA VACTLC      ; Active rows count (1-8)
 1D80H  (1CH) INR E
 1D81H  (BBH) CMP E
 1D82H  (DAH) JC 08DBH       ; Generate FC error
@@ -4918,7 +4944,7 @@ L147F:
 ; CSRLIN function
 ; ======================================================
 1D90H  (E5H) PUSH H
-1D91H  (3AH) LDA F639H      ; Cursor row (1-8)
+1D91H  (3AH) LDA VCURLN      ; Cursor row (1-8)
 1D94H  (3DH) DCR A
 1D95H  (CDH) CALL 340AH
 1D98H  (E1H) POP H
@@ -4945,7 +4971,7 @@ L147F:
 1DA7H  (E5H) PUSH H
 1DA8H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
 1DA9H  DB   02H
-1DAAH  (21H) LXI H,F5F0H    ; Active system signature -- Warm vs Cold boot
+1DAAH  (21H) LXI H,VSSYS    ; Active system signature -- Warm vs Cold boot
 1DADH  (CDH) CALL 37DBH
 1DB0H  (E1H) POP H
 1DB1H  (C9H) RET
@@ -4963,7 +4989,7 @@ L147F:
 ; HIMEM function
 ; ======================================================
 1DB9H  (E5H) PUSH H
-1DBAH  (2AH) LHLD F5F4H     ; HIMEM
+1DBAH  (2AH) LHLD VHIMEM     ; HIMEM
 1DBDH  (CDH) CALL 37DBH
 1DC0H  (E1H) POP H
 1DC1H  (D7H) RST 2          ; Get next non-white char from M
@@ -5087,9 +5113,9 @@ L147F:
 1E4DH  (32H) STA F638H      ; New Console device flag
 1E50H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
 1E51H  DB   3EH
-1E52H  (22H) SHLD F639H     ; Cursor row (1-8)
+1E52H  (22H) SHLD VCURLN     ; Cursor row (1-8)
 1E55H  (EBH) XCHG
-1E56H  (22H) SHLD F63BH     ; Active rows count (1-8)
+1E56H  (22H) SHLD VACTLC     ; Active rows count (1-8)
 1E59H  (32H) STA F676H
 1E5CH  (E1H) POP H
 1E5DH  (C9H) RET
@@ -5143,7 +5169,7 @@ L1E69:
 1EA0H  (C5H) PUSH B
 1EA1H  (22H) SHLD FA8CH
 1EA4H  (EBH) XCHG
-1EA5H  (22H) SHLD F67CH     ; Start of BASIC program pointer
+1EA5H  (22H) SHLD VBASPP     ; Start of BASIC program pointer
 1EA8H  (CDH) CALL 05F0H     ; Update line addresses for current BASIC program
 1EABH  (E1H) POP H
 1EACH  (7EH) MOV A,M
@@ -5215,7 +5241,7 @@ L1E69:
 1F27H  (22H) SHLD FA8CH
 1F2AH  (3EH) MVI A,80H
 1F2CH  (EBH) XCHG
-1F2DH  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+1F2DH  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 1F30H  (EBH) XCHG
 1F31H  (CDH) CALL 2239H     ; Save new entry to Catalog
 1F34H  (CDH) CALL 21D4H
@@ -5236,7 +5262,7 @@ L1E69:
 ; ======================================================
 1F42H  (21H) LXI H,F957H
 1F45H  (0EH) MVI C,03H
-1F47H  (3AH) LDA F63CH      ; Active columns count (1-40)
+1F47H  (3AH) LDA VACTCC      ; Active columns count (1-40)
 1F4AH  (FEH) CPI 28H
 1F4CH  (CAH) JZ 1F51H
 1F4FH  (0EH) MVI C,06H
@@ -5265,7 +5291,7 @@ L1E69:
 1F70H  (7EH) MOV A,M
 1F71H  (E7H) RST 4          ; Send character in A to screen/printer
 1F72H  (D1H) POP D
-1F73H  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+1F73H  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 1F76H  (DFH) RST 3          ; Compare DE and HL
 1F77H  (3EH) MVI A,2AH
 1F79H  (06H) MVI B,20H
@@ -5356,7 +5382,7 @@ L1E69:
 2002H  (C3H) JMP 1FBFH
 
 2005H  (E5H) PUSH H
-2006H  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+2006H  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 2009H  (DFH) RST 3          ; Compare DE and HL
 200AH  (E1H) POP H
 200BH  (CAH) JZ 08DBH       ; Generate FC error
@@ -5365,7 +5391,7 @@ L1E69:
 2014H  (C3H) JMP 0502H      ; Vector to BASIC ready - print Ok
 
 2017H  (36H) MVI M,00H
-2019H  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+2019H  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 201CH  (DFH) RST 3          ; Compare DE and HL
 201DH  (F5H) PUSH PSW
 201EH  (D5H) PUSH D
@@ -5379,9 +5405,9 @@ L1E69:
 202CH  (F1H) POP PSW
 202DH  (C8H) RZ
 202EH  (D8H) RC
-202FH  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+202FH  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 2032H  (09H) DAD B
-2033H  (22H) SHLD F67CH     ; Start of BASIC program pointer
+2033H  (22H) SHLD VBASPP     ; Start of BASIC program pointer
 2036H  (C9H) RET
 
 
@@ -5515,7 +5541,7 @@ L1E69:
 2105H  (21H) LXI H,F999H
 2108H  (22H) SHLD FA8CH
 210BH  (2AH) LHLD F99AH     ; BASIC program not saved pointer
-210EH  (22H) SHLD F67CH     ; Start of BASIC program pointer
+210EH  (22H) SHLD VBASPP     ; Start of BASIC program pointer
 2111H  (AFH) XRA A
 2112H  (77H) MOV M,A
 2113H  (23H) INX H
@@ -5786,7 +5812,7 @@ L1E69:
 
 2298H  (CDH) CALL 05F0H     ; Update line addresses for current BASIC program
 229BH  (EBH) XCHG
-229CH  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+229CH  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 229FH  (7BH) MOV A,E
 22A0H  (95H) SUB L
 22A1H  (6FH) MOV L,A
@@ -5802,7 +5828,7 @@ L1E69:
 22AFH  (CDH) CALL 260BH     ; Open CAS for output of BASIC files
 22B2H  (CDH) CALL 2648H
 22B5H  (D1H) POP D
-22B6H  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+22B6H  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 
 ; ======================================================
 ; Save buffer at M to tape
@@ -5975,7 +6001,7 @@ L1E69:
 23D3H  (E5H) PUSH H
 23D4H  (44H) MOV B,H
 23D5H  (4DH) MOV C,L
-23D6H  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+23D6H  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 23D9H  (E5H) PUSH H
 23DAH  (CDH) CALL 6B6DH     ; Insert BC spaces at M
 23DDH  (DAH) JC 3F17H
@@ -6056,7 +6082,7 @@ L1E69:
 245DH  (CDH) CALL 26D1H
 2460H  (2AH) LHLD FAD0H     ; Length of last program loaded/saved to tape
 2463H  (EBH) XCHG
-2464H  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+2464H  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 2467H  (CDH) CALL 2590H
 246AH  (C2H) JNZ 2478H      ; Generate Verify Failed error
 246DH  (7EH) MOV A,M
@@ -6166,7 +6192,7 @@ L1E69:
 252EH  (C3H) JMP 0804H      ; Execute BASIC program
 
 2531H  (CDH) CALL 25A4H
-2534H  (2AH) LHLD F5F4H     ; HIMEM
+2534H  (2AH) LHLD VHIMEM     ; HIMEM
 2537H  (EBH) XCHG
 2538H  (2AH) LHLD FACEH     ; 'Load address' of current program
 253BH  (DFH) RST 3          ; Compare DE and HL
@@ -6557,7 +6583,7 @@ L1E69:
 27C8H  (B7H) ORA A
 27C9H  (0EH) MVI C,F1H
 27CBH  (F5H) PUSH PSW
-27CCH  (2AH) LHLD F678H     ; BASIC string buffer pointer
+27CCH  (2AH) LHLD VTPRAM     ; BASIC string buffer pointer
 27CFH  (EBH) XCHG
 27D0H  (2AH) LHLD FB8CH
 27D3H  (2FH) CMA
@@ -7134,7 +7160,7 @@ L1E69:
 2AD1H  (2AH) LHLD FBB6H     ; Unused memory pointer
 2AD4H  (DFH) RST 3          ; Compare DE and HL
 2AD5H  (DAH) JC 2AE9H
-2AD8H  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+2AD8H  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 2ADBH  (DFH) RST 3          ; Compare DE and HL
 2ADCH  (D2H) JNC 2AE9H
 2ADFH  (E1H) POP H
@@ -7232,7 +7258,7 @@ L1E69:
 2B58H  (CDH) CALL 2919H
 2B5BH  (CDH) CALL 27F1H
 2B5EH  (EBH) XCHG
-2B5FH  (2AH) LHLD F678H     ; BASIC string buffer pointer
+2B5FH  (2AH) LHLD VTPRAM     ; BASIC string buffer pointer
 2B62H  (EBH) XCHG
 2B63H  (2AH) LHLD FB8CH
 2B66H  (C3H) JMP 10BFH
@@ -10403,7 +10429,7 @@ L1E69:
 3F15H  (E1H) POP H
 3F16H  (D8H) RC
 3F17H  (CDH) CALL 05F0H     ; Update line addresses for current BASIC program
-3F1AH  (2AH) LHLD F678H     ; BASIC string buffer pointer
+3F1AH  (2AH) LHLD VTPRAM     ; BASIC string buffer pointer
 3F1DH  (2BH) DCX H
 3F1EH  (2BH) DCX H
 3F1FH  (22H) SHLD FB9DH     ; SP used by BASIC to reinitialize the stack
@@ -10414,7 +10440,7 @@ L1E69:
 ; ======================================================
 ; Initialize BASIC Variables for new execution
 ; ======================================================
-3F28H  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+3F28H  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 3F2BH  (2BH) DCX H
 3F2CH  (22H) SHLD FB99H     ; Address of last variable assigned
 3F2FH  (CDH) CALL 4009H     ; Clear all COM), TIME), and KEY interrupt definitions
@@ -10443,7 +10469,7 @@ L1E69:
 3F67H  (C2H) JNZ 3F6DH
 3F6AH  (32H) STA FCA7H
 3F6DH  (C1H) POP B
-3F6EH  (2AH) LHLD F678H     ; BASIC string buffer pointer
+3F6EH  (2AH) LHLD VTPRAM     ; BASIC string buffer pointer
 3F71H  (2BH) DCX H
 3F72H  (2BH) DCX H
 3F73H  (22H) SHLD FB9DH     ; SP used by BASIC to reinitialize the stack
@@ -10646,7 +10672,7 @@ L1E69:
 ; RESTORE statement
 ; ======================================================
 407FH  (EBH) XCHG
-4080H  (2AH) LHLD F67CH     ; Start of BASIC program pointer
+4080H  (2AH) LHLD VBASPP     ; Start of BASIC program pointer
 4083H  (CAH) JZ 4094H
 4086H  (EBH) XCHG
 4087H  (CDH) CALL 08EBH     ; Convert ASCII number at M to binary
@@ -10749,7 +10775,7 @@ L1E69:
 4108H  (2BH) DCX H
 4109H  (D7H) RST 2          ; Get next non-white char from M
 410AH  (E5H) PUSH H
-410BH  (2AH) LHLD F5F4H     ; HIMEM
+410BH  (2AH) LHLD VHIMEM     ; HIMEM
 410EH  (44H) MOV B,H
 410FH  (4DH) MOV C,L
 4110H  (2AH) LHLD FB67H     ; File buffer area pointer
@@ -10796,10 +10822,10 @@ L1E69:
 4153H  (DFH) RST 3          ; Compare DE and HL
 4154H  (D2H) JNC 3F17H
 4157H  (EBH) XCHG
-4158H  (22H) SHLD F678H     ; BASIC string buffer pointer
+4158H  (22H) SHLD VTPRAM     ; BASIC string buffer pointer
 415BH  (60H) MOV H,B
 415CH  (69H) MOV L,C
-415DH  (22H) SHLD F5F4H     ; HIMEM
+415DH  (22H) SHLD VHIMEM     ; HIMEM
 4160H  (E1H) POP H
 4161H  (22H) SHLD FB67H     ; File buffer area pointer
 4164H  (E1H) POP H
@@ -11070,7 +11096,7 @@ ESCA:
 ; ======================================================
 ; Send cursor to lower left of CRT
 ; ======================================================
-4277H  (2AH) LHLD F63BH     ; Active rows count (1-8)
+4277H  (2AH) LHLD VACTLC     ; Active rows count (1-8)
 427AH  (26H) MVI H,01H
 
 ; ======================================================
@@ -11097,11 +11123,11 @@ POSIT:
 ; Exit conditions: none
 ; ======================================================
 ERAFNK:
-    LDA F63DH      ; Label line protect status
+    LDA VLABLF      ; Label line protect status
     ANA A
     RZ
     CALL RSTSYS    ; Unprotect line 8.  An ESC U is printed
-    LHLD F639H     ; Cursor row (1-8)
+    LHLD VCURLN     ; Cursor row (1-8)
     PUSH H
     CALL 4277H     ; Send cursor to lower left of CRT
     CALL ERABOL    ; Erase from cursor to end of line
@@ -11127,8 +11153,8 @@ STDSPF:
 ; Exit conditions:  none
 ; ======================================================
 DSPNFK:
-    LHLD F639H     ; Cursor row (1-8)
-    LDA F63BH      ; Active rows count (1-8)
+    LHLD VCURLN     ; Cursor row (1-8)
+    LDA VACTLC      ; Active rows count (1-8)
     CMP L
     JNZ L42C0
     PUSH H
@@ -11144,11 +11170,11 @@ L42C0:
     CALL 4277H     ; Send cursor to lower left of CRT
     LXI H,F789H    ; Function key definition area
     MVI E,08H
-    LDA F648H      ; Reverse video switch
+    LDA VRVIDF      ; Reverse video switch
     PUSH PSW
     CALL EXTREF    ; Cancel inverse character mode
 L42D3:
-    LDA F63CH      ; Active columns count (1-40)
+    LDA VACTCC      ; Active columns count (1-40)
     CPI 28H
     LXI B,040CH
     JZ L42E1
@@ -11201,7 +11227,7 @@ L42ED:
 4327H  (A7H) ANA A
 4328H  (C2H) JNZ 434AH
 432BH  (CDH) CALL 4335H     ; Character plotting level 4. Turn off background task & call level 5
-432EH  (2AH) LHLD F639H     ; Cursor row (1-8)
+432EH  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 4331H  (22H) SHLD F640H     ; Cursor row (1-8)
 4334H  (C9H) RET
 
@@ -11211,7 +11237,7 @@ L42ED:
 ; ======================================================
 4335H  (CDH) CALL 73C5H
 4338H  (CDH) CALL 434CH     ; Character plotting level 5. Handle ESC sequences & call level 6
-433BH  (2AH) LHLD F639H     ; Cursor row (1-8)
+433BH  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 433EH  (EBH) XCHG
 433FH  (CDH) CALL SETCUR
 4342H  (3AH) LDA F63FH      ; Cursor status (0 = off)
@@ -11230,7 +11256,7 @@ L42ED:
 4350H  (A7H) ANA A
 4351H  (C2H) JNZ 43FAH      ; ESCape sequence driver
 4354H  (79H) MOV A,C
-4355H  (2AH) LHLD F639H     ; Cursor row (1-8)
+4355H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 4358H  (FEH) CPI 09H
 435AH  (CAH) JZ 4480H       ; Tab routine
 435DH  (FEH) CPI 7FH
@@ -11265,7 +11291,7 @@ L42ED:
 4383H  (66H) MOV H,M        ; Get handler MSB
 4384H  (6FH) MOV L,A        ; Copy handler LSB to L
 4385H  (E5H) PUSH H         ; Push the key handler address on stack
-4386H  (2AH) LHLD F639H     ; Cursor row (1-8)
+4386H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 4389H  (C9H) RET            ; "RETurn" to the key handler address
 
 
@@ -11294,7 +11320,7 @@ L42ED:
 43A7H  (F1H) POP PSW
 43A8H  (C9H) RET
 
-43A9H  (3AH) LDA F63DH      ; Label line protect status
+43A9H  (3AH) LDA VLABLF      ; Label line protect status
 43ACH  (C6H) ADI 08H
 43AEH  (C9H) RET
 
@@ -11373,11 +11399,11 @@ L42ED:
 
 4411H  (3DH) DCR A
 4412H  (32H) STA F646H      ; ESC mode flag for RST 20H
-4415H  (3AH) LDA F63CH      ; Active columns count (1-40)
-4418H  (11H) LXI D,F63AH    ; Cursor column (1-40)
+4415H  (3AH) LDA VACTCC      ; Active columns count (1-40)
+4418H  (11H) LXI D,VCURCL    ; Cursor column (1-40)
 441BH  (CAH) JZ 4426H
-441EH  (3AH) LDA F63BH      ; Active rows count (1-8)
-4421H  (21H) LXI H,F63DH    ; Label line protect status
+441EH  (3AH) LDA VACTLC      ; Active rows count (1-8)
+4421H  (21H) LXI H,VLABLF    ; Label line protect status
 4424H  (86H) ADD M
 4425H  (1BH) DCX D
 4426H  (47H) MOV B,A
@@ -11396,7 +11422,7 @@ L42ED:
 ; ESC p routine (start inverse video)
 ; ======================================================
 4431H  (F6H) ORI AFH
-4433H  (32H) STA F648H      ; Reverse video switch
+4433H  (32H) STA VRVIDF      ; Reverse video switch
 4436H  (C9H) RET
 
 
@@ -11405,7 +11431,7 @@ L42ED:
 ; ======================================================
 4437H  (AFH) XRA A
 4438H  (C2H) JNZ FF3EH
-443BH  (32H) STA F63DH      ; Label line protect status
+443BH  (32H) STA VLABLF      ; Label line protect status
 443EH  (C9H) RET
 
 
@@ -11431,7 +11457,7 @@ L42ED:
 ; ======================================================
 ; ESC C routine (move cursor right)
 ; ======================================================
-4453H  (3AH) LDA F63CH      ; Active columns count (1-40)
+4453H  (3AH) LDA VACTCC      ; Active columns count (1-40)
 4456H  (BCH) CMP H
 4457H  (C8H) RZ
 4458H  (24H) INR H
@@ -11451,7 +11477,7 @@ L42ED:
 ; ======================================================
 4461H  (CDH) CALL 445CH     ; ESC D routine (move cursor left)
 4464H  (C0H) RNZ
-4465H  (3AH) LDA F63CH      ; Active columns count (1-40)
+4465H  (3AH) LDA VACTCC      ; Active columns count (1-40)
 4468H  (67H) MOV H,A
 
 ; ======================================================
@@ -11470,7 +11496,7 @@ L42ED:
 4472H  (C8H) RZ
 4473H  (DAH) JC 447BH
 4476H  (2CH) INR L
-4477H  (22H) SHLD F639H     ; Cursor row (1-8)
+4477H  (22H) SHLD VCURLN     ; Cursor row (1-8)
 447AH  (C9H) RET
 
 447BH  (2DH) DCR L
@@ -11481,12 +11507,12 @@ L42ED:
 ; ======================================================
 ; Tab routine
 ; ======================================================
-4480H  (3AH) LDA F63AH      ; Cursor column (1-40)
+4480H  (3AH) LDA VCURCL      ; Cursor column (1-40)
 4483H  (F5H) PUSH PSW
 4484H  (3EH) MVI A,20H
 4486H  (E7H) RST 4          ; Send character in A to screen/printer
 4487H  (C1H) POP B
-4488H  (3AH) LDA F63AH      ; Cursor column (1-40)
+4488H  (3AH) LDA VCURCL      ; Cursor column (1-40)
 448BH  (B8H) CMP B
 448CH  (C8H) RZ
 448DH  (3DH) DCR A
@@ -11606,7 +11632,7 @@ L42ED:
 451DH  (E1H) POP H
 451EH  (C9H) RET
 
-451FH  (3AH) LDA F648H      ; Reverse video switch
+451FH  (3AH) LDA VRVIDF      ; Reverse video switch
 4522H  (F5H) PUSH PSW
 4523H  (CDH) CALL EXTREF     ; Cancel inverse character mode
 4526H  (3EH) MVI A,08H
@@ -11664,7 +11690,7 @@ L42ED:
 ; Character plotting level 6.  Save character in C to LCD RAM & call level 7
 ; ======================================================
 4560H  (CDH) CALL 43A2H
-4563H  (3AH) LDA F648H      ; Reverse video switch
+4563H  (3AH) LDA VRVIDF      ; Reverse video switch
 4566H  (E5H) PUSH H
 4567H  (F5H) PUSH PSW
 4568H  (E5H) PUSH H
@@ -11826,14 +11852,14 @@ L42ED:
 ; ======================================================
 ; 4644H: Get line from keyboard (terminated by <ENTER>)
 ; Entry conditions: none
-; Exit conditions:  data stored at location F685h
+; Exit conditions:  data stored at location VKYBBF
 ; ======================================================
 INLIN:
     CALL 421AH
     JNZ L4703
-    LDA F63AH      ; Cursor column (1-40)
+    LDA VCURCL      ; Cursor column (1-40)
     STA FACAH
-    LXI D,F685H    ; Keyboard buffer
+    LXI D,VKYBBF    ; Keyboard buffer
     MVI B,01H
 L4655:
     CALL CHGET     ; Wait for key from keyboard
@@ -11877,7 +11903,7 @@ IHCTC:
     MVI A,43H
     RST 4          ; Send character in A to screen/printer
     CALL CRLF      ; Send CRLF to screen or printer
-    LXI H,F685H    ; Keyboard buffer
+    LXI H,VKYBBF    ; Keyboard buffer
     MVI M,00H
     DCX H
     STC
@@ -11911,13 +11937,13 @@ L46A9:
     PUSH PSW
     MVI A,7FH
     RST 4          ; Send character in A to screen/printer
-    LHLD F639H     ; Cursor row (1-8)
+    LHLD VCURLN     ; Cursor row (1-8)
     DCR L
     DCR H
     MOV A,H
     ORA L
     JZ L46C0
-    LXI H,F63AH    ; Cursor column (1-40)
+    LXI H,VCURCL    ; Cursor column (1-40)
     POP PSW
     CMP M
     JNZ L46A9
@@ -11958,7 +11984,7 @@ l46D8:
     DCR B
     JZ l4701
     MOV C,A
-    LXI H,F685H    ; Keyboard buffer
+    LXI H,VKYBBF    ; Keyboard buffer
 L46E4:
     INR C
     MOV A,M
@@ -11969,7 +11995,7 @@ L46E4:
     ANI 07H
     JNZ L46E4
 l46F2:
-    LDA F63CH      ; Active columns count (1-40)
+    LDA VACTCC      ; Active columns count (1-40)
     CMP C
     JNC L46FB
     MVI C,01H
@@ -12006,7 +12032,7 @@ L4728:
     POP H          ; Restore ASCII / Tokenize FCB address from stack
     SHLD FC8CH     ; Save back in ASCII / Tokenize FCB address variable
     MVI B,00H
-    LXI H,F685H    ; Keyboard buffer
+    LXI H,VKYBBF    ; Keyboard buffer
 L4731:
     XRA A
     STA FAA2H
@@ -12667,7 +12693,7 @@ LCD:
     CALL 421AH     ; Test for output to a file
     JNZ 4E52H      ; Jump to send to file instead if enabled
     POP H
-    LDA F675H      ; Output device for RST 20H (0=screen)
+    LDA VOUTSW      ; Output device for RST 20H (0=screen)
     ORA A          ; Test for output to LCD or LPT
     JZ DCHSTK      ; Jump if output to LCD
     POP PSW        ; Restore char to be sent to LPT
@@ -12684,7 +12710,7 @@ PRTTAB:
 LSNDSP:
     MVI A,20H      ; Prepare to send spaces
     CALL PRTTAB    ; Print A to printer, expanding tabs if necessary
-    LDA F674H      ; Line printer head position
+    LDA VLPPCL      ; Line printer head position
     ANI 07H        ; Test if col is factor of 8
     JNZ LSNDSP     ; Jump to send more spaces
     POP PSW        ; Restore character
@@ -12696,10 +12722,10 @@ SNTABC:
     SUI 0DH        ; Test for CR
     JZ ISCRCH      ; Jump if CR character
     JC NCRCHA       ; Jump if not LF character
-    LDA F674H      ; Line printer head position
+    LDA VLPPCL      ; Line printer head position
     INR A          ; Increment printer line (LF detected)
 ISCRCH:
-    STA F674H      ; Line printer head position
+    STA VLPPCL      ; Line printer head position
 NCRCHA:
     POP PSW        ; Restore character from stack
 L4B7A:
@@ -12723,8 +12749,8 @@ L4B88:
 ; ======================================================
 ROTLCD:
     XRA A          ; Zero out A
-    STA F675H      ; Output device for RST 20H (0=screen)
-    LDA F674H      ; Line printer head position
+    STA VOUTSW      ; Output device for RST 20H (0=screen)
+    LDA VLPPCL      ; Line printer head position
     ORA A
     RZ
     LDA FACDH
@@ -12734,7 +12760,7 @@ L4BA0:
     MVI A,0DH
     CALL L4B7A
     XRA A
-    STA F674H      ; Line printer head position
+    STA VLPPCL      ; Line printer head position
     RET
 
 ; ======================================================
@@ -12748,7 +12774,7 @@ DCHSTK:
 ; ======================================================
 4BABH  (F5H) PUSH PSW
 4BACH  (CDH) CALL 4313H     ; Print A to the screen
-4BAFH  (3AH) LDA F63AH      ; Cursor column (1-40)
+4BAFH  (3AH) LDA VCURCL      ; Cursor column (1-40)
 4BB2H  (3DH) DCR A
 4BB3H  (32H) STA F788H      ; Horiz. position of cursor (0-39)
 4BB6H  (F1H) POP PSW
@@ -12758,7 +12784,7 @@ DCHSTK:
 ; ======================================================
 ; Move LCD to blank line (send CRLF if needed)
 ; ======================================================
-4BB8H  (3AH) LDA F63AH      ; Cursor column (1-40)
+4BB8H  (3AH) LDA VCURCL      ; Cursor column (1-40)
 4BBBH  (3DH) DCR A
 4BBCH  (C8H) RZ
 4BBDH  (C3H) JMP 4BCBH
@@ -12776,11 +12802,11 @@ DCHSTK:
 4BD7H  (AFH) XRA A
 4BD8H  (C9H) RET
 
-4BD9H  (3AH) LDA F675H      ; Output device for RST 20H (0=screen)
+4BD9H  (3AH) LDA VOUTSW      ; Output device for RST 20H (0=screen)
 4BDCH  (B7H) ORA A
 4BDDH  (CAH) JZ 4BE5H
 4BE0H  (AFH) XRA A
-4BE1H  (32H) STA F674H      ; Line printer head position
+4BE1H  (32H) STA VLPPCL      ; Line printer head position
 4BE4H  (C9H) RET
 
 4BE5H  (AFH) XRA A
@@ -13410,7 +13436,7 @@ DCHSTK:
 4F90H  (5FH) MOV E,A
 4F91H  (CDH) CALL 4E7AH
 4F94H  (DAH) JC 4FEAH
-4F97H  (21H) LXI H,F685H    ; Keyboard buffer
+4F97H  (21H) LXI H,VKYBBF    ; Keyboard buffer
 4F9AH  (06H) MVI B,FFH
 4F9CH  (4FH) MOV C,A
 4F9DH  (7AH) MOV A,D
@@ -13758,7 +13784,7 @@ DCHSTK:
 ; ======================================================
 ; Print current STAT settings
 ; ======================================================
-51C7H  (21H) LXI H,F65BH    ; RS232 parameter setting table
+51C7H  (21H) LXI H,VISTAT    ; RS232 parameter setting table
 51CAH  (06H) MVI B,05H
 51CCH  (7EH) MOV A,M
 51CDH  (E7H) RST 4          ; Send character in A to screen/printer
@@ -13767,7 +13793,7 @@ DCHSTK:
 51D0H  (C2H) JNZ 51CCH
 51D3H  (3EH) MVI A,2CH
 51D5H  (E7H) RST 4          ; Send character in A to screen/printer
-51D6H  (3AH) LDA F62BH      ; Dial speed (1=10pps), 2=20pps
+51D6H  (3AH) LDA VPPSST      ; Dial speed (1=10pps), 2=20pps
 51D9H  (0FH) RRC
 51DAH  (3EH) MVI A,32H
 51DCH  (98H) SBB B
@@ -13803,7 +13829,7 @@ DCHSTK:
 5214H  (D6H) SUI 0AH
 5216H  (C2H) JNZ 5152H
 5219H  (3CH) INR A
-521AH  (32H) STA F62BH      ; Dial speed (1=10pps), 2=20pps
+521AH  (32H) STA VPPSST      ; Dial speed (1=10pps), 2=20pps
 521DH  (C3H) JMP 515BH      ; Re-entry point for TELCOM commands
 
 5220H  (21H) LXI H,5244H
@@ -14039,12 +14065,12 @@ DCHSTK:
 ; Auto logon sequence
 ; ======================================================
 539EH  (F5H) PUSH PSW
-539FH  (3AH) LDA F62BH      ; Dial speed (1=10pps), 2=20pps
+539FH  (3AH) LDA VPPSST      ; Dial speed (1=10pps), 2=20pps
 53A2H  (0FH) RRC
 53A3H  (D4H) CNC 531AH
 53A6H  (F1H) POP PSW
 53A7H  (D2H) JNC 52BBH      ; Disconnect phone line and disable modem carrier
-53AAH  (3AH) LDA F65BH      ; RS232 parameter setting table
+53AAH  (3AH) LDA VISTAT      ; RS232 parameter setting table
 53ADH  (FEH) CPI 4DH
 53AFH  (37H) STC
 53B0H  (C0H) RNZ
@@ -14106,7 +14132,7 @@ DCHSTK:
 540EH  (4FH) MOV C,A
 540FH  (C2H) JNZ 5414H
 5412H  (0EH) MVI C,0AH
-5414H  (3AH) LDA F62BH      ; Dial speed (1=10pps), 2=20pps
+5414H  (3AH) LDA VPPSST      ; Dial speed (1=10pps), 2=20pps
 5417H  (0FH) RRC
 5418H  (11H) LXI D,161CH
 541BH  (D2H) JNC 5421H
@@ -14122,7 +14148,7 @@ DCHSTK:
 5435H  (0DH) DCR C
 5436H  (C2H) JNZ 5414H
 5439H  (FBH) EI
-543AH  (3AH) LDA F62BH      ; Dial speed (1=10pps), 2=20pps
+543AH  (3AH) LDA VPPSST      ; Dial speed (1=10pps), 2=20pps
 543DH  (E6H) ANI 01H
 543FH  (3CH) INR A
 5440H  (C3H) JMP 5316H
@@ -14541,7 +14567,7 @@ DCHSTK:
 ; MENU Program
 ; ======================================================
 5797H  (2AH) LHLD FB67H     ; File buffer area pointer
-579AH  (22H) SHLD F678H     ; BASIC string buffer pointer
+579AH  (22H) SHLD VTPRAM     ; BASIC string buffer pointer
 579DH  (CDH) CALL 3F2CH
 57A0H  (CDH) CALL 6ECBH     ; Deactivate RS232 or modem
 57A3H  (CDH) CALL 6370H
@@ -14691,7 +14717,7 @@ DCHSTK:
 58C2H  (7AH) MOV A,D
 58C3H  (32H) STA FDEEH      ; Current MENU directory location
 58C6H  (E5H) PUSH H
-58C7H  (2AH) LHLD F639H     ; Cursor row (1-8)
+58C7H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 58CAH  (E5H) PUSH H
 58CBH  (6BH) MOV L,E
 58CCH  (D5H) PUSH D
@@ -14778,7 +14804,7 @@ DCHSTK:
 594FH  (CAH) JZ F624H
 5952H  (FEH) CPI C0H
 5954H  (CAH) JZ 5F65H       ; Edit .DO files
-5957H  (22H) SHLD F67CH     ; Start of BASIC program pointer
+5957H  (22H) SHLD VBASPP     ; Start of BASIC program pointer
 595AH  (1BH) DCX D
 595BH  (1BH) DCX D
 595CH  (EBH) XCHG
@@ -14894,11 +14920,11 @@ DCHSTK:
 59E8H  (CDH) CALL 59C9H     ; Position cursor for next directory entry
 59EBH  (06H) MVI B,0AH
 59EDH  (E5H) PUSH H
-59EEH  (21H) LXI H,F63AH    ; Cursor column (1-40)
+59EEH  (21H) LXI H,VCURCL    ; Cursor column (1-40)
 59F1H  (35H) DCR M
 59F2H  (C5H) PUSH B
 59F3H  (D5H) PUSH D
-59F4H  (2AH) LHLD F639H     ; Cursor row (1-8)
+59F4H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 59F7H  (CDH) CALL 45CBH
 59FAH  (EBH) XCHG
 59FBH  (CDH) CALL SETCUR
@@ -14906,7 +14932,7 @@ DCHSTK:
 59FFH  (CDH) CALL 73A9H     ; Blink the cursor
 5A02H  (FBH) EI
 5A03H  (D1H) POP D
-5A04H  (21H) LXI H,F63AH    ; Cursor column (1-40)
+5A04H  (21H) LXI H,VCURCL    ; Cursor column (1-40)
 5A07H  (34H) INR M
 5A08H  (C1H) POP B
 5A09H  (05H) DCR B
@@ -15050,7 +15076,7 @@ l5A94:
 ; Exit conditions:  none
 ; ======================================================
 FNKSB:
-    LDA F63DH      ; Label line protect status
+    LDA VLABLF      ; Label line protect status
     ORA A
     CNZ DSPNFK      ; Display function key line
     RET
@@ -15192,7 +15218,7 @@ FNKSB:
 5BB8H  (22H) SHLD F652H
 5BBBH  (CDH) CALL 5D5DH
 5BBEH  (97H) SUB A
-5BBFH  (32H) STA F675H      ; Output device for RST 20H (0=screen)
+5BBFH  (32H) STA VOUTSW      ; Output device for RST 20H (0=screen)
 5BC2H  (21H) LXI H,5CE1H
 5BC5H  (3AH) LDA FDEDH      ; Flag to indicate MENU entry location or command entry
 5BC8H  (B7H) ORA A
@@ -15208,7 +15234,7 @@ FNKSB:
 5BDEH  (CDH) CALL 6CA7H
 5BE1H  (C0H) RNZ
 5BE2H  (97H) SUB A
-5BE3H  (32H) STA F675H      ; Output device for RST 20H (0=screen)
+5BE3H  (32H) STA VOUTSW      ; Output device for RST 20H (0=screen)
 5BE6H  (CDH) CALL 4BB8H     ; Move LCD to blank line (send CRLF if needed)
 5BE9H  (CDH) CALL BEEP     ; BEEP statement
 5BECH  (21H) LXI H,5D0AH
@@ -15229,10 +15255,10 @@ FNKSB:
 5C04H  (CDH) CALL 5DC5H
 5C07H  (CDH) CALL 67DFH
 5C0AH  (3AH) LDA FDEEH      ; Current MENU directory location
-5C0DH  (32H) STA F675H      ; Output device for RST 20H (0=screen)
+5C0DH  (32H) STA VOUTSW      ; Output device for RST 20H (0=screen)
 5C10H  (CDH) CALL 6A10H
 5C13H  (97H) SUB A
-5C14H  (32H) STA F675H      ; Output device for RST 20H (0=screen)
+5C14H  (32H) STA VOUTSW      ; Output device for RST 20H (0=screen)
 5C17H  (3AH) LDA FDEEH      ; Current MENU directory location
 5C1AH  (B7H) ORA A
 5C1BH  (C2H) JNZ 5C24H
@@ -15440,7 +15466,7 @@ FNKSB:
 ; Print time on top line until key pressed
 ; ======================================================
 5D70H  (E5H) PUSH H
-5D71H  (2AH) LHLD F639H     ; Cursor row (1-8)
+5D71H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 5D74H  (E5H) PUSH H
 5D75H  (CDH) CALL CHSNS     ; Check keyboard queue for pending characters
 5D78H  (F5H) PUSH PSW
@@ -15487,13 +15513,13 @@ FNKSB:
 5DB7H  (EBH) XCHG
 5DB8H  (2AH) LHLD FDD7H
 5DBBH  (EBH) XCHG
-5DBCH  (3AH) LDA F63BH      ; Active rows count (1-8)
+5DBCH  (3AH) LDA VACTLC      ; Active rows count (1-8)
 5DBFH  (3DH) DCR A
 5DC0H  (3DH) DCR A
 5DC1H  (32H) STA FDEFH      ; Maximum MENU directory location
 5DC4H  (C9H) RET
 
-5DC5H  (21H) LXI H,F63CH    ; Active columns count (1-40)
+5DC5H  (21H) LXI H,VACTCC    ; Active columns count (1-40)
 5DC8H  (3EH) MVI A,FFH
 5DCAH  (32H) STA F921H
 5DCDH  (32H) STA F920H
@@ -15580,7 +15606,7 @@ FNKSB:
 
 5E82H  (CDH) CALL 4F45H
 5E85H  (CDH) CALL 212DH
-5E88H  (3AH) LDA F63DH      ; Label line protect status
+5E88H  (3AH) LDA VLABLF      ; Label line protect status
 5E8BH  (32H) STA FACCH
 5E8EH  (21H) LXI H,0000H
 5E91H  (22H) SHLD F6E7H
@@ -15611,7 +15637,7 @@ FNKSB:
 5EC6H  (CDH) CALL 1FF8H
 5EC9H  (CDH) CALL 3F6DH
 5ECCH  (3AH) LDA FACCH
-5ECFH  (32H) STA F63DH      ; Label line protect status
+5ECFH  (32H) STA VLABLF      ; Label line protect status
 5ED2H  (C3H) JMP 6C5BH
 
 5ED5H  (D5H) PUSH D
@@ -15707,7 +15733,7 @@ FNKSB:
 5F9CH  (22H) SHLD F7FBH
 5F9FH  (21H) LXI H,5E4FH
 5FA2H  (22H) SHLD F88AH
-5FA5H  (3AH) LDA F63CH      ; Active columns count (1-40)
+5FA5H  (3AH) LDA VACTCC      ; Active columns count (1-40)
 5FA8H  (32H) STA F922H
 5FABH  (3EH) MVI A,80H
 5FADH  (32H) STA F650H
@@ -15762,7 +15788,7 @@ FNKSB:
 600FH  (66H) MOV H,M
 6010H  (69H) MOV L,C
 6011H  (E5H) PUSH H
-6012H  (2AH) LHLD F639H     ; Cursor row (1-8)
+6012H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 6015H  (C9H) RET
 
 
@@ -15791,11 +15817,11 @@ FNKSB:
 6061H  (FFH) RST 7          ; Jump to RST 38H Vector entry of following byte
 6062H  DB   38H
 6063H  (CDH) CALL 65B9H
-6066H  (CDH) CALL UNLOCK     ; Resume automatic scrolling
-6069H  (CDH) CALL ERAFNK     ; Erase function key display
+6066H  (CDH) CALL UNLOCK    ; Resume automatic scrolling
+6069H  (CDH) CALL ERAFNK    ; Erase function key display
 606CH  (CDH) CALL 63DBH
 606FH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
-6072H  (CDH) CALL CRLF     ; Send CRLF to screen or printer
+6072H  (CDH) CALL CRLF      ; Send CRLF to screen or printer
 6075H  (CDH) CALL 6383H
 6078H  (2AH) LHLD F765H
 607BH  (E9H) PCHL
@@ -15869,8 +15895,8 @@ FNKSB:
 60E2H  (D4H) CNC 60F5H
 60E5H  (C3H) JMP 62A0H
 
-60E8H  (2AH) LHLD F639H     ; Cursor row (1-8)
-60EBH  (3AH) LDA F63CH      ; Active columns count (1-40)
+60E8H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
+60EBH  (3AH) LDA VACTCC      ; Active columns count (1-40)
 60EEH  (24H) INR H
 60EFH  (BCH) CMP H
 60F0H  (D2H) JNC 6175H
@@ -15926,7 +15952,7 @@ FNKSB:
 6143H  (C3H) JMP 612EH
 
 6146H  (E5H) PUSH H
-6147H  (3AH) LDA F639H      ; Cursor row (1-8)
+6147H  (3AH) LDA VCURLN      ; Cursor row (1-8)
 614AH  (CDH) CALL 699EH
 614DH  (E1H) POP H
 614EH  (C3H) JMP 62F6H
@@ -15944,10 +15970,10 @@ FNKSB:
 6155H  (D4H) CNC 6166H
 6158H  (C3H) JMP 62A0H
 
-615BH  (2AH) LHLD F639H     ; Cursor row (1-8)
+615BH  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 615EH  (25H) DCR H
 615FH  (C2H) JNZ 6175H
-6162H  (3AH) LDA F63CH      ; Active columns count (1-40)
+6162H  (3AH) LDA VACTCC      ; Active columns count (1-40)
 6165H  (67H) MOV H,A
 6166H  (E5H) PUSH H
 6167H  (CDH) CALL 6A45H
@@ -16054,7 +16080,7 @@ FNKSB:
 ; ======================================================
 ; TEXT control R routine
 ; ======================================================
-61FDH  (3AH) LDA F63CH      ; Active columns count (1-40)
+61FDH  (3AH) LDA VACTCC      ; Active columns count (1-40)
 6200H  (67H) MOV H,A
 6201H  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 6204H  (CDH) CALL 6AF9H
@@ -16109,7 +16135,7 @@ FNKSB:
 6253H  (0EH) MVI C,00H
 6255H  (21H) LXI H,800EH
 6258H  (CDH) CALL 63CDH
-625BH  (21H) LXI H,F639H    ; Cursor row (1-8)
+625BH  (21H) LXI H,VCURLN    ; Cursor row (1-8)
 625EH  (96H) SUB M
 625FH  (47H) MOV B,A
 6260H  (CDH) CALL 6A45H
@@ -16182,7 +16208,7 @@ FNKSB:
 62D1H  (95H) SUB L
 62D2H  (4FH) MOV C,A
 62D3H  (EBH) XCHG
-62D4H  (2AH) LHLD F639H     ; Cursor row (1-8)
+62D4H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 62D7H  (EBH) XCHG
 62D8H  (D5H) PUSH D
 62D9H  (26H) MVI H,01H
@@ -16350,8 +16376,8 @@ FNKSB:
 
 63CDH  (E5H) PUSH H
 63CEH  (F5H) PUSH PSW
-63CFH  (21H) LXI H,F63DH    ; Label line protect status
-63D2H  (3AH) LDA F63BH      ; Active rows count (1-8)
+63CFH  (21H) LXI H,VLABLF    ; Label line protect status
+63D2H  (3AH) LDA VACTLC      ; Active rows count (1-8)
 63D5H  (86H) ADD M
 63D6H  (6FH) MOV L,A
 63D7H  (F1H) POP PSW
@@ -16360,7 +16386,7 @@ FNKSB:
 63DAH  (C9H) RET
 
 63DBH  (F5H) PUSH PSW
-63DCH  (2AH) LHLD F63BH     ; Active rows count (1-8)
+63DCH  (2AH) LHLD VACTLC     ; Active rows count (1-8)
 63DFH  (CDH) CALL 63CDH
 63E2H  (6FH) MOV L,A
 63E3H  (F1H) POP PSW
@@ -16370,11 +16396,11 @@ FNKSB:
 ; ======================================================
 ; Get next byte for TEXT Program entry
 ; ======================================================
-63E5H  (2AH) LHLD F639H     ; Cursor row (1-8)
+63E5H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 63E8H  (E5H) PUSH H
 63E9H  (7DH) MOV A,L
 63EAH  (32H) STA FAADH      ; Label line enable flag
-63EDH  (3AH) LDA F63DH      ; Label line protect status
+63EDH  (3AH) LDA VLABLF      ; Label line protect status
 63F0H  (F5H) PUSH PSW
 63F1H  (CDH) CALL CHGET     ; Wait for key from keyboard
 63F4H  (C1H) POP B
@@ -16382,7 +16408,7 @@ FNKSB:
 63F6H  (F5H) PUSH PSW
 63F7H  (AFH) XRA A
 63F8H  (32H) STA FAADH      ; Label line enable flag
-63FBH  (3AH) LDA F63DH      ; Label line protect status
+63FBH  (3AH) LDA VLABLF      ; Label line protect status
 63FEH  (B8H) CMP B
 63FFH  (C2H) JNZ 6404H
 6402H  (F1H) POP PSW
@@ -16390,15 +16416,15 @@ FNKSB:
 
 6404H  (A7H) ANA A
 6405H  (CAH) JZ 6414H
-6408H  (3AH) LDA F639H      ; Cursor row (1-8)
+6408H  (3AH) LDA VCURLN      ; Cursor row (1-8)
 640BH  (BDH) CMP L
-640CH  (3AH) LDA F63BH      ; Active rows count (1-8)
+640CH  (3AH) LDA VACTLC      ; Active rows count (1-8)
 640FH  (C4H) CNZ 6284H
 6412H  (F1H) POP PSW
 6413H  (C9H) RET
 
 6414H  (E5H) PUSH H
-6415H  (3AH) LDA F63BH      ; Active rows count (1-8)
+6415H  (3AH) LDA VACTLC      ; Active rows count (1-8)
 6418H  (3DH) DCR A
 6419H  (CDH) CALL 6A48H
 641CH  (23H) INX H
@@ -16457,7 +16483,7 @@ FNKSB:
 6473H  (22H) SHLD F6E2H
 6476H  (EBH) XCHG
 6477H  (E5H) PUSH H
-6478H  (3AH) LDA F639H      ; Cursor row (1-8)
+6478H  (3AH) LDA VCURLN      ; Cursor row (1-8)
 647BH  (CDH) CALL 6986H
 647EH  (E1H) POP H
 647FH  (CDH) CALL 630BH
@@ -16496,7 +16522,7 @@ FNKSB:
 
 64B6H  (CDH) CALL 2262H
 64B9H  (2AH) LHLD F9A5H     ; Start of Paste Buffer
-64BCH  (22H) SHLD F88CH     ; End of RAM for file storage
+64BCH  (22H) SHLD VPSTBF     ; End of RAM for file storage
 64BFH  (AFH) XRA A
 64C0H  (32H) STA F6E6H
 64C3H  (CDH) CALL 64ABH
@@ -16523,7 +16549,7 @@ FNKSB:
 64E5H  (B1H) ORA C
 64E6H  (C8H) RZ
 64E7H  (E5H) PUSH H
-64E8H  (2AH) LHLD F88CH     ; End of RAM for file storage
+64E8H  (2AH) LHLD VPSTBF     ; End of RAM for file storage
 64EBH  (CDH) CALL 6B6DH     ; Insert BC spaces at M
 64EEH  (EBH) XCHG
 64EFH  (E1H) POP H
@@ -16543,7 +16569,7 @@ FNKSB:
 6504H  (CDH) CALL 6383H
 6507H  (CDH) CALL 2146H     ; Update system pointers for .DO), .CO), vars), etc.
 650AH  (CDH) CALL 6AF9H
-650DH  (22H) SHLD F88CH     ; End of RAM for file storage
+650DH  (22H) SHLD VPSTBF     ; End of RAM for file storage
 6510H  (7CH) MOV A,H
 6511H  (32H) STA F6E6H
 6514H  (2AH) LHLD F9A5H     ; Start of Paste Buffer
@@ -16566,8 +16592,8 @@ FNKSB:
 6533H  (F1H) POP PSW
 6534H  (DAH) JC 60A3H
 6537H  (D5H) PUSH D
-6538H  (2AH) LHLD F88CH     ; End of RAM for file storage
-653BH  (3AH) LDA F639H      ; Cursor row (1-8)
+6538H  (2AH) LHLD VPSTBF     ; End of RAM for file storage
+653BH  (3AH) LDA VCURLN      ; Cursor row (1-8)
 653EH  (CDH) CALL 6986H
 6541H  (CDH) CALL 6A3EH
 6544H  (E1H) POP H
@@ -16620,7 +16646,7 @@ FNKSB:
 6595H  (C3H) JMP 6229H
 
 6598H  (CDH) CALL 628FH     ; TEXT control C routine
-659BH  (2AH) LHLD F639H     ; Cursor row (1-8)
+659BH  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 659EH  (CDH) CALL 63CDH
 65A1H  (BDH) CMP L
 65A2H  (C0H) RNZ
@@ -16668,7 +16694,7 @@ FNKSB:
 65F0H  (BEH) CMP M
 65F1H  (C8H) RZ
 65F2H  (77H) MOV M,A
-65F3H  (2AH) LHLD F639H     ; Cursor row (1-8)
+65F3H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 65F6H  (E5H) PUSH H
 65F7H  (CDH) CALL 63CDH
 65FAH  (CDH) CALL 69CBH
@@ -16677,7 +16703,7 @@ FNKSB:
 6600H  (11H) LXI D,5F48H
 6603H  (D5H) PUSH D
 6604H  (CDH) CALL 65B3H
-6607H  (3AH) LDA F63AH      ; Cursor column (1-40)
+6607H  (3AH) LDA VCURCL      ; Cursor column (1-40)
 660AH  (32H) STA FACAH
 660DH  (E1H) POP H
 660EH  (E5H) PUSH H
@@ -16696,7 +16722,7 @@ FNKSB:
 662AH  (CDH) CALL POSIT     ; Set the current cursor position (H=Row),L=Col)
 662DH  (CDH) CALL ERABOL     ; Erase from cursor to end of line
 6630H  (F1H) POP PSW
-6631H  (11H) LXI D,F685H    ; Keyboard buffer
+6631H  (11H) LXI D,VKYBBF    ; Keyboard buffer
 6634H  (06H) MVI B,01H
 6636H  (A7H) ANA A
 6637H  (C3H) JMP 663DH
@@ -16713,7 +16739,7 @@ FNKSB:
 664FH  (0EH) MVI C,07H
 6651H  (C3H) JMP 4378H
 
-6654H  (11H) LXI D,F685H    ; Keyboard buffer
+6654H  (11H) LXI D,VKYBBF    ; Keyboard buffer
 6657H  (CDH) CALL 65C3H     ; Copy NULL terminated string at M to (DE)
 665AH  (C3H) JMP 6678H
 
@@ -16731,7 +16757,7 @@ FNKSB:
 666DH  DW   IHCTUX
 666FH  DB   1DH
 6670H  DW   IHBACK
-6672H  (11H) LXI D,F685H    ; Keyboard buffer
+6672H  (11H) LXI D,VKYBBF    ; Keyboard buffer
 6675H  (E1H) POP H
 6676H  (AFH) XRA A
 6677H  (12H) STAX D
@@ -16740,9 +16766,9 @@ FNKSB:
 
 667CH  (3EH) MVI A,09H
 667EH  (4FH) MOV C,A
-667FH  (3AH) LDA F63CH      ; Active columns count (1-40)
+667FH  (3AH) LDA VACTCC      ; Active columns count (1-40)
 6682H  (D6H) SUI 09H
-6684H  (21H) LXI H,F63AH    ; Cursor column (1-40)
+6684H  (21H) LXI H,VCURCL    ; Cursor column (1-40)
 6687H  (BEH) CMP M
 6688H  (DAH) JC BEEP       ; BEEP statement
 668BH  (79H) MOV A,C
@@ -16760,7 +16786,7 @@ FNKSB:
 6694H  (21H) LXI H,66F2H
 6697H  (22H) SHLD F652H
 669AH  (E5H) PUSH H
-669BH  (2AH) LHLD F639H     ; Cursor row (1-8)
+669BH  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 669EH  (22H) SHLD F6E7H
 66A1H  (21H) LXI H,670CH
 66A4H  (11H) LXI D,F64AH
@@ -16769,7 +16795,7 @@ FNKSB:
 66ABH  (AFH) XRA A
 66ACH  (BEH) CMP M
 66ADH  (CAH) JZ 66E6H
-66B0H  (32H) STA F688H
+66B0H  (32H) STA VCRPOS
 66B3H  (CDH) CALL 112EH     ; Evaluate expression at M-1
 66B6H  (FEH) CPI 0AH
 66B8H  (D8H) RC
@@ -16778,9 +16804,9 @@ FNKSB:
 66BCH  (D1H) POP D
 66BDH  (32H) STA F649H
 66C0H  (32H) STA F922H
-66C3H  (32H) STA F675H      ; Output device for RST 20H (0=screen)
+66C3H  (32H) STA VOUTSW      ; Output device for RST 20H (0=screen)
 66C6H  (11H) LXI D,F64AH
-66C9H  (21H) LXI H,F685H    ; Keyboard buffer
+66C9H  (21H) LXI H,VKYBBF    ; Keyboard buffer
 66CCH  (CDH) CALL 65C3H     ; Copy NULL terminated string at M to (DE)
 66CFH  (3CH) INR A
 66D0H  (32H) STA F920H
@@ -16803,10 +16829,10 @@ FNKSB:
 66F8H  (CDH) CALL 65ABH
 66FBH  (C3H) JMP 66E9H
 
-66FEH  (3AH) LDA F63CH      ; Active columns count (1-40)
+66FEH  (3AH) LDA VACTCC      ; Active columns count (1-40)
 6701H  (32H) STA F922H
 6704H  (AFH) XRA A
-6705H  (32H) STA F675H      ; Output device for RST 20H (0=screen)
+6705H  (32H) STA VOUTSW      ; Output device for RST 20H (0=screen)
 6708H  (32H) STA F920H
 670BH  (C9H) RET
 
@@ -16837,7 +16863,7 @@ FNKSB:
 673FH  (CDH) CALL 6598H
 6742H  (21H) LXI H,66F2H
 6745H  (22H) SHLD F652H
-6748H  (2AH) LHLD F639H     ; Cursor row (1-8)
+6748H  (2AH) LHLD VCURLN     ; Cursor row (1-8)
 674BH  (22H) SHLD F6E7H
 674EH  (E1H) POP H
 674FH  (CDH) CALL 6600H
@@ -16945,7 +16971,7 @@ FNKSB:
 6826H  (C9H) RET
 
 6827H  (EBH) XCHG
-6828H  (22H) SHLD F88CH     ; End of RAM for file storage
+6828H  (22H) SHLD VPSTBF     ; End of RAM for file storage
 682BH  (EBH) XCHG
 682CH  (2AH) LHLD F892H
 682FH  (22H) SHLD F88EH
@@ -16964,7 +16990,7 @@ FNKSB:
 6848H  (C2H) JNZ 683BH
 684BH  (2AH) LHLD F88EH
 684EH  (22H) SHLD F892H
-6851H  (2AH) LHLD F88CH     ; End of RAM for file storage
+6851H  (2AH) LHLD VPSTBF     ; End of RAM for file storage
 6854H  (EBH) XCHG
 6855H  (3AH) LDA F920H
 6858H  (3DH) DCR A
@@ -17247,7 +17273,7 @@ FNKSB:
 6A41H  (3CH) INR A
 6A42H  (C3H) JMP 6A48H
 
-6A45H  (3AH) LDA F639H      ; Cursor row (1-8)
+6A45H  (3AH) LDA VCURLN      ; Cursor row (1-8)
 6A48H  (5FH) MOV E,A
 6A49H  (16H) MVI D,00H
 6A4BH  (21H) LXI H,F6E9H
@@ -17386,7 +17412,7 @@ FNKSB:
 6B1BH  (E1H) POP H
 6B1CH  (E5H) PUSH H
 6B1DH  (CDH) CALL 6AC7H
-6B20H  (3AH) LDA F63AH      ; Cursor column (1-40)
+6B20H  (3AH) LDA VCURCL      ; Cursor column (1-40)
 6B23H  (BCH) CMP H
 6B24H  (DAH) JC 6B0CH
 6B27H  (E1H) POP H
@@ -17599,7 +17625,7 @@ FNKSB:
 6C4FH  (21H) LXI H,F999H
 6C52H  (22H) SHLD FA8CH
 6C55H  (2AH) LHLD F99AH     ; BASIC program not saved pointer
-6C58H  (22H) SHLD F67CH     ; Start of BASIC program pointer
+6C58H  (22H) SHLD VBASPP     ; Start of BASIC program pointer
 6C5BH  (CDH) CALL 6C9CH     ; Copy BASIC Function key table to key definition area
 6C5EH  (CDH) CALL FNKSB     ; Display function keys on 8th line
 6C61H  (AFH) XRA A
@@ -17622,7 +17648,7 @@ FNKSB:
 6C8AH  (DFH) RST 3          ; Compare DE and HL
 6C8BH  (DAH) JC 6C8FH
 6C8EH  (25H) DCR H
-6C8FH  (22H) SHLD F678H     ; BASIC string buffer pointer
+6C8FH  (22H) SHLD VTPRAM     ; BASIC string buffer pointer
 6C92H  (C9H) RET
 
 
@@ -17831,7 +17857,7 @@ L6D6A:
 ; ======================================================
 ; RST 6.5 routine (RS232 receive interrupt)
 ; ======================================================
-6DACH  (CDH) CALL F5FCH     ; RST 6.5 RAM Vector
+6DACH  (CDH) CALL VUARTH    ; RST 6.5 RAM Vector
 6DAFH  (E5H) PUSH H
 6DB0H  (D5H) PUSH D
 6DB1H  (C5H) PUSH B
@@ -18853,7 +18879,7 @@ SCMODK:                     ; Scan BREAK,CAPS,NUM,CODE,GRAPH,CTRL,SHIFT & set bi
 7304H  (CDH) CALL 35D9H     ; different from m100 to: 7328H
 7307H  (E5H) PUSH H
 7308H  (2AH) LHLD FC1AH     ; Start of FAC1 for integers
-730BH  (11H) LXI D,F5F0H    ; Active system signature -- Warm vs Cold boot
+730BH  (11H) LXI D,VSSYS    ; Active system signature -- Warm vs Cold boot
 730EH  (DFH) RST 3          ; Compare DE and HL
 730FH  (EBH) XCHG
 7310H  (DCH) CC 2791H
@@ -18867,7 +18893,7 @@ SCMODK:                     ; Scan BREAK,CAPS,NUM,CODE,GRAPH,CTRL,SHIFT & set bi
 731CH  (3FH) CMC
 731DH  (C0H) RNZ
 731EH  (47H) MOV B,A
-731FH  (3AH) LDA F65BH      ; RS232 parameter setting table
+731FH  (3AH) LDA VISTAT      ; RS232 parameter setting table
 7322H  (FEH) CPI 3AH
 7324H  (78H) MOV A,B
 7325H  (3FH) CMC
@@ -19686,7 +19712,7 @@ L7497:
 7D50H  (3EH) MVI A,EDH
 7D52H  (D3H) OUT BAH
 7D54H  (CAH) JZ 7DE7H       ; Cold boot routine
-7D57H  (2AH) LHLD F5F0H     ; Active system signature -- Warm vs Cold boot
+7D57H  (2AH) LHLD VSSYS     ; Active system signature -- Warm vs Cold boot
 7D5AH  (11H) LXI D,8A4DH
 7D5DH  (DFH) RST 3          ; Compare DE and HL
 7D5EH  (C2H) JNZ 7DE7H      ; Cold boot routine
@@ -19695,23 +19721,23 @@ L7497:
 7D65H  (CDH) CALL 7EE1H     ; Calculate physical RAM available
 7D68H  (BAH) CMP D
 7D69H  (C2H) JNZ 7DE7H      ; Cold boot routine
-7D6CH  (CDH) CALL F605H
+7D6CH  (CDH) CALL VOPTRD
 7D6FH  (3EH) MVI A,00H
 7D71H  (C2H) JNZ 7D75H
 7D74H  (3DH) DCR A
-7D75H  (21H) LXI H,F62AH    ; Option ROM flag
+7D75H  (21H) LXI H,VOPTRF    ; Option ROM flag
 7D78H  (BEH) CMP M
 7D79H  (C2H) JNZ 7DE7H      ; Cold boot routine
-7D7CH  (2AH) LHLD F5F2H
+7D7CH  (2AH) LHLD VSPOPD
 7D7FH  (EBH) XCHG
 7D80H  (21H) LXI H,0000H
-7D83H  (22H) SHLD F5F2H
+7D83H  (22H) SHLD VSPOPD
 7D86H  (21H) LXI H,9C0BH
 7D89H  (DFH) RST 3          ; Compare DE and HL
 7D8AH  (C2H) JNZ 7DA8H
 7D8DH  (2AH) LHLD FABEH     ; SP save area for power up/down
 7D90H  (F9H) SPHL
-7D91H  (CDH) CALL F5F6H
+7D91H  (CDH) CALL VPWONH
 7D94H  (CDH) CALL 7DD0H
 7D97H  (2AH) LHLD FFF8H
 7D9AH  (E5H) PUSH H
@@ -19733,16 +19759,16 @@ L7497:
 
 7DBBH  (21H) LXI H,FAAFH    ; Start of IPL filename
 7DBEH  (22H) SHLD F62CH
-7DC1H  (2AH) LHLD F678H     ; BASIC string buffer pointer
+7DC1H  (2AH) LHLD VTPRAM     ; BASIC string buffer pointer
 7DC4H  (F9H) SPHL
-7DC5H  (CDH) CALL F5F6H
+7DC5H  (CDH) CALL VPWONH
 7DC8H  (CDH) CALL 3F6DH
 7DCBH  (21H) LXI H,5797H
 7DCEH  (E5H) PUSH H
 7DCFH  (F6H) ORI AFH
 7DD1H  (CDH) CALL 6CE0H     ; Warm start reset entry
 7DD4H  (AFH) XRA A
-7DD5H  (32H) STA F656H      ; Power off exit condition switch
+7DD5H  (32H) STA VPROFS      ; Power off exit condition switch
 7DD8H  (3AH) LDA FF43H      ; RS232 initialization status
 7DDBH  (A7H) ANA A
 7DDCH  (C8H) RZ
@@ -19758,8 +19784,8 @@ L7497:
 7DE7H  (31H) LXI SP,F5E6H
 7DEAH  (CDH) CALL 7EE1H     ; Calculate physical RAM available
 7DEDH  (06H) MVI B,90H
-7DEFH  (11H) LXI D,F5F0H    ; Active system signature -- Warm vs Cold boot
-7DF2H  (21H) LXI H,035AH    ; Initialization image loaded to F5F0H
+7DEFH  (11H) LXI D,VSSYS    ; Active system signature -- Warm vs Cold boot
+7DF2H  (21H) LXI H,035AH    ; Initialization image loaded to VSSYS
 7DF5H  (CDH) CALL 2542H     ; Move B bytes from M to (DE)
 7DF8H  (CDH) CALL 7EC6H     ; Initialize RST 38H RAM vector table
 7DFBH  (3EH) MVI A,0CH
@@ -19780,10 +19806,10 @@ L7497:
 7E1EH  (05H) DCR B
 7E1FH  (C2H) JNZ 7E1CH
 7E22H  (36H) MVI M,FFH
-7E24H  (CDH) CALL F605H     ; Detect Option ROM
+7E24H  (CDH) CALL VOPTRD     ; Detect Option ROM
 7E27H  (C2H) JNZ 7E43H
 7E2AH  (3DH) DCR A
-7E2BH  (32H) STA F62AH      ; Option ROM flag
+7E2BH  (32H) STA VOPTRF      ; Option ROM flag
 7E2EH  (21H) LXI H,F9BAH
 7E31H  (36H) MVI M,F0H
 7E33H  (23H) INX H
@@ -19804,7 +19830,7 @@ L7497:
 7E52H  (32H) STA F680H      ; End of statement marker
 7E55H  (21H) LXI H,FBD4H
 7E58H  (22H) SHLD FBD9H
-7E5BH  (22H) SHLD F678H     ; BASIC string buffer pointer
+7E5BH  (22H) SHLD VTPRAM     ; BASIC string buffer pointer
 7E5EH  (22H) SHLD FB67H     ; File buffer area pointer
 7E61H  (3EH) MVI A,01H
 7E63H  (32H) STA FBB3H
@@ -19814,7 +19840,7 @@ L7497:
 7E6FH  (AFH) XRA A
 7E70H  (77H) MOV M,A
 7E71H  (23H) INX H
-7E72H  (22H) SHLD F67CH     ; Start of BASIC program pointer
+7E72H  (22H) SHLD VBASPP     ; Start of BASIC program pointer
 7E75H  (22H) SHLD F99AH     ; BASIC program not saved pointer
 7E78H  (77H) MOV M,A
 7E79H  (23H) INX H
@@ -19848,7 +19874,7 @@ L7497:
 ; ======================================================
 7EACH  (2AH) LHLD FBB2H     ; Start of variable data pointer
 7EAFH  (EBH) XCHG
-7EB0H  (2AH) LHLD F678H     ; BASIC string buffer pointer
+7EB0H  (2AH) LHLD VTPRAM     ; BASIC string buffer pointer
 7EB3H  (7DH) MOV A,L
 7EB4H  (93H) SUB E
 7EB5H  (6FH) MOV L,A
@@ -19924,13 +19950,13 @@ L7497:
 7F28H  (C3H) JMP 0804H      ; Execute BASIC program
 
 7F2BH  (F5H) PUSH PSW
-7F2CH  (2AH) LHLD F5F4H     ; HIMEM
+7F2CH  (2AH) LHLD VHIMEM     ; HIMEM
 7F2FH  (11H) LXI D,FEF5H
 7F32H  (19H) DAD D
 7F33H  (3DH) DCR A
 7F34H  (F2H) JP 7F32H
 7F37H  (EBH) XCHG
-7F38H  (2AH) LHLD F678H     ; BASIC string buffer pointer
+7F38H  (2AH) LHLD VTPRAM     ; BASIC string buffer pointer
 7F3BH  (44H) MOV B,H
 7F3CH  (4DH) MOV C,L
 7F3DH  (2AH) LHLD FB67H     ; File buffer area pointer
@@ -19966,7 +19992,7 @@ L7497:
 7F69H  (7CH) MOV A,H
 7F6AH  (98H) SBB B
 7F6BH  (67H) MOV H,A
-7F6CH  (22H) SHLD F678H     ; BASIC string buffer pointer
+7F6CH  (22H) SHLD VTPRAM     ; BASIC string buffer pointer
 7F6FH  (2BH) DCX H
 7F70H  (2BH) DCX H
 7F71H  (C1H) POP B
