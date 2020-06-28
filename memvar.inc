@@ -1,4 +1,4 @@
-#define		MEMVAR
+#define		MEMVARS
 
 VSSYS              equ 0F5F0H            ; Start of system
 VSPOPD             equ 0F5F2H            ; SP on power-down

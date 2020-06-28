@@ -1,4 +1,4 @@
-#ifndef MemVars
+#ifndef MEMVARS
 #include	"memvar.inc"
 #endif
 	
