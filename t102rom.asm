@@ -16,11 +16,11 @@
 ; Compare next byte with M
 ; ======================================================
         MOV  A,M        ; Get byte from (HL)
-        XTHL           ; Get address of next inst. from stack
+        XTHL            ; Get address of next inst. from stack
         CMP  M          ; Compare with expected code byte
         JNZ  ERRSYN     ; Generate Syntax error if no match
         INX  H          ; Increment past the compare byte
-        XTHL           ; Put new return address on stack
+        XTHL            ; Put new return address on stack
 	
 ; Fall through to get next BASIC instruction. The code above is
 ; used to parse the validity of BASIC statements.
@@ -29,25 +29,24 @@
 ; ======================================================
 ; Get next non-white char from M
 ; ======================================================
-        JMP  L0858H      ; RST 10H routine with pre-increment of HL
+        JMP  L0858H     ; RST 10H routine with pre-increment of HL
+
 	
-	
-    org 0010H
 ; ======================================================
 ; Load pointer to Storage of TEXT Line Starts in DE
 ; ======================================================
         XCHG
-        LHLD F6EBH     ; Storage of TEXT Line Starts
+        LHLD F6EBH      ; Storage of TEXT Line Starts
         XCHG
 	
 	
-    org 0010H
+    org 0018H
 ; ======================================================
 ; Compare DE and HL
 ; ======================================================
         MOV  A,H        ; Compare MSB first to test <>
         SUB  D          ; Compare with D
-        RNZ            ; Return if not equal
+        RNZ             ; Return if not equal
         MOV  A,L        ; Prepare to test LSB
         SUB  E          ; Compare with E
         RET
