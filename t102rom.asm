@@ -125,290 +125,290 @@
 ; ======================================================
 ; Function vector table for SGN to MID$
 ; ======================================================
-    DW   3407H,3654H,33F2H,2B4CH
-    DW   1100H,10C8H,10CEH,305AH
-    DW   313EH,2FCFH,30A4H,2EEFH
-    DW   2F09H,2F58H,2F71H,1284H
-    DW   1889H,506DH,506BH,3501H
-    DW   352AH,35BAH,3645H,2943H
-    DW   273AH,2A07H,294FH,295FH
-    DW   298EH,29ABH,29DCH,29E6H
+    DW  3407H,3654H,33F2H,2B4CH
+    DW  1100H,10C8H,10CEH,305AH
+    DW  313EH,2FCFH,30A4H,2EEFH
+    DW  2F09H,2F58H,2F71H,1284H
+    DW  1889H,506DH,506BH,3501H
+    DW  352AH,35BAH,3645H,2943H
+    DW  273AH,2A07H,294FH,295FH
+    DW  298EH,29ABH,29DCH,29E6H
 	
     org 0080H
 ; ======================================================
 ; BASIC statement keyword table END to NEW
 ; ======================================================
-    DB   80H or 'E',"ND"        ; 0
-    DB   80H or 'F',"OR"
-    DB   80H or 'N',"EXT"
-    DB   80H or 'D',"ATA"
-    DB   80H or 'I',"NPUT"
-    DB   80H or 'D',"IM"        ; 5
-    DB   80H or 'R',"EAD"
-    DB   80H or 'L',"ET"
-    DB   80H or 'G',"OTO"
-    DB   80H or 'R',"UN"
-    DB   80H or 'I',"F"         ; 10
-    DB   80H or 'R',"ESTORE"
-    DB   80H or 'G',"OSUB"
-    DB   80H or 'R',"ETURN"
-    DB   80H or 'R',"EM"
-    DB   80H or 'S',"TOP"       ; 15
-    DB   80H or 'W',"IDTH"
-    DB   80H or 'E',"LSE"
-    DB   80H or 'L',"INE"
-    DB   80H or 'E',"DIT"
-    DB   80H or 'E',"RROR"      ; 20
-    DB   80H or 'R',"ESUME"
-    DB   80H or 'O',"UT"
-    DB   80H or 'O',"N"
-    DB   80H or 'D',"SKO$"
-    DB   80H or 'O',"PEN"       ; 25
-    DB   80H or 'C',"LOSE"
-    DB   80H or 'L',"OAD"
-    DB   80H or 'M',"ERGE"
-    DB   80H or 'F',"ILES"
-    DB   80H or 'S',"AVE"       ; 30
-    DB   80H or 'L',"FILES"
-    DB   80H or 'L',"PRINT"
-    DB   80H or 'D',"EF"
-    DB   80H or 'P',"OKE"
-    DB   80H or 'P',"RINT"      ; 35
-    DB   80H or 'C',"ONT"
-    DB   80H or 'L',"IST"
-    DB   80H or 'L',"LIST"
-    DB   80H or 'C',"LEAR"
-    DB   80H or 'C',"LOAD"      ; 40
-    DB   80H or 'C',"SAVE"
-    DB   80H or 'T',"IME$"
-    DB   80H or 'D',"ATE$"
-    DB   80H or 'D',"AY$"
-    DB   80H or 'C',"OM"        ; 45
-    DB   80H or 'M',"DM"
-    DB   80H or 'K',"EY"
-    DB   80H or 'C',"LS"
-    DB   80H or 'B',"EEP"
-    DB   80H or 'S',"OUND"      ; 50
-    DB   80H or 'L',"COPY"
-    DB   80H or 'P',"SET"
-    DB   80H or 'P',"RESET"
-    DB   80H or 'M',"OTOR"
-    DB   80H or 'M',"AX"        ; 55
-    DB   80H or 'P',"OWER"
-    DB   80H or 'C',"ALL"
-    DB   80H or 'M',"ENU"
-    DB   80H or 'I',"PL"
-    DB   80H or 'N',"AME"       ; 60
-    DB   80H or 'K',"ILL"
-    DB   80H or 'S',"CREEN"
-    DB   80H or 'N',"EW"
+    DB  80H or 'E',"ND"        ; 0
+    DB  80H or 'F',"OR"
+    DB  80H or 'N',"EXT"
+    DB  80H or 'D',"ATA"
+    DB  80H or 'I',"NPUT"
+    DB  80H or 'D',"IM"        ; 5
+    DB  80H or 'R',"EAD"
+    DB  80H or 'L',"ET"
+    DB  80H or 'G',"OTO"
+    DB  80H or 'R',"UN"
+    DB  80H or 'I',"F"         ; 10
+    DB  80H or 'R',"ESTORE"
+    DB  80H or 'G',"OSUB"
+    DB  80H or 'R',"ETURN"
+    DB  80H or 'R',"EM"
+    DB  80H or 'S',"TOP"       ; 15
+    DB  80H or 'W',"IDTH"
+    DB  80H or 'E',"LSE"
+    DB  80H or 'L',"INE"
+    DB  80H or 'E',"DIT"
+    DB  80H or 'E',"RROR"      ; 20
+    DB  80H or 'R',"ESUME"
+    DB  80H or 'O',"UT"
+    DB  80H or 'O',"N"
+    DB  80H or 'D',"SKO$"
+    DB  80H or 'O',"PEN"       ; 25
+    DB  80H or 'C',"LOSE"
+    DB  80H or 'L',"OAD"
+    DB  80H or 'M',"ERGE"
+    DB  80H or 'F',"ILES"
+    DB  80H or 'S',"AVE"       ; 30
+    DB  80H or 'L',"FILES"
+    DB  80H or 'L',"PRINT"
+    DB  80H or 'D',"EF"
+    DB  80H or 'P',"OKE"
+    DB  80H or 'P',"RINT"      ; 35
+    DB  80H or 'C',"ONT"
+    DB  80H or 'L',"IST"
+    DB  80H or 'L',"LIST"
+    DB  80H or 'C',"LEAR"
+    DB  80H or 'C',"LOAD"      ; 40
+    DB  80H or 'C',"SAVE"
+    DB  80H or 'T',"IME$"
+    DB  80H or 'D',"ATE$"
+    DB  80H or 'D',"AY$"
+    DB  80H or 'C',"OM"        ; 45
+    DB  80H or 'M',"DM"
+    DB  80H or 'K',"EY"
+    DB  80H or 'C',"LS"
+    DB  80H or 'B',"EEP"
+    DB  80H or 'S',"OUND"      ; 50
+    DB  80H or 'L',"COPY"
+    DB  80H or 'P',"SET"
+    DB  80H or 'P',"RESET"
+    DB  80H or 'M',"OTOR"
+    DB  80H or 'M',"AX"        ; 55
+    DB  80H or 'P',"OWER"
+    DB  80H or 'C',"ALL"
+    DB  80H or 'M',"ENU"
+    DB  80H or 'I',"PL"
+    DB  80H or 'N',"AME"       ; 60
+    DB  80H or 'K',"ILL"
+    DB  80H or 'S',"CREEN"
+    DB  80H or 'N',"EW"
 	
     org 018FH
 ; ======================================================
 ; Function keyword table TAB to <
 ; ======================================================
-    DB   80H or 'T',"AB("
-    DB   80H or 'T',"O"         ; 65
-    DB   80H or 'U',"SING"
-    DB   80H or 'V',"ARPTR"
-    DB   80H or 'E',"RL"
-    DB   80H or 'E',"RR"
-    DB   80H or 'S',"TRING$"    ; 70
-    DB   80H or 'I',"NSTR"
-    DB   80H or 'D',"SKI$"
-    DB   80H or 'I',"NKEY$"
-    DB   80H or 'C',"SRLIN"
-    DB   80H or 'O',"FF"        ; 75
-    DB   80H or 'H',"IMEM"
-    DB   80H or 'T',"HEN"
-    DB   80H or 'N',"OT"
-    DB   80H or 'S',"TEP"
-    DB   80H or '+'             ; 80
-    DB   80H or '-'
-    DB   80H or '*'
-    DB   80H or '/'
-    DB   80H or '^'
-    DB   80H or 'A',"ND"        ; 85
-    DB   80H or 'O',"R"
-    DB   80H or 'X',"OR"
-    DB   80H or 'E',"QV"
-    DB   80H or 'I',"MP"
-    DB   80H or 'M',"OD"        ; 90
-    DB   80H or '\'
-    DB   80H or '>'
-    DB   80H or '='
-    DB   80H or '<'
+    DB  80H or 'T',"AB("
+    DB  80H or 'T',"O"         ; 65
+    DB  80H or 'U',"SING"
+    DB  80H or 'V',"ARPTR"
+    DB  80H or 'E',"RL"
+    DB  80H or 'E',"RR"
+    DB  80H or 'S',"TRING$"    ; 70
+    DB  80H or 'I',"NSTR"
+    DB  80H or 'D',"SKI$"
+    DB  80H or 'I',"NKEY$"
+    DB  80H or 'C',"SRLIN"
+    DB  80H or 'O',"FF"        ; 75
+    DB  80H or 'H',"IMEM"
+    DB  80H or 'T',"HEN"
+    DB  80H or 'N',"OT"
+    DB  80H or 'S',"TEP"
+    DB  80H or '+'             ; 80
+    DB  80H or '-'
+    DB  80H or '*'
+    DB  80H or '/'
+    DB  80H or '^'
+    DB  80H or 'A',"ND"        ; 85
+    DB  80H or 'O',"R"
+    DB  80H or 'X',"OR"
+    DB  80H or 'E',"QV"
+    DB  80H or 'I',"MP"
+    DB  80H or 'M',"OD"        ; 90
+    DB  80H or '\'
+    DB  80H or '>'
+    DB  80H or '='
+    DB  80H or '<'
 	
     org 01F0H
 ; ======================================================
 ; Function keyword table SGN to MID$
 ; ======================================================
-    DB   80H or 'S',"GN"        ; 95
-    DB   80H or 'I',"NT"
-    DB   80H or 'A',"BS"
-    DB   80H or 'F',"RE"
-    DB   80H or 'I',"NP"
-    DB   80H or 'L',"POS"       ; 100
-    DB   80H or 'P',"OS"
-    DB   80H or 'S',"QR"
-    DB   80H or 'R',"ND"
-    DB   80H or 'L',"OG"
-    DB   80H or 'E',"XP"        ; 105
-    DB   80H or 'C',"OS"
-    DB   80H or 'S',"IN"
-    DB   80H or 'T',"AN"
-    DB   80H or 'A',"TN"
-    DB   80H or 'P',"EEK"       ; 110
-    DB   80H or 'E',"OF"
-    DB   80H or 'L',"OC"
-    DB   80H or 'L',"OF"
-    DB   80H or 'C',"INT"
-    DB   80H or 'C',"SNG"       ; 115
-    DB   80H or 'C',"DBL"
-    DB   80H or 'F',"IX"
-    DB   80H or 'L',"EN"
-    DB   80H or 'S',"TR$"
-    DB   80H or 'V',"AL"        ; 120
-    DB   80H or 'A',"SC"
-    DB   80H or 'C',"HR$"
-    DB   80H or 'S',"PACE$"
-    DB   80H or 'L',"EFT$"
-    DB   80H or 'R',"IGHT$"     ; 125
-    DB   80H or 'M',"ID$"
-    DB   80H or "'"             ; 127
-    DB   80H
+    DB  80H or 'S',"GN"        ; 95
+    DB  80H or 'I',"NT"
+    DB  80H or 'A',"BS"
+    DB  80H or 'F',"RE"
+    DB  80H or 'I',"NP"
+    DB  80H or 'L',"POS"       ; 100
+    DB  80H or 'P',"OS"
+    DB  80H or 'S',"QR"
+    DB  80H or 'R',"ND"
+    DB  80H or 'L',"OG"
+    DB  80H or 'E',"XP"        ; 105
+    DB  80H or 'C',"OS"
+    DB  80H or 'S',"IN"
+    DB  80H or 'T',"AN"
+    DB  80H or 'A',"TN"
+    DB  80H or 'P',"EEK"       ; 110
+    DB  80H or 'E',"OF"
+    DB  80H or 'L',"OC"
+    DB  80H or 'L',"OF"
+    DB  80H or 'C',"INT"
+    DB  80H or 'C',"SNG"       ; 115
+    DB  80H or 'C',"DBL"
+    DB  80H or 'F',"IX"
+    DB  80H or 'L',"EN"
+    DB  80H or 'S',"TR$"
+    DB  80H or 'V',"AL"        ; 120
+    DB  80H or 'A',"SC"
+    DB  80H or 'C',"HR$"
+    DB  80H or 'S',"PACE$"
+    DB  80H or 'L',"EFT$"
+    DB  80H or 'R',"IGHT$"     ; 125
+    DB  80H or 'M',"ID$"
+    DB  80H or "'"             ; 127
+    DB  80H
 	
     org 0262H
 ; ======================================================
 ; BASIC statement vector table for END to NEW
 ; ======================================================
-    DW   409FH,0726H,4174H,099EH
-    DW   0CA3H,478BH,0CD9H,09C3H
-    DW   0936H,090FH,0B1AH,407FH
-    DW   091EH,0966H,09A0H,409AH
-    DW   1DC3H,09A0H,0C45H,5E51H
-    DW   0B0FH,0AB0H,110CH,0A2FH
-    DW   5071H,4CCBH,4E28H,4D70H
-    DW   4D71H,1F3AH,4DCFH,506FH
-    DW   0B4EH,0872H,128BH,0B56H
-    DW   40DAH,1140H,113BH,40F9H
-    DW   2377H,2280H,19ABH,19BDH
-    DW   19F1H,1A9EH,1A9EH,1BB8H
-    DW   4231H,4229H,1DC5H,1E5EH
-    DW   1C57H,1C66H,1DECH,7F0BH
-    DW   1419H,1DFAH,5797H,1A78H
-    DW   2037H,1F91H,1E22H,20FEH
+    DW  409FH,0726H,4174H,099EH
+    DW  0CA3H,478BH,0CD9H,09C3H
+    DW  0936H,090FH,0B1AH,407FH
+    DW  091EH,0966H,09A0H,409AH
+    DW  1DC3H,09A0H,0C45H,5E51H
+    DW  0B0FH,0AB0H,110CH,0A2FH
+    DW  5071H,4CCBH,4E28H,4D70H
+    DW  4D71H,1F3AH,4DCFH,506FH
+    DW  0B4EH,0872H,128BH,0B56H
+    DW  40DAH,1140H,113BH,40F9H
+    DW  2377H,2280H,19ABH,19BDH
+    DW  19F1H,1A9EH,1A9EH,1BB8H
+    DW  4231H,4229H,1DC5H,1E5EH
+    DW  1C57H,1C66H,1DECH,7F0BH
+    DW  1419H,1DFAH,5797H,1A78H
+    DW  2037H,1F91H,1E22H,20FEH
 	
     org 02E2H
 ; ======================================================
 ; Operator order of precedence table
 ; ======================================================
-    DB   79H, 79H, 7CH, 7CH
-    DB   7FH, 50H, 46H, 3CH
-    DB   32H, 28H, 7AH, 7BH
-    DB   BAH, 35H, 00H, 00H
+    DB  79H, 79H, 7CH, 7CH
+    DB  7FH, 50H, 46H, 3CH
+    DB  32H, 28H, 7AH, 7BH
+    DB  BAH, 35H, 00H, 00H
 	
     org 02F2H
 ; ======================================================
 ; Vector table for math operations
 ; ======================================================
-    DW   3501H,35D9H
-    DW   352AH,2B78H,2B69H,2CFFH
-    DW   2DC7H,3D8EH,34FAH,37F4H
-    DW   37FDH,3803H,380EH,3D7FH
-    DW   3498H,3704H,36F8H,3725H
-    DW   0F0DH,3DF7H,34C2H
+    DW  3501H,35D9H
+    DW  352AH,2B78H,2B69H,2CFFH
+    DW  2DC7H,3D8EH,34FAH,37F4H
+    DW  37FDH,3803H,380EH,3D7FH
+    DW  3498H,3704H,36F8H,3725H
+    DW  0F0DH,3DF7H,34C2H
 	
     org 031CH
 ; ======================================================
 ; BASIC error message text
 ; ======================================================
-    DB   "NF"
-    DB   "SN"
-    DB   "RG"
-    DB   "OD"
-    DB   "FC"
-    DB   "OV"
-    DB   "OM"
-    DB   "UL"
-    DB   "BS"
-    DB   "DD"
-    DB   "/0"
-    DB   "ID"
-    DB   "TM"
-    DB   "OS"
-    DB   "LS"
-    DB   "ST"
-    DB   "CN"
-    DB   "IO"
-    DB   "NR"
-    DB   "RW"
-    DB   "UE"
-    DB   "MO"
-    DB   "IE"
-    DB   "BN"
-    DB   "FF"
-    DB   "AO"
-    DB   "EF"
-    DB   "NM"
-    DB   "DS"
-    DB   "FL"
-    DB   "CF"
+    DB  "NF"
+    DB  "SN"
+    DB  "RG"
+    DB  "OD"
+    DB  "FC"
+    DB  "OV"
+    DB  "OM"
+    DB  "UL"
+    DB  "BS"
+    DB  "DD"
+    DB  "/0"
+    DB  "ID"
+    DB  "TM"
+    DB  "OS"
+    DB  "LS"
+    DB  "ST"
+    DB  "CN"
+    DB  "IO"
+    DB  "NR"
+    DB  "RW"
+    DB  "UE"
+    DB  "MO"
+    DB  "IE"
+    DB  "BN"
+    DB  "FF"
+    DB  "AO"
+    DB  "EF"
+    DB  "NM"
+    DB  "DS"
+    DB  "FL"
+    DB  "CF"
 	
 ; ======================================================
 ; L035AH: Initialization image loaded to F5F0H
 ; ======================================================
-    DB   4DH            ; LSB of COLD vs WARM boot marker (at address VSSYS)
-    DB   8AH            ; MSB of COLD vs WARM boot marker
-    DB   00H            ; Auto PowerDown signature LSB (at address VSPOPD)
-    DB   00H            ; Auto PowerDown signature MSB
-    DB   F0H            ; LSB of HIMEM (VHIMEM)
-    DB   F5H            ; MSB of HIMEM
-    RET                 ; This RET can be changed to JMP to hook Boot-up (VPWONH)
-    NOP                 ; Space for address for JMP
-    NOP
-    EI                  ; This is the hook for WAND (VBCRIH) (RST 5.5)
-    RET                 ; Replace EI, RET, NOP with a JMP instruction
-    NOP
-    RET                 ; This is the RST 6.5 routine (RS232 receive interrupt) hook (VUARTH)
-    NOP                 ; Replace RET, NOP, NOP with a JMP instruction
-    NOP
-    RET                 ; This is the RST 7.5 hook (Background tick)  (VTLINH)
-    NOP
-    NOP
-    JMP L1431H          ; Normal TRAP (low power) interrupt routine - Hook at VLPSIH
+    DB  4DH             ; LSB of COLD vs WARM boot marker (at address VSSYS)
+    DB  8AH             ; MSB of COLD vs WARM boot marker
+    DB  00H             ; Auto PowerDown signature LSB (at address VSPOPD)
+    DB  00H             ; Auto PowerDown signature MSB
+    DB  F0H             ; LSB of HIMEM (VHIMEM)
+    DB  F5H             ; MSB of HIMEM
+	RET             ; This RET can be changed to JMP to hook Boot-up (VPWONH)
+	NOP             ; Space for address for JMP
+	NOP 
+	EI              ; This is the hook for WAND (VBCRIH) (RST 5.5)
+	RET             ; Replace EI, RET, NOP with a JMP instruction
+	NOP 
+	RET             ; This is the RST 6.5 routine (RS232 receive interrupt) hook (VUARTH)
+	NOP             ; Replace RET, NOP, NOP with a JMP instruction
+	NOP 
+	RET             ; This is the RST 7.5 hook (Background tick)  (VTLINH)
+	NOP 
+	NOP 
+	JMP   L1431H    ; Normal TRAP (low power) interrupt routine - Hook at VLPSIH
 	
 	
     org 036FH
 ; ======================================================
 ; External ROM detect image loaded at F605H
 ; ======================================================
-    DB   3EH,01H,D3H,E8H,21H,40H,00H,11H  ; F605H - MVI A,01H;  OUT E8H; LXI H,L0040H;  LXI D,FAA4H
-    DB   A4H,FAH,7EH,12H,23H,13H,7DH,D6H  ; F60DH - MVI A,M;    STAX D;  INX H; INX D; MOV A,L; SUI 48H
-    DB   48H,C2H,0FH,F6H,D3H,E8H,2AH,A4H  ; F515H - JNZ F60FH;  OUT E8H; LHLD FAA4H;   
-    DB   FAH,11H,41H,42H,C3H,18H,00H,F3H  ; F61DH - LXI D,L4142H; JMP 0018H;     DI;     ; Different from M100
-    DB   3EH,01H,D3H,E8H,C7H,00H,01H,00H  ; F625H - MVI A,01H;  OUT E8H; RST 0
-    DB   00H,FFH,FFH,00H,00H,00H,00H,00H  ; F62DH \
-    DB   00H,00H,00H,00H,01H,01H,08H,28H  ; F635H  \
-    DB   00H,00H,00H,01H,01H,01H,01H,19H  ; F63DH   \
-    DB   28H,00H,00H,00H,50H,38H,30H,00H  ; F645H    \
-    DB   00H,00H,00H,00H,00H,00H,00H,00H  ; F64DH     \ Initialized Data space at F6XXH
-    DB   00H,00H,64H,FFH,00H,00H,4DH,37H  ; F655H    /
-    DB   49H,31H,44H,C3H,00H,00H,00H,C9H  ; F65DH   /     ; Different from M100
-    DB   00H,C9H,D3H,00H,C9H,DBH,00H,C9H  ; F665H  /
-    DB   3AH,00H,00H,00H,00H,00H,00H,00H  ; F66DH /
-    DB   00H,0EH,00H,15H,FDH,FEH,FFH,B2H  ; F675H
-    DB   FCH,00H,00H
+    DB  3EH,01H,D3H,E8H,21H,40H,00H,11H  ; F605H - MVI A,01H;  OUT E8H; LXI H,L0040H;  LXI D,FAA4H
+    DB  A4H,FAH,7EH,12H,23H,13H,7DH,D6H  ; F60DH - MVI A,M;    STAX D;  INX H; INX D; MOV A,L; SUI 48H
+    DB  48H,C2H,0FH,F6H,D3H,E8H,2AH,A4H  ; F515H - JNZ F60FH;  OUT E8H; LHLD FAA4H;   
+    DB  FAH,11H,41H,42H,C3H,18H,00H,F3H  ; F61DH - LXI D,L4142H; JMP 0018H;     DI;     ; Different from M100
+    DB  3EH,01H,D3H,E8H,C7H,00H,01H,00H  ; F625H - MVI A,01H;  OUT E8H; RST 0
+    DB  00H,FFH,FFH,00H,00H,00H,00H,00H  ; F62DH \
+    DB  00H,00H,00H,00H,01H,01H,08H,28H  ; F635H  \
+    DB  00H,00H,00H,01H,01H,01H,01H,19H  ; F63DH   \
+    DB  28H,00H,00H,00H,50H,38H,30H,00H  ; F645H    \
+    DB  00H,00H,00H,00H,00H,00H,00H,00H  ; F64DH     \ Initialized Data space at F6XXH
+    DB  00H,00H,64H,FFH,00H,00H,4DH,37H  ; F655H    /
+    DB  49H,31H,44H,C3H,00H,00H,00H,C9H  ; F65DH   /     ; Different from M100
+    DB  00H,C9H,D3H,00H,C9H,DBH,00H,C9H  ; F665H  /
+    DB  3AH,00H,00H,00H,00H,00H,00H,00H  ; F66DH /
+    DB  00H,0EH,00H,15H,FDH,FEH,FFH,B2H  ; F675H
+    DB  FCH,00H,00H
 	
 	
     org 03EAH
 ; ======================================================
 ; BASIC message strings
 ; ======================================================
-    DB   " Error",00H
-    DB   " in ",00H
-    DB   "Ok",0DH,0AH,00H
-    DB   "Break",00H
+    DB  " Error",00H
+    DB  " in ",00H
+    DB  "Ok",0DH,0AH,00H
+    DB  "Break",00H
 	
 	
 ; ======================================================
@@ -474,19 +474,19 @@ GERRSN: LHLD FB94H      ; Line number of current data statement
 ; L0446H: Generate Syntax error
 ; ======================================================
 ERRSYN: MVI  E,02H      ; Load value for SN Error  TODO: examine this, it doesn't make sense
-        DB   01H
+    DB  01H
         MVI  E,0BH      ; Load value for /0 Error
-        DB   01H
+    DB  01H
         MVI  E,01H      ; Load value for NF Error
-        DB   01H
+    DB  01H
         MVI  E,0AH      ; Load value for DD Error
-        DB   01H
+    DB  01H
         MVI  E,14H      ; Load value for RW Error
-        DB   01H
+    DB  01H
         MVI  E,06H      ; Load value for OV Error
-        DB   01H
+    DB  01H
         MVI  E,16H      ; Load value for MO Error
-        DB   01H
+    DB  01H
         MVI  E,0DH      ; Load value for TM Error 
 	
 ; ======================================================
@@ -962,12 +962,12 @@ L0716H:	LXI   H,L0005H  ; Prepare to add 5 to line length for Address, Line # & 
 ; ======================================================
 ; FOR statement
 ; ======================================================
-	MVI   A,64H     
+BSFOR:	MVI   A,64H     
 	STA   FB96H     ; FOR/NEXT loop active flag
-	CALL  L09C3H    ; LET statement
+	CALL  BSLET    ; LET statement
 	POP   B         ; Pop BASIC Loop "RET"urn address from stack
 	PUSH  H         ; Save pointer to FOR arguments on stack
-	CALL  L099EH    ; DATA statement
+	CALL  BSDATA    ; DATA statement
 	SHLD  FB92H     ; Save address of first statement in FOR loop
 	LXI   H,L0002H  
 	DAD   SP        ; Get SP prior to our PUSH H above
@@ -1006,15 +1006,15 @@ L073AH:	CALL  L0405H
 ; ======================================================
 ; TO statement
 ; ======================================================
-	RST   5         ; Determine type of last var used
+BSTO:	RST   5         ; Determine type of last var used
 	JZ    L045BH    ; Generate TM error
 	PUSH  PSW       ; Save type of last var used
-	CALL  L0DABH    ; Main BASIC evaluation routine
+	CALL  BMEVAL    ; Main BASIC evaluation routine
 	POP   PSW       ; Restore type of last var used
 	PUSH  H         
 	JNC   L0791H    ; Jump if Double Precision
 	JP    L07C8H    ; Jump if Single Precision
-	CALL  L3501H    ; CINT function
+	CALL  BFCINT    ; CINT function
 	XTHL            
 	LXI   D,L0001H  
 	MOV   A,M       
@@ -1022,7 +1022,7 @@ L073AH:	CALL  L0405H
 ; ======================================================
 ; STEP statement
 ; ======================================================
-	CPI   CFH       
+BSSTEP:	CPI   CFH       
 	CZ    L1112H    ; Evaluate expression at M
 	PUSH  D         
 	PUSH  H         
@@ -1030,7 +1030,7 @@ L073AH:	CALL  L0405H
 	CALL  L341BH    
 	JMP   L07EAH    
 	
-L0791H:	CALL  L35BAH    ; CDBL function
+L0791H:	CALL  BFCDBL    ; CDBL function
 	POP   D         
 	LXI   H,FFF8H   
 	DAD   SP        
@@ -1044,9 +1044,9 @@ L0791H:	CALL  L35BAH    ; CDBL function
 	MVI   A,01H     
 	JNZ   L07B7H    
 	RST   2         ; Get next non-white char from M
-	CALL  L0DABH    ; Main BASIC evaluation routine
+	CALL  BMEVAL    ; Main BASIC evaluation routine
 	PUSH  H         
-	CALL  L35BAH    ; CDBL function
+	CALL  BFCDBL    ; CDBL function
 	RST   6         ; Get sign of FAC1
 	LXI   D,FC18H   ; Start of FAC1 for single and double precision
 	POP   H         
@@ -1062,7 +1062,7 @@ L07B7H:	MOV   B,H
 	POP   PSW       
 	JMP   L07F1H    
 	
-L07C8H:	CALL  L352AH    ; CSNG function
+L07C8H:	CALL  BFCSNG    ; CSNG function
 	CALL  L343DH    ; Load single precision FAC1 to BCDE
 	POP   H         
 	PUSH  B         
@@ -1075,7 +1075,7 @@ L07C8H:	CALL  L352AH    ; CSNG function
 	JNZ   L07EBH    
 	CALL  L0DACH    
 	PUSH  H         
-	CALL  L352AH    ; CSNG function
+	CALL  BFCSNG    ; CSNG function
 	CALL  L343DH    ; Load single precision FAC1 to BCDE
 	RST   6         ; Get sign of FAC1
 L07EAH:	POP   H         
@@ -1102,7 +1102,7 @@ L0800H:	MVI   B,81H
 ; ======================================================
 ; Execute BASIC program
 ; ======================================================
-L0804H:	CALL  L6D6DH    ; Check RS232 queue for pending characters
+BASEXE:	CALL  L6D6DH    ; Check RS232 queue for pending characters
 	CNZ   L4028H    ; Call routine to process ON COM interrupt
 	LDA   F654H     ; Load pending interrupt (ON KEY/TIME/COM/MDM) count
 	ORA   A         ; Test for pending interrupts to process
@@ -1110,7 +1110,7 @@ L0804H:	CALL  L6D6DH    ; Check RS232 queue for pending characters
 L0811H:	CALL  L13F3H    ; Test for CTRL-C or CTRL-S during BASIC execute
 	SHLD  FB9BH     ; Most recent or currenly running line pointer
 	XCHG            ; Store line pointer in DE
-	LXI   H,0000H  ; Prepare to get Stack Pointer
+	LXI   H,0000H   ; Prepare to get Stack Pointer
 	DAD   SP        ; Get Stack Pointer prior to BASIC Inst. execution
 	SHLD  FB9DH     ; SP used by BASIC to reinitialize the stack
 	XCHG            ; Restore line pointer
@@ -1136,7 +1136,7 @@ L082BH:	MOV   A,M       ; Get LSB of "Next line #" POINTER
 ; Start executing BASIC program at HL
 ; ======================================================
 L083AH:	RST   2         ; Get next non-white char from M
-	LXI   D,L0804H  ; Address of routine to process next BASIC line
+	LXI   D,BASEXE  ; Address of routine to process next BASIC line
 	PUSH  D         ; Push it to the stack
 L083FH:	RZ              ; Return to process next line if end of current line
 	
@@ -1144,7 +1144,7 @@ L083FH:	RZ              ; Return to process next line if end of current line
 ; Execute instruction in A), HL points to args
 ; ======================================================
 L0840H:	SUI   80H       ; Subtract 80 from instruction ID to make it zero based
-	JC    L09C3H    ; LET statement
+	JC    BSLET    ; LET statement
 	CPI   40H       ; Test instruction number for bounds
 	JNC   L10F4H    ; Test if command to execute is FEH, generate SN error if not
 	RLC             ; Multiply instruction x2 to get offset in address table
@@ -1186,8 +1186,8 @@ L086CH:	CPI   30H       ; Test for '0'
 ; ======================================================
 ; DEF statement
 ; ======================================================
-	CPI   E0H       ; Test for INT token ID
-	JZ    L0886H    ; DEFINT statement
+BSDEF:	CPI   E0H       ; Test for INT token ID
+	JZ    BSDINT    ; DEFINT statement
 	CPI   44H       ; Test for 'D' character
 	JNZ   L088CH    ; Jump if not D to test for "SNG"
 	RST   2         ; Get next non-white char from M
@@ -1199,14 +1199,14 @@ L086CH:	CPI   30H       ; Test for '0'
 ; ======================================================
 ; DEFDBL statement
 ; ======================================================
-	MVI   E,08H     ; Load variable type for Double precision
+BSDDBL:	MVI   E,08H     ; Load variable type for Double precision
 	JMP   L08A1H    ; Declare variable at M to be type E
 	
 	
 ; ======================================================
 ; DEFINT statement
 ; ======================================================
-L0886H:	RST   2         ; Get next non-white char from M
+BSDINT:	RST   2         ; Get next non-white char from M
 	MVI   E,02H     ; Load variable type for Integer
 	JMP   L08A1H    ; Declare variable at M to be type E
 	
@@ -1221,7 +1221,7 @@ L088CH:	RST   1         ; Compare next byte with M
 ; ======================================================
 ; DEFSNG statement
 ; ======================================================
-	MVI   E,04H     ; Load variable type for Single Precision
+BSDSNG:	MVI   E,04H     ; Load variable type for Single Precision
 	JMP   L08A1H    ; Declare variable at M to be type E
 	
 L089BH:	RST   1         ; Compare next byte with M
@@ -1232,7 +1232,7 @@ L089BH:	RST   1         ; Compare next byte with M
 ; ======================================================
 ; DEFSTR statement
 ; ======================================================
-	MVI   E,03H     ; Load variable type for String var
+BSDSTR:	MVI   E,03H     ; Load variable type for String var
 	
 ; ======================================================
 ; Declare variable at M to be type E
@@ -1301,7 +1301,7 @@ L08EBH:	DCX   H
 ; ======================================================
 ; Convert ASCII number at M+1 to binary
 ; ======================================================
-L08ECH:	LXI   D,0000H  ; Initialize value to zero
+L08ECH:	LXI   D,0000H   ; Initialize value to zero
 L08EFH:	RST   2         ; Get next non-white char from M
 	RNC             ; Return if not ASCII Digit '0-9'
 	PUSH  H         ; Save pointer to BASIC command line
@@ -1332,26 +1332,26 @@ L090CH:	POP   PSW       ; POP next byte from BASIC command line
 ; ======================================================
 ; RUN statement
 ; ======================================================
-	JZ    L3F28H    ; Initialize BASIC Variables for new execution
-	JNC   L4D6EH    ; RUN statement
+BSRUN:	JZ    L3F28H    ; Initialize BASIC Variables for new execution
+	JNC   BSRUN2    ; RUN statement
 	CALL  L3F2CH    ; Initialize BASIC Variables for new execution
-	LXI   B,L0804H  
+	LXI   B,BASEXE  
 	JMP   L0935H    
 	
 	
 ; ======================================================
 ; GOSUB statement
 ; ======================================================
-L091EH:	MVI   C,03H     ; Prepare to test for 6 bytes stack space
+BSGSUB:	MVI   C,03H     ; Prepare to test for 6 bytes stack space
 	CALL  L3EFFH    ; Test if enough Stack space
 	POP   B         ; POP BASIC exec loop return address from stack
 	PUSH  H         ; Save pointer to arguments to stack
 	PUSH  H         ; Make space on stack for current line number
 	LHLD  F67AH     ; Current executing line number
 	XTHL            ; Put line number containing GOSUB to stack
-	LXI   B,0000H  ; Load a GOSUB control variable
+	LXI   B,0000H   ; Load a GOSUB control variable
 	PUSH  B         ; Push GOSUB control variable to stack
-	LXI   B,L0804H  ; Address of BASIC execution loop
+	LXI   B,BASEXE  ; Address of BASIC execution loop
 	MVI   A,8CH     ; BASIC GOSUB token ID
 	PUSH  PSW       ; Push GOSUB ID to stack
 	INX   SP        ; Don't keep flags on stack, only token ID
@@ -1360,7 +1360,7 @@ L0935H:	PUSH  B         ; Push BASIC execution loop return address to stack
 ; ======================================================
 ; GOTO statement
 ; ======================================================
-L0936H:	CALL  L08EBH    ; Convert ASCII number at M to binary
+BSGOTO:	CALL  L08EBH    ; Convert ASCII number at M to binary
 L0939H:	CALL  L09A0H    ; REM statement
 	INX   H         ; Increment to next statement to be executed
 	PUSH  H         ; Save address of next instruction on stack
@@ -1398,7 +1398,7 @@ L0952H:	PUSH  H         ; Push line # to Stack
 ; ======================================================
 ; RETURN statement
 ; ======================================================
-	RNZ             
+BSRETN:	RNZ             
 	MVI   D,FFH     
 	CALL  POPRET    ; Pop return address for NEXT or RETURN
 	CPI   8CH       ; Test for GOSUB token ID popped from stack
@@ -1424,14 +1424,14 @@ L0987H:	POP   H
 	LDA   FB97H     
 	ORA   A         
 	JNZ   L0501H    ; Pop stack and vector to BASIC ready
-L0998H:	LXI   H,L0804H  
+L0998H:	LXI   H,BASEXE  
 	XTHL            
 	MVI   A,E1H     
 	
 ; ======================================================
 ; DATA statement
 ; ======================================================
-L099EH:	LXI   B,L0E3AH  ; Using 0EH below, forms "LXI B,0E3AH"
+BSDATA:	LXI   B,L0E3AH  ; Using 0EH below, forms "LXI B,0E3AH"
 	NOP             
 	MVI   B,00H     ; Zero out B. Termination tokens are NULL & C from above
 L09A4H:	MOV   A,C       ; \ Swap termination token when a quote is
@@ -1460,7 +1460,7 @@ L09BDH:	POP   PSW       ; POP PSW that was left on stack
 ; ======================================================
 ; LET statement
 ; ======================================================
-L09C3H:	CALL  L4790H    ; Find address of variable at M
+BSLET:	CALL  L4790H    ; Find address of variable at M
 	RST   1         ; Compare next byte with M
     DB	DDH             ; Test for '='
 	XCHG            
@@ -1469,7 +1469,7 @@ L09C3H:	CALL  L4790H    ; Find address of variable at M
 	PUSH  D         
 	LDA   FB65H     ; Type of last variable used
 	PUSH  PSW       
-	CALL  L0DABH    ; Main BASIC evaluation routine
+	CALL  BMEVAL    ; Main BASIC evaluation routine
 	POP   PSW       
 L09D6H:	XTHL            
 L09D7H:	MOV   B,A       
@@ -1520,13 +1520,13 @@ L0A29H:	CALL  L3465H
 ; ======================================================
 ; ON statement
 ; ======================================================
-	CPI   94H       
-	JNZ   L0A5BH    ; ON KEY/TIME/COM/MDM GOSUB routine
+BSON:	CPI   94H       
+	JNZ   BSOKTC    ; ON KEY/TIME/COM/MDM GOSUB routine
 	
 ; ======================================================
 ; ON ERROR statement
 ; ======================================================
-	RST   2         ; Get next non-white char from M
+BSONER:	RST   2         ; Get next non-white char from M
 	RST   1         ; Compare next byte with M
     DB	88H             ; Test for GOTO token ID
 	CALL  L08EBH    ; Convert ASCII number at M to binary
@@ -1554,8 +1554,8 @@ L0A48H:	XCHG
 ; ======================================================
 ; ON KEY/TIME/COM/MDM GOSUB routine
 ; ======================================================
-L0A5BH:	CALL  L1AFCH    ; Determine device (KEY/TIME/COM/MDM) for ON GOSUB
-	JC    L0A94H    ; ON TIME$ handler
+BSOKTC:	CALL  L1AFCH    ; Determine device (KEY/TIME/COM/MDM) for ON GOSUB
+	JC    BONTIH    ; ON TIME$ handler
 	PUSH  B         ; Save device code to stack
 	RST   2         ; Get next non-white char from M
 	RST   1         ; Compare next byte with M
@@ -1598,7 +1598,7 @@ L0A7EH:	POP   PSW       ; Restore device count from stack
 ; ======================================================
 ; ON TIME$ handler
 ; ======================================================
-L0A94H:	CALL  L112EH    ; Evaluate expression at M-1
+BONTIH:	CALL  L112EH    ; Evaluate expression at M-1
 	MOV   A,M       
 	MOV   B,A       
 	CPI   8CH       
@@ -1619,7 +1619,7 @@ L0AA2H:	DCR   C
 ; ======================================================
 ; RESUME statement
 ; ======================================================
-	LDA   FBA7H     ; BASIC Program Running Flag
+BSRESU:	LDA   FBA7H     ; BASIC Program Running Flag
 	ORA   A         
 	JNZ   L0AC0H    
 	STA   FBA5H     ; Address of ON ERROR routine
@@ -1671,13 +1671,13 @@ L0AFAH:	INX   H
 	JZ    L40B3H    
 L0B08H:	XRA   A         
 	STA   FBA7H     ; BASIC Program Running Flag
-	JMP   L099EH    ; DATA statement
+	JMP   BSDATA    ; DATA statement
 	
 	
 ; ======================================================
 ; ERROR statement
 ; ======================================================
-L0B0FH:	CALL  L112EH    ; Evaluate expression at M-1
+BSERRO:	CALL  L112EH    ; Evaluate expression at M-1
 	RNZ             
 	ORA   A         
 	JZ    L08DBH    ; Generate FC error
@@ -1687,7 +1687,7 @@ L0B0FH:	CALL  L112EH    ; Evaluate expression at M-1
 ; ======================================================
 ; IF statement
 ; ======================================================
-	CALL  L0DABH    ; Main BASIC evaluation routine
+BSIF:	CALL  BMEVAL    ; Main BASIC evaluation routine
 	MOV   A,M       
 	CPI   2CH       
 	CZ    L0858H    ; RST 10H routine with pre-increment of HL
@@ -1701,11 +1701,11 @@ L0B2BH:	PUSH  H
 	POP   H         
 	JZ    L0B3AH    
 L0B33H:	RST   2         ; Get next non-white char from M
-	JC    L0936H    ; GOTO statement
+	JC    BSGOTO    ; GOTO statement
 	JMP   L083FH    
 	
 L0B3AH:	MVI   D,01H     
-L0B3CH:	CALL  L099EH    ; DATA statement
+L0B3CH:	CALL  BSDATA    ; DATA statement
 	ORA   A         
 	RZ              
 	RST   2         ; Get next non-white char from M
@@ -1719,7 +1719,7 @@ L0B3CH:	CALL  L099EH    ; DATA statement
 ; ======================================================
 ; LPRINT statement
 ; ======================================================
-L0B4EH:	MVI   A,01H     ; Prepare to set output to LPT
+BSLPRN:	MVI   A,01H     ; Prepare to set output to LPT
 	STA   VOUTSW    ; Output device for RST 20H (0=screen)
 	JMP   L0B60H    ; Jump into PRINT statement
 	
@@ -1727,7 +1727,7 @@ L0B4EH:	MVI   A,01H     ; Prepare to set output to LPT
 ; ======================================================
 ; PRINT statement
 ; ======================================================
-	MVI   C,02H     ; Set PRINT # init entry marker
+BSPRIN:	MVI   C,02H     ; Set PRINT # init entry marker
 	CALL  L4F2BH    ; Test for '#' char and process argument
 	CPI   40H       
 	CZ    L1D5FH    
@@ -1736,16 +1736,16 @@ L0B60H:	DCX   H
 	CZ    L4BCBH    
 L0B65H:	JZ    L0C39H    
 	CPI   C2H       
-	JZ    L4991H    ; USING function
+	JZ    BFUSNG    ; USING function
 	CPI   C0H       
-	JZ    L0C01H    ; TAB statement
+	JZ    BSTAB    ; TAB statement
 	PUSH  H         
 	CPI   2CH       
 	JZ    L0BCDH    
 	CPI   3BH       
 	JZ    L0C34H    
 	POP   B         
-	CALL  L0DABH    ; Main BASIC evaluation routine
+	CALL  BMEVAL    ; Main BASIC evaluation routine
 	PUSH  H         
 	RST   5         ; Determine type of last var used
 	JZ    L0BC6H    
@@ -1810,7 +1810,7 @@ L0BF8H:	SUI   0EH       ; Subtract 14 (comma field width)
 ; ======================================================
 ; TAB statement
 ; ======================================================
-L0C01H:	CALL  L112DH    ; Evaluate expression at M
+BSTAB:	CALL  L112DH    ; Evaluate expression at M
 	RST   1         ; Compare next byte with M
     DB	29H             ; Test for ')'
 	DCX   H         
@@ -1854,11 +1854,11 @@ L0C39H:	XRA   A
 ; ======================================================
 ; LINE statement
 ; ======================================================
-	CPI   84H       
-	JNZ   L1C6DH    ; LINE statement
+BSLINE:	CPI   84H       
+	JNZ   BSLINE    ; LINE statement
 	RST   2         ; Get next non-white char from M
 	CPI   23H       
-	JZ    L4F5BH    ; LINE INPUT # statement
+	JZ    BSLINP    ; LINE INPUT # statement
 	CALL  L10E6H    ; Check for running program
 	MOV   A,M       
 	CALL  L0CB4H    
@@ -1894,7 +1894,7 @@ L0C87H:	LDA   FB98H
 ; ======================================================
 ; INPUT # statement
 ; ======================================================
-L0C99H:	CALL  L4F29H    ; Test for '#' char and process argument
+BSINPN:	CALL  L4F29H    ; Test for '#' char and process argument
 	PUSH  H         
 	LXI   H,F684H   
 	JMP   L0CD4H    
@@ -1903,10 +1903,10 @@ L0C99H:	CALL  L4F29H    ; Test for '#' char and process argument
 ; ======================================================
 ; INPUT statement
 ; ======================================================
-L0CA3H:	CALL  L10E6H    ; Check for running program
+BSINPU:	CALL  L10E6H    ; Check for running program
 	MOV   A,M       
 	CPI   23H       
-	JZ    L0C99H    ; INPUT # statement
+	JZ    BSINPN    ; INPUT # statement
 	CALL  L10E6H    ; Check for running program
 	MOV   A,M       
 	LXI   B,L0CC4H  
@@ -1939,7 +1939,7 @@ L0CD4H:	MVI   M,2CH
 ; ======================================================
 ; READ statement
 ; ======================================================
-	PUSH  H         
+BSREAD:	PUSH  H         
 	LHLD  FBB8H     ; Address where DATA search will begin next
 	ORI   AFH       
 	STA   FB98H     
@@ -2028,7 +2028,7 @@ L0D6DH:	POP   H
 L0D71H:
     DB	"?Extraignored",0DH,0AH,00H
 	
-L0D82H:	CALL  L099EH    ; DATA statement
+L0D82H:	CALL  BSDATA    ; DATA statement
 	ORA   A         
 	JNZ   L0D9BH    
 	INX   H         
@@ -2051,7 +2051,7 @@ L0D9BH:	RST   2         ; Get next non-white char from M
 	
 L0DA4H:	RST   1         ; Compare next byte with M
     DB	DDH             ; Test for '=' token ID
-	JMP   L0DABH    ; Main BASIC evaluation routine
+	JMP   BMEVAL    ; Main BASIC evaluation routine
 	
 L0DA9H:	RST   1         ; Compare next byte with M
     DB	28H             ; Test for '('
@@ -2059,7 +2059,7 @@ L0DA9H:	RST   1         ; Compare next byte with M
 ; ======================================================
 ; Main BASIC evaluation routine
 ; ======================================================
-L0DABH:	DCX   H         
+BMEVAL:	DCX   H         
 L0DACH:	MVI   D,00H     
 L0DAEH:	PUSH  D         
 	MVI   C,01H     ; Prepare to test for 2 bytes free stack space
@@ -2139,7 +2139,7 @@ L0E3AH:	MOV   D,A
 	JMP   L0E2BH    
 	
 L0E45H:	PUSH  D         
-	CALL  L3501H    ; CINT function
+	CALL  BFCINT    ; CINT function
 	POP   D         
 	PUSH  H         
 	LXI   B,L1072H  ; Load pointer to vector for handling logic functions
@@ -2197,7 +2197,7 @@ L0EA1H:	LXI   H,L0310H
 	PUSH  B         
 	RET             
 	
-L0EB1H:	CALL  L35BAH    ; CDBL function
+L0EB1H:	CALL  BFCDBL    ; CDBL function
 L0EB4H:	CALL  L3484H    ; Copy FAC1 to FAC2
 	POP   H         
 	SHLD  FC1CH     
@@ -2206,7 +2206,7 @@ L0EB4H:	CALL  L3484H    ; Copy FAC1 to FAC2
 L0EBFH:	POP   B         
 	POP   D         
 	CALL  L3432H    ; Load single precision in BCDE to FAC1
-L0EC4H:	CALL  L35BAH    ; CDBL function
+L0EC4H:	CALL  BFCDBL    ; CDBL function
 	LXI   H,L02F8H  
 L0ECAH:	LDA   FB66H     ; Get tokenization flags
 	RLC             
@@ -2232,7 +2232,7 @@ L0ED8H:	MOV   A,B
 	SHLD  FC1AH     ; Start of FAC1 for integers
 	JMP   L0EC4H    
 	
-L0EEDH:	CALL  L352AH    ; CSNG function
+L0EEDH:	CALL  BFCSNG    ; CSNG function
 L0EF0H:	POP   B         
 	POP   D         
 L0EF2H:	LXI   H,L0304H  
@@ -2278,14 +2278,14 @@ L0F1CH:	RST   2         ; Get next non-white char from M
 	CPI   22H       ; Test for '"'
 	JZ    L276CH    
 	CPI   CEH       ; Test for NOT function
-	JZ    L1054H    ; NOT function
+	JZ    BFNOT    ; NOT function
 	CPI   C5H       ; Test for ERR function
 	JNZ   L0F51H    ; Jump if not ERR function
 	
 ; ======================================================
 ; ERR function
 ; ======================================================
-	RST   2         ; Get next non-white char from M
+BFERR:	RST   2         ; Get next non-white char from M
 	LDA   F672H     ; Last Error code
 	PUSH  H         
 	CALL  L10D1H    ; Load integer in A into FAC1
@@ -2298,7 +2298,7 @@ L0F51H:	CPI   C4H       ; Test for ERL function
 ; ======================================================
 ; ERL function
 ; ======================================================
-	RST   2         ; Get next non-white char from M
+BFERL:	RST   2         ; Get next non-white char from M
 	PUSH  H         
 	LHLD  FB9FH     ; Line number of last error
 	CALL  L37DBH    ; Convert unsigned HL to single precision in FAC1
@@ -2306,31 +2306,31 @@ L0F51H:	CPI   C4H       ; Test for ERL function
 	RET             
 	
 L0F60H:	CPI   AAH       ; TIME$ token
-	JZ    L1904H    ; TIME$ function
+	JZ    BFTIMS    ; TIME$ function
 	CPI   ABH       ; DATE$ token
 	JZ    L1924H    ; Jump to DATE$ function
 	CPI   ACH       ; DAY token
-	JZ    L1955H    ; DAY function
+	JZ    BFDAY    ; DAY function
 	CPI   B7H       ; MAX token
-	JZ    L1D9BH    ; MAX function
+	JZ    BFMAX    ; MAX function
 	CPI   CCH       ; HIMEM token
-	JZ    L1DB9H    ; HIMEM function
+	JZ    BFHMEM    ; HIMEM function
 	CPI   C3H       ; VARPTR token
 	JNZ   L0FA3H    ; Jump if not VARPTR to test more
 	
 ; ======================================================
 ; VARPTR function
 ; ======================================================
-	RST   2         ; Get next non-white char from M
+BFVPTR:	RST   2         ; Get next non-white char from M
 	RST   1         ; Compare next byte with M
     DB	28H             ; Test for '('
 	CPI   23H       
-	JNZ   L0F92H    ; VARPTR(variable) function
+	JNZ   BFVPTV    ; VARPTR(variable) function
 	
 ; ======================================================
 ; VARPTR(#buffer) function
 ; ======================================================
-	CALL  L112DH    ; Evaluate expression at M
+BFVPTB:	CALL  L112DH    ; Evaluate expression at M
 	PUSH  H         
 	CALL  L4C84H    ; Get file descriptor for file in A
 	XCHG            
@@ -2341,7 +2341,7 @@ L0F60H:	CPI   AAH       ; TIME$ token
 ; ======================================================
 ; VARPTR(variable) function
 ; ======================================================
-L0F92H:	CALL  L482CH    
+BFVPTV:	CALL  L482CH    
 L0F95H:	RST   1         ; Compare next byte with M
     DB	29H             ; Test for ')'
 	PUSH  H         
@@ -2354,17 +2354,17 @@ L0F95H:	RST   1         ; Compare next byte with M
 	RET             
 	
 L0FA3H:	CPI   C7H       
-	JZ    L2A37H    ; INSTR function
+	JZ    BFINST    ; INSTR function
 	CPI   C9H       
-	JZ    L4BEAH    ; INKEY$ function
+	JZ    BFINKY    ; INKEY$ function
 	CPI   C6H       
 	JZ    L296DH    ; STRING$ function
 	CPI   84H       
-	JZ    L4E8EH    ; INPUT statement
+	JZ    BSINPT    ; INPUT statement
 	CPI   CAH       
-	JZ    L1D90H    ; CSRLIN function
+	JZ    BFCSRL    ; CSRLIN function
 	CPI   C8H       
-	JZ    L5073H    ; DSKI$ function
+	JZ    BFDSKI    ; DSKI$ function
 	SUI   DFH       ; Compare with SGN token to test for function
 	JNC   L0FF2H    ; Jump if SGN or higher (function)
 L0FC6H:	CALL  L0DA9H    
@@ -2440,7 +2440,7 @@ L1015H:	CALL  L0FC6H
 	JNC   L102AH    
 	RST   5         ; Determine type of last var used
 	PUSH  H         
-	CC    L35BAH    ; CDBL function
+	CC    BFCDBL    ; CDBL function
 	POP   H         
 L102AH:	LXI   D,L0FD8H  
 	PUSH  D         
@@ -2482,9 +2482,9 @@ L1047H:	INR   A
 ; ======================================================
 ; NOT function
 ; ======================================================
-L1054H:	MVI   D,5AH     
+BFNOT:	MVI   D,5AH     
 	CALL  L0DAEH    
-	CALL  L3501H    ; CINT function
+	CALL  BFCINT    ; CINT function
 	MOV   A,L       
 	CMA             
 	MOV   L,A       
@@ -2508,7 +2508,7 @@ L1069H:	LDA   FB65H     ; Type of last variable used
 	
 L1072H:	MOV   A,B       
 	PUSH  PSW       
-	CALL  L3501H    ; CINT function
+	CALL  BFCINT    ; CINT function
 	POP   PSW       
 	POP   D         
 	CPI   7AH       
@@ -2523,7 +2523,7 @@ L1072H:	MOV   A,B
 ; ======================================================
 ; OR function
 ; ======================================================
-	MOV   A,E       ; Move LSB of DE to A
+BFOR:	MOV   A,E       ; Move LSB of DE to A
 	ORA   L         ; OR LSB of HL
 	MOV   L,A       ; Save in L
 	MOV   A,H       ; Move MSB of HL to A
@@ -2536,7 +2536,7 @@ L1092H:	CPI   50H       ; Compare A with AND token
 ; ======================================================
 ; AND function
 ; ======================================================
-	MOV   A,E       ; Move LSB of DE to A
+BFAND:	MOV   A,E       ; Move LSB of DE to A
 	ANA   L         ; AND LSB with HL
 	MOV   L,A       ; Save in L
 	MOV   A,H       ; Move MSB of HL to A
@@ -2549,7 +2549,7 @@ L109DH:	CPI   3CH       ; Compare A with XOR token
 ; ======================================================
 ; XOR function
 ; ======================================================
-	MOV   A,E       ; Move LSB of DE to A
+BFXOR:	MOV   A,E       ; Move LSB of DE to A
 	XRA   L         ; XOR with LSB of HL
 	MOV   L,A       ; Save in L
 	MOV   A,H       ; Move MSB of HL to A
@@ -2557,12 +2557,12 @@ L109DH:	CPI   3CH       ; Compare A with XOR token
 	RET             
 	
 L10A8H:	CPI   32H       ; Compare A with EQV token
-	JNZ   L10B5H    ; IMP function
+	JNZ   BFIMP     ; IMP function
 	
 ; ======================================================
 ; EQV function
 ; ======================================================
-	MOV   A,E       ; Move LSB of DE to A
+BFEQV:	MOV   A,E       ; Move LSB of DE to A
 	XRA   L         ; XOR with LSB of HL
 	CMA             ; Compliment the result
 	MOV   L,A       ; And save in L
@@ -2575,7 +2575,7 @@ L10A8H:	CPI   32H       ; Compare A with EQV token
 ; ======================================================
 ; IMP function
 ; ======================================================
-L10B5H:	MOV   A,L       ; Load LSB of HL
+BFIMP:	MOV   A,L       ; Load LSB of HL
 	CMA             ; Compliment HL
 	ANA   E         ; AND with LSB of DE
 	CMA             ; Compliment the result
@@ -2598,14 +2598,14 @@ L10C1H:	MOV   L,A       ; Save the result in HL
 ; ======================================================
 ; LPOS function
 ; ======================================================
-	LDA   VLPPCL    ; Line printer head position
+BFLPOS:	LDA   VLPPCL    ; Line printer head position
 	JMP   L10D1H    ; Load integer in A into FAC1
 	
 	
 ; ======================================================
 ; POS function
 ; ======================================================
-	LDA   F788H     ; Horiz. position of cursor (0-39)
+BFPOS:	LDA   F788H     ; Horiz. position of cursor (0-39)
 	
 ; ======================================================
 ; Load integer in A into FAC1
@@ -2654,7 +2654,7 @@ L10F4H:	CPI   7EH       ; Test if command is '~'
 ; ======================================================
 ; INP function
 ; ======================================================
-L1100H:	CALL  L1131H    ; Get expression integer < 256 in A or FC Error
+BFINP:	CALL  L1131H    ; Get expression integer < 256 in A or FC Error
 	STA   F66BH     ; Save port number as argument to IN
 	CALL  F66AH     ; Call the RAM based IN hook
 	JMP   L10D1H    ; Load integer in A into FAC1
@@ -2663,7 +2663,7 @@ L1100H:	CALL  L1131H    ; Get expression integer < 256 in A or FC Error
 ; ======================================================
 ; OUT statement
 ; ======================================================
-	CALL  L111FH    ; Call to process arguments to OUT statement
+BFOUT:	CALL  L111FH    ; Call to process arguments to OUT statement
 	JMP   F667H     ; Jump to RAM based hook
 	
 	
@@ -2675,9 +2675,9 @@ L1112H:	RST   2         ; Get next non-white char from M
 ; ======================================================
 ; Evaluate expression at M-1
 ; ======================================================
-L1113H:	CALL  L0DABH    ; Main BASIC evaluation routine
+L1113H:	CALL  BMEVAL    ; Main BASIC evaluation routine
 L1116H:	PUSH  H         ; Preserve HL on stack
-	CALL  L3501H    ; CINT function
+	CALL  BFCINT    ; CINT function
 	XCHG            ; Put Integer into DE
 	POP   H         ; Restore HL
 	MOV   A,D       ; Move MSB of integer to A to test if > 255
@@ -2700,7 +2700,7 @@ L112DH:	RST   2         ; Get next non-white char from M
 ; ======================================================
 ; Evaluate expression at M-1
 ; ======================================================
-L112EH:	CALL  L0DABH    ; Main BASIC evaluation routine
+L112EH:	CALL  BMEVAL    ; Main BASIC evaluation routine
 L1131H:	CALL  L1116H    ; Convert to integer in DE and test if 255 or less
 	JNZ   L08DBH    ; Generate FC error
 	DCX   H         ; Decrement input string pointer
@@ -2712,13 +2712,13 @@ L1131H:	CALL  L1116H    ; Convert to integer in DE and test if 255 or less
 ; ======================================================
 ; LLIST statement
 ; ======================================================
-	MVI   A,01H     
+BSLLST:	MVI   A,01H     
 	STA   VOUTSW    ; Output device for RST 20H (0=screen)
 	
 ; ======================================================
 ; LIST statement
 ; ======================================================
-L1140H:	POP   B         
+BSLIST:	POP   B         
 	CALL  L060AH    ; Evaluate LIST statement arguments
 	PUSH  B         
 	MOV   H,B       
@@ -2924,7 +2924,7 @@ L1270H:	LDAX  D
 ; ======================================================
 ; PEEK function
 ; ======================================================
-	CALL  L12A1H    ; Convert last expression to integer (-32768 to 65535) or OV
+BFPEEK:	CALL  L12A1H    ; Convert last expression to integer (-32768 to 65535) or OV
 	MOV   A,M       ; Load A from (HL)
 	JMP   L10D1H    ; Load integer in A into FAC1
 	
@@ -2932,7 +2932,7 @@ L1270H:	LDAX  D
 ; ======================================================
 ; POKE function
 ; ======================================================
-	CALL  L1297H    ; Evaluate expression at M
+BFPOKE:	CALL  L1297H    ; Evaluate expression at M
 	PUSH  D         ; Save POKE address to stack
 	RST   1         ; Compare next byte with M
     DB	2CH             ; ','
@@ -2945,20 +2945,20 @@ L1270H:	LDAX  D
 ; ======================================================
 ; Evaluate expression at M
 ; ======================================================
-L1297H:	CALL  L0DABH    ; Main BASIC evaluation routine
+L1297H:	CALL  BMEVAL    ; Main BASIC evaluation routine
 	PUSH  H         
 	CALL  L12A1H    ; Convert last expression to integer (-32768 to 65535) or OV
 	XCHG            
 	POP   H         
 	RET             
 	
-L12A1H:	LXI   B,L3501H  ; CINT function
+L12A1H:	LXI   B,BFCINT  ; CINT function
 	PUSH  B         
 	RST   5         ; Determine type of last var used
 	RM              ; Return to CINT function if last var was integer
 	RST   6         ; Get sign of FAC1
 	RM              ; Return to CINT function if FAC1 negative
-	CALL  L352AH    ; CSNG function
+	CALL  BFCSNG    ; CSNG function
 	LXI   B,L3245H  ; Load BCDE with Single precision for 32768.0
 	LXI   D,8076H   ; "
 	CALL  L3498H    ; Compare single precision in BCDE with FAC1
@@ -3048,94 +3048,94 @@ ENDPBF: LXI  H,FFFFH    ; Load value indication paste is "inactive"
         SHLD F62EH      ; And store it as the active index of paste from paste buffer
         RET             ; Now return the next byte from the paste buffer to "inject"
 ; Test for actual keystroke characters to process
-TKEYCH: CALL CHSNS      ; Check keyboard queue for pending characters
-        JNZ  L1358
-        CALL CONIOB
-        MVI  A,FFH
-        STA  VPROFS     ; Power off exit condition switch
-CKQPDL: CALL CHSNS      ; Check keyboard queue for pending characters
-        JZ  CKQPDL
-        XRA  A
-        STA  VPROFS     ; Power off exit condition switch
-        CALL COFIOB     ; Turn cursor back off if it was off before
-L1358:  LXI  H,F932H
-        MOV  A,M
-        ANA  A
-        JNZ  L13B5
-        CALL L1BB1H     ; Renew automatic power-off counter
-        CALL KYREAD     ; Scan keyboard for character (CTRL-BREAK ==> CTRL-C)
-        RNC
-        SUI  0BH        ; Test for PASTE key
-        JZ   PPASTE     ; Jump to process PASTE key if zero
-        JNC  L13C0
-        INR  A          ; Test for SHIFT-PRINT key
-        JZ   PKYSEQ     ; Jump to process special "Paste" of SHIFT-PRINT key sequence
-        INR  A
-        JZ  L1E5EH      ; LCOPY statement
-        INR  A          ; Test for LABEL key
-        JZ  TOGLAB      ; Toggle function key label line
-        MOV  E,A
-        LDA  F650H
-        ADD  A          ;
-        ADD  A          ;
-        MOV  A,E        ;
+TKEYCH: CALL  CHSNS     ; Check keyboard queue for pending characters
+        JNZ   L1358
+        CALL  CONIOB
+        MVI   A,FFH
+        STA   VPROFS    ; Power off exit condition switch
+CKQPDL: CALL  CHSNS     ; Check keyboard queue for pending characters
+        JZ    CKQPDL
+        XRA   A
+        STA   VPROFS    ; Power off exit condition switch
+        CALL  COFIOB    ; Turn cursor back off if it was off before
+L1358:  LXI   H,F932H
+        MOV   A,M
+        ANA   A
+        JNZ   L13B5
+        CALL  L1BB1H    ; Renew automatic power-off counter
+        CALL  KYREAD    ; Scan keyboard for character (CTRL-BREAK ==> CTRL-C)
+        RNC 
+        SUI   0BH       ; Test for PASTE key
+        JZ    PPASTE    ; Jump to process PASTE key if zero
+        JNC   L13C0
+        INR   A         ; Test for SHIFT-PRINT key
+        JZ    PKYSEQ    ; Jump to process special "Paste" of SHIFT-PRINT key sequence
+        INR   A
+        JZ    L1E5E     ; LCOPY statement
+        INR   A         ; Test for LABEL key
+        JZ    TOGLAB    ; Toggle function key label line
+        MOV   E,A
+        LDA   F650H
+        ADD   A         ;
+        ADD   A         ;
+        MOV   A,E       ;
         RC              ;
-        MVI  D,FFH      ;
+        MVI   D,FFH     ;
         XCHG            ;   KDP: TODO: This is calculating the FKey table entry or FKeys somehow!
-        DAD  H          ;
-        DAD  H          ;
-        DAD  H          ;
-        DAD  H          ;
-        LXI  D,F809H    ;
-        DAD  D          ;
-        LDA  F650H      ;
-        ANA  A          ;
-        JP   SHLPAT     ;
-        INX  H
-        INX  H
-        INX  H
-        INX  H
+        DAD   H         ;
+        DAD   H         ;
+        DAD   H         ;
+        DAD   H         ;
+        LXI   D,F809H   ;
+        DAD   D         ;
+        LDA   F650H     ;
+        ANA   A         ;
+        JP    SHLPAT    ;
+        INX   H
+        INX   H
+        INX   H
+        INX   H
 
 ; Set HL as pointer to text to be "PASTED" / injected as keystrokes
-SHLPAT: SHLD F62CH      ; Points to text for selected FKey from FKey table
-        JMP  WAITKY     ; Wait for key from keyboard
+SHLPAT: SHLD  F62CH     ; Points to text for selected FKey from FKey table
+        JMP   WAITKY    ; Wait for key from keyboard
 
 ; Process paste of key sequence defined for SHIFT-PRINT key
-PKYSEQ: LHLD F88AH      ; Load pointer to SHIFT-PRINT key sequence for this mode
-        JMP  SHLPAT     ; Jump to set HL as pointer to PASTE sequence
+PKYSEQ: LHLD  F88AH     ; Load pointer to SHIFT-PRINT key sequence for this mode
+        JMP   SHLPAT    ; Jump to set HL as pointer to PASTE sequence
 
 ; Toggle function key label line	
-TOGLAB: LDA  FAADH      ; Label line enable flag
-        ANA  A          ; Test if Label line is enabled
+TOGLAB: LDA   FAADH     ; Label line enable flag
+        ANA   A         ; Test if Label line is enabled
         RZ              ; Return if not enabled
-        LDA  VLABLF     ; Label line protect status
-        XRI  FFH        ; Test if Label Line is on or off
+        LDA   VLABLF    ; Label line protect status
+        XRI   FFH       ; Test if Label Line is on or off
 
 ; Erase or Display function key line based on Z flag
-        JZ   ERAFNK     ; Erase function key display
-        JMP  DSPNFK     ; Display function key line
+        JZ    ERAFNK    ; Erase function key display
+        JMP   DSPNFK    ; Display function key line
 L13B5:  DI              ; Disable interrupts for power-down
-        MVI  M,00H
-        LDA  VPROFT     ; Load power-down time (1/10th of a minute)
-        DCX  H          ; Point to power-down count-down
-        MOV  M,A        ; Update power-down count-down for next power-up
-        CALL L143FH     ; Turn off computer
-L13C0:  XRA  A
+        MVI   M,00H
+        LDA   VPROFT    ; Load power-down time (1/10th of a minute)
+        DCX   H         ; Point to power-down count-down
+        MOV   M,A       ; Update power-down count-down for next power-up
+        CALL  L143FH    ; Turn off computer
+L13C0:  XRA   A
         RET
 
 ; Turn cursor on if not already during program pause
-CONIOB: LDA  F63FH      ; Cursor status (0 = off)
-        STA  FACBH      ; Storage if cursor was on before BASIC CTRL-S
-        ANA  A
-        RNZ
-        CALL CURSON     ; Turn the cursor on
-        JMP  SDESCX     ; Send ESC X
+CONIOB: LDA   F63FH     ; Cursor status (0 = off)
+        STA   FACBH     ; Storage if cursor was on before BASIC CTRL-S
+        ANA   A
+        RNZ 
+        CALL  CURSON    ; Turn the cursor on
+        JMP   SDESCX    ; Send ESC X
 ; Turn cursor back off if it was off before
-COFIOB: LDA  FACBH
-        ANA  A
-        RNZ
-        CALL CUROFF     ; Turn the cursor off
-        JMP  SDESCX     ; Send ESC X
+COFIOB: LDA   FACBH
+        ANA   A
+        RNZ 
+        CALL  CUROFF    ; Turn the cursor off
+        JMP   SDESCX    ; Send ESC X
 	
 	
 ; ======================================================
@@ -3177,16 +3177,16 @@ NCTRLC: CALL BRKCHK     ; Check for break or wait (CTRL-S)
         CALL COFIOB     ; Turn cursor back off if it was already off
 ICTRLC: XRA  A
         STA  FFAAH      ; Keyboard buffer count
-        JMP  L409AH     ; STOP statement
+        JMP  BSSTOP     ; STOP statement
 	
 	
 ; ======================================================
 ; POWER statement
 ; ======================================================
-L1419H:	SUI   A4H       ; Test for CONT token
-	JZ    L1459H    ; POWER CONT statement
+BSPOWR:	SUI   A4H       ; Test for CONT token
+	JZ    BSPWRC    ; POWER CONT statement
 	CPI   27H       ; Test for POWER OFF token
-	JNZ   L1461H    ; POWER ON statement
+	JNZ   BSPWRO    ; POWER ON statement
 	RST   2         ; Get next non-white char from M
 	JZ    L1451H    ; If no arguments, jump to turn power off
 	RST   1         ; Compare next byte with M
@@ -3216,7 +3216,7 @@ L143FH:	DI              ; Disable interrupts for PowerDown
 	PUSH  D         ; to the same location upon next
 	PUSH  B         ; power on cycle.
 	PUSH  PSW       ;
-	LXI   H,0000H  ; Prepare to save SP for Auto PowerDown
+	LXI   H,0000H   ; Prepare to save SP for Auto PowerDown
 	DAD   SP        ; Get SP into HL
 	SHLD  FABEH     ; SP save area for power up/down
 	LXI   H,9C0BH   ; Load Auto PowerDown signaure
@@ -3230,7 +3230,7 @@ L1451H:	DI              ; Disable interrupts (again?)
 ; ======================================================
 ; POWER CONT statement
 ; ======================================================
-L1459H:	CALL  L1469H    ; Store zero to power down time & counter?
+BSPWRC:	CALL  L1469H    ; Store zero to power down time & counter?
 	STA   F932H     ; Store zero
 	RST   2         ; Get next non-white char from M
 	RET             
@@ -3239,7 +3239,7 @@ L1459H:	CALL  L1469H    ; Store zero to power down time & counter?
 ; ======================================================
 ; POWER ON statement
 ; ======================================================
-L1461H:	CALL  L112EH    ; Evaluate expression at M-1
+BSPWRO:	CALL  L112EH    ; Evaluate expression at M-1
 	CPI   0AH       ; Validate POWER argument is at least 10 (10 * 0.1 min)
 	JC    L08DBH    ; Generate FC error
 L1469H:	STA   VPROFT    ; Store POWER down time (1/10ths of a minute)
@@ -3286,7 +3286,7 @@ L1494H:	MVI   E,12H     ; Load code for I/O Error
 ; Turn cassette motor on and detect sync header
 ; ======================================================
 L1499H:	CALL  L14A8H    ; Turn cassette motor on
-	LXI   B,0000H  ; Zero out BC to delay prior to writing
+	LXI   B,0000H   ; Zero out BC to delay prior to writing
 L149FH:	DCX   B         ; Decrement BC
 	MOV   A,B       ; Get MSB of count
 	ORA   C         ; OR in LSB of count to test for zero
@@ -3380,7 +3380,7 @@ L14EEH:	POP   B
 ; ======================================================
 ; CRT device control block
 ; ======================================================
-	DW	14F8H,4D59H,14FAH
+    DW	14F8H,4D59H,14FAH
 	
 L14F8H:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	40H             
@@ -3390,8 +3390,8 @@ L14F8H:	RST   7         ; Jump to RST 38H Vector entry of following byte
 ; ======================================================
 ; RAM device control block
 ; ======================================================
-	DW	1506H,158DH,15ACH,15C4H
-	DW	161BH          
+    DW	1506H,158DH,15ACH,15C4H
+    DW	161BH          
 	
 	
 ; ======================================================
@@ -3667,8 +3667,8 @@ L1675H:	PUSH  D
 ; ======================================================
 ; CAS device control block
 ; ======================================================
-	DW	1689H,16ADH,16C7H,16D2H
-	DW	1710H          
+    DW	1689H,16ADH,16C7H,16D2H
+    DW	1710H          
 	
 	
 ; ======================================================
@@ -3766,7 +3766,7 @@ L1710H:	LXI   H,FA8EH
 L1716H:	PUSH  H         ; Preserve pointer to data
 	CALL  L2648H    ; Write 8DH data packet header to TAPE
 	POP   H         ; Restore pointer to data
-	LXI   B,0000H  ; Clear out the byte counter + checksum
+	LXI   B,0000H   ; Clear out the byte counter + checksum
 L171EH:	MOV   A,M       ; Get next byte to write
 	CALL  L14C1H    ; Write byte to tape & update checksum
 	INX   H         ; Increment pointer
@@ -3813,7 +3813,7 @@ L174FH:	INX   H
 ; ======================================================
 ; LPT device control block
 ; ======================================================
-	DW	14D8H,4D59H,175AH
+    DW	14D8H,4D59H,175AH
 	
 	
 ; ======================================================
@@ -3828,8 +3828,8 @@ L174FH:	INX   H
 ; ======================================================
 ; COM device control block
 ; ======================================================
-	DW	176DH,179EH,17A8H,17B0H
-	DW	17CAH          
+    DW	176DH,179EH,17A8H,17B0H
+    DW	17CAH          
 	
 	
 ; ======================================================
@@ -3906,8 +3906,8 @@ L17CDH:	MOV   M,C
 ; ======================================================
 ; MDM Device control block
 ; ======================================================
-	DW	176CH,17DBH,17A8H,17B0H
-	DW	17CAH          
+    DW	176CH,17DBH,17A8H,17B0H
+    DW	17CAH          
 	
 	
 ; ======================================================
@@ -4019,8 +4019,9 @@ L1864H:	STAX  D
 ; ======================================================
 ; Wand device control block
 ; ======================================================
-L1877H:DW	1881H,1883H,08DBH,1885H
-	DW	1887H          
+L1877H:
+    DW	1881H,1883H,08DBH,1885H
+    DW	1887H          
 	
 L1881H:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	46H             
@@ -4034,7 +4035,7 @@ L1887H:	RST   7         ; Jump to RST 38H Vector entry of following byte
 ; ======================================================
 ; EOF function
 ; ======================================================
-L1889H:	RST   7         ; Jump to RST 38H Vector entry of following byte
+BFEOF:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	26H             
 	CALL  L4C81H    
 	JZ    L505AH    ; Generate CF error
@@ -4115,7 +4116,7 @@ L1900H:	DAD   D         ; Rewind the FOR loop
 ; ======================================================
 ; TIME$ function
 ; ======================================================
-L1904H:	RST   2         ; Get next non-white char from M
+BFTIMS:	RST   2         ; Get next non-white char from M
 	PUSH  H         ; Save pointer to BASIC string on stack
 	CALL  L198DH    ; Create an 8-byte transient string and return address in HL
 	CALL  L190FH    ; Read time and store it at M
@@ -4138,14 +4139,14 @@ L1920H:	INX   H         ; Increment string pointer
 L1924H:	RST   2         ; Get next non-white char from M
 	PUSH  H         ; Save pointer to BASIC command line
 	CALL  L198DH    ; Create an 8-byte transient string and return address in HL
-	CALL  L192FH    ; DATE$ function
+	CALL  BFDATS    ; DATE$ function
 	JMP   L278DH    ; Add new transient string to string stack
 	
 	
 ; ======================================================
 ; DATE$ function
 ; ======================================================
-L192FH:	CALL  L19A0H    ; Update in-memory (F923H) clock values
+BFDATS:	CALL  L19A0H    ; Update in-memory (F923H) clock values
 	LXI   D,F92CH   ; Month (1-12)
 	LDAX  D         ; Load month value
 	CPI   0AH       ; Test if month >= 10
@@ -4168,7 +4169,7 @@ L1941H:	MOV   M,B       ; Save 1st digit of month to output string
 ; ======================================================
 ; DAY function
 ; ======================================================
-L1955H:	RST   2         ; Get next non-white char from M
+BFDAY:	RST   2         ; Get next non-white char from M
 	PUSH  H         ; Preserve HL on stack
 	MVI   A,03H     ; Prepare to create a 3-byte string
 	CALL  L198FH    ; Create a string with length A and return address in HL
@@ -4187,16 +4188,16 @@ L1962H:	CALL  L19A0H    ; Update in-memory (F923H) clock values
 	MOV   C,A       ; Move day code x3 to C for offset into Day table
 	MVI   B,00H     ; Zero out MSB of BC for add
 	XCHG            ; Save HL (the pointer to BASIC string)
-	LXI   H,L1978H  ; Load pointer to ASCII table with Days
+	LXI   H,ASCDYT  ; Load pointer to ASCII table with Days
 	DAD   B         ; Index into Day ASCII table
 	MVI   B,03H     ; Prepare to copy 3 bytes from Day table
 	JMP   L2542H    ; Move B bytes from M to (DE)
 	
-L1978H:
+ASCDYT:			; ASCII Table with day names
     DB	"Sun"           
     DB	"Mon"           
     DB	"Tue"           
-    DB	"Wed"           ; Do I really need to explain these line by line? :)
+    DB	"Wed"
     DB	"Thu"           
     DB	"Fri"           
     DB	"Sat"           
@@ -4229,7 +4230,7 @@ L19A0H:	PUSH  H         ; Preserve BASIC string pointer to stack
 ; ======================================================
 ; TIME$ statement
 ; ======================================================
-	CPI   DDH       ; Test for '=' token
+BSTIMS:	CPI   DDH       ; Test for '=' token
 	JNZ   L1AA5H    ; Jump to process ON/OFF/STOP arguments
 	CALL  L1A42H    ; Get time string from command line
 	
@@ -4247,7 +4248,7 @@ L19B3H:	LXI   H,F923H   ; Seconds (ones)
 ; ======================================================
 ; DATE$ statement
 ; ======================================================
-	CALL  L1A2CH    
+BSDATS:	CALL  L1A2CH    
 	JNZ   ERRSYN    ; Generate Syntax error
 	CALL  L112EH    ; Evaluate expression at M-1
 	DCR   A         
@@ -4276,10 +4277,10 @@ L19B3H:	LXI   H,F923H   ; Seconds (ones)
 ; ======================================================
 ; DAY$ statement
 ; ======================================================
-L19F1H:	CALL  L1A2CH    
+BSDAYS:	CALL  L1A2CH    
 	CPI   03H       
 	JNZ   ERRSYN    ; Generate Syntax error
-	LXI   D,L1978H  
+	LXI   D,ASCDYT  
 	MVI   C,07H     
 L19FEH:	PUSH  H         
 	MVI   B,03H     
@@ -4311,7 +4312,7 @@ L1A1FH:	INX   D
 	
 L1A2CH:	RST   1         ; Compare next byte with M
     DB	DDH             ; Test for '=' token ID
-L1A2EH:	CALL  L0DABH    ; Main BASIC evaluation routine
+L1A2EH:	CALL  BMEVAL    ; Main BASIC evaluation routine
 	XTHL            
 	PUSH  H         
 	CALL  L19A0H    ; Update in-memory (F923H) clock values
@@ -4363,7 +4364,7 @@ L1A6AH:	DCX   D
 ; ======================================================
 ; IPL statement
 ; ======================================================
-	JZ    L1A96H    ; Erase current IPL program
+BSIPL:	JZ    L1A96H    ; Erase current IPL program
 	CALL  L1A2EH    
 	ANA   A         
 	JZ    L1A95H    
@@ -4393,7 +4394,7 @@ L1A96H:	XRA   A
 ; ======================================================
 ; COM and MDM statements
 ; ======================================================
-	PUSH  H         
+BSCOMM:	PUSH  H         
 	LXI   H,F944H   ; On Com flag
 	JMP   L1AA9H    
 	
@@ -4409,7 +4410,7 @@ L1AACH:	POP   H         ; Retore HL
 ; ======================================================
 ; KEY() statement
 ; ======================================================
-L1AB2H:	CALL  L112EH    ; Evaluate expression at M-1
+BSKEYB:	CALL  L112EH    ; Evaluate expression at M-1
 	DCR   A         ; Make key selection zero based
 	CPI   08H       ; Test if FKey selection > 7 (zero based)
 	JNC   L08DBH    ; Generate FC error
@@ -4422,7 +4423,7 @@ L1AB2H:	CALL  L112EH    ; Evaluate expression at M-1
 ; ======================================================
 ; KEY STOP/ON/OFF statements
 ; ======================================================
-L1AC3H:	PUSH  H         ; Preserve HL (BASIC string pointer) to stack
+BSKYSO:	PUSH  H         ; Preserve HL (BASIC string pointer) to stack
 	MVI   E,08H     ;
 L1AC6H:	PUSH  D         
 	PUSH  PSW       
@@ -4453,11 +4454,11 @@ L1AD4H:	MVI   D,00H     ; Clear MSB of DE for index into KEY ON enabled table
 ; Determine argument (ON/OFF/STOP) for TIME$ statement
 ; ======================================================
 L1AEAH:	CPI   97H       ; Load code for ON token
-	JZ    L3FA0H    ; TIME$ ON statement
+	JZ    BSTMON    ; TIME$ ON statement
 	CPI   CBH       ; Load code for OFF token
-	JZ    L3FB2H    ; TIME$ OFF statement
+	JZ    BSTMOF    ; TIME$ OFF statement
 	CPI   8FH       ; Load code for STOP token
-	JZ    L3FB9H    ; TIME$ STOP statement
+	JZ    BSTMST    ; TIME$ STOP statement
 	JMP   ERRSYN    ; Generate Syntax error
 	
 	
@@ -4479,7 +4480,7 @@ L1AFCH:	CPI   ADH       ; Compare with value of COM token
 ; ======================================================
 ; ON TIME$ statement
 ; ======================================================
-	INX   H         ; Increment to next BASIC line text (Skip QUOTE perhaps?)
+BSONTM:	INX   H         ; Increment to next BASIC line text (Skip QUOTE perhaps?)
 	CALL  L1A42H    ; Get time string from command line
 	LXI   H,F93DH   ; Time for ON TIME interrupt (SSHHMM)
 	MVI   B,06H     ; Prepare to copy 6 bytes of string "SSMMHH"
@@ -4595,13 +4596,13 @@ L1BB1H:	LDA   VPROFT    ; Get Power down time (1/10ths of a minute)
 ; ======================================================
 ; KEY statement
 ; ======================================================
-	CPI   A5H       ; Load value of LIST token
+BSKEY:	CPI   A5H       ; Load value of LIST token
 	JNZ   L1BF6H    ; Jump if not LIST to test for ON/OFF
 	
 ; ======================================================
 ; KEY LIST statement
 ; ======================================================
-	RST   2         ; Get next non-white char from M
+BSKYLT:	RST   2         ; Get next non-white char from M
 	PUSH  H         ; Preserve HL on stack
 	LXI   H,F789H   ; Function key definition area
 	MVI   C,04H     ; Prepare to print 4 lines of FKey text, 2 per line
@@ -4641,11 +4642,11 @@ L1BEDH:	RST   4         ; Send character in A to screen/printer
 L1BF6H:	CPI   28H       ; Test for '('
 	JZ    L1AB2H    ; KEY() statement
 	CPI   97H       ; Test for OFF token
-	JZ    L1AC3H    ; KEY STOP/ON/OFF statements
+	JZ    BSKYSO    ; KEY STOP/ON/OFF statements
 	CPI   CBH       ; Test for ON token
-	JZ    L1AC3H    ; KEY STOP/ON/OFF statements
+	JZ    BSKYSO    ; KEY STOP/ON/OFF statements
 	CPI   8FH       ; Test for STOP token
-	JZ    L1AC3H    ; KEY STOP/ON/OFF statements
+	JZ    BSKYSO    ; KEY STOP/ON/OFF statements
 	CALL  L112EH    ; Evaluate expression at M-1
 	DCR   A         ; Decrement KEY number to make it zero based
 	CPI   08H       ; Test if KEY number too big
@@ -4663,7 +4664,7 @@ L1BF6H:	CPI   28H       ; Test for '('
 	XCHG            ; Restore HL (BASIC string pointer)
 	RST   1         ; Compare next byte with M
     DB	2CH             ; ','
-	CALL  L0DABH    ; Main BASIC evaluation routine
+	CALL  BMEVAL    ; Main BASIC evaluation routine
 	PUSH  H         ; Save BASIC string pointer to stack
 	CALL  L2916H    ; Get pointer to most recently used string (Len + address)
 	MOV   B,M       ; Get length of string for FKey
@@ -4701,7 +4702,7 @@ L1C4EH:	MOV   M,C       ; NULL terminate the FKey text
 ; ======================================================
 ; PSET statement
 ; ======================================================
-L1C57H:	CALL  L1D2EH    ; Get (X),Y) coordinate from tokenized string at M
+BSPSET:	CALL  L1D2EH    ; Get (X),Y) coordinate from tokenized string at M
 L1C5AH:	RRC             
 	PUSH  H         
 	PUSH  PSW       
@@ -4715,7 +4716,7 @@ L1C5AH:	RRC
 ; ======================================================
 ; PRESET statement
 ; ======================================================
-	CALL  L1D2EH    ; Get (X),Y) coordinate from tokenized string at M
+BSPRST:	CALL  L1D2EH    ; Get (X),Y) coordinate from tokenized string at M
 	CMA             
 	JMP   L1C5AH    
 	
@@ -4723,7 +4724,7 @@ L1C5AH:	RRC
 ; ======================================================
 ; LINE statement
 ; ======================================================
-L1C6DH:	CPI   D1H       ; Test for '-' token ID
+BSLINE:	CPI   D1H       ; Test for '-' token ID
 	XCHG            ; Save BASIC line pointer in DE
 	LHLD  VXPIXS    ; X coord of last point plotted
 	XCHG            ; Default to last coord in case of "LINE -(1,3)"
@@ -4932,7 +4933,7 @@ L1D6FH:	INR   E
 ; ======================================================
 ; CSRLIN function
 ; ======================================================
-L1D90H:	PUSH  H         
+BFCSRL:	PUSH  H         
 	LDA   VCURLN    ; Cursor row (1-8)
 	DCR   A         
 L1D95H:	CALL  L340AH    ; SGN function
@@ -4944,9 +4945,9 @@ L1D95H:	CALL  L340AH    ; SGN function
 ; ======================================================
 ; MAX function
 ; ======================================================
-L1D9BH:	RST   2         ; Get next non-white char from M
+BFMAX:	RST   2         ; Get next non-white char from M
 	CPI   9DH       ; Test for FILES Token ID
-	JZ    L1DB2H    ; MAXFILES function
+	JZ    BFMAXF    ; MAXFILES function
 	RST   1         ; Compare next byte with M
     DB	52H             ; Test for 'R'
 	RST   1         ; Compare next byte with M
@@ -4957,7 +4958,7 @@ L1D9BH:	RST   2         ; Get next non-white char from M
 ; ======================================================
 ; MAXRAM function
 ; ======================================================
-	PUSH  H         
+BFMAXR:	PUSH  H         
 	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	02H             
 	LXI   H,VSSYS   ; Active system signature -- Warm vs Cold boot
@@ -4969,7 +4970,7 @@ L1D9BH:	RST   2         ; Get next non-white char from M
 ; ======================================================
 ; MAXFILES function
 ; ======================================================
-L1DB2H:	PUSH  H         
+BFMAXF:	PUSH  H         
 	LDA   FC82H     ; Maxfiles
 	JMP   L1D95H    
 	
@@ -4977,7 +4978,7 @@ L1DB2H:	PUSH  H
 ; ======================================================
 ; HIMEM function
 ; ======================================================
-L1DB9H:	PUSH  H         ; Save BASIC line pointer to stack
+BFHMEM:	PUSH  H         ; Save BASIC line pointer to stack
 	LHLD  VHIMEM    ; HIMEM
 	CALL  L37DBH    ; Convert unsigned HL to single precision in FAC1
 	POP   H         ; Restore BASIC line pointer
@@ -4988,16 +4989,16 @@ L1DB9H:	PUSH  H         ; Save BASIC line pointer to stack
 ; ======================================================
 ; WIDTH statement
 ; ======================================================
-L1DC3H:	RST   7         ; Jump to RST 38H Vector entry of following byte
+BSWDTH:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	3AH             
 	
 ; ======================================================
 ; SOUND statement
 ; ======================================================
-	CPI   97H       ; Test for ON token ID
+BSSOUN:	CPI   97H       ; Test for ON token ID
 	JZ    L1DE6H    ; SOUND ON statement
 	CPI   CBH       ; Test for OFF token ID
-	JZ    L1DE5H    ; SOUND OFF statement
+	JZ    BSSNDO    ; SOUND OFF statement
 	CALL  L1297H    ; Evaluate expression at M
 	MOV   A,D       ; Get MSB of frequency
 	ANI   C0H       ; Test for negative or > 16383
@@ -5016,7 +5017,7 @@ L1DC3H:	RST   7         ; Jump to RST 38H Vector entry of following byte
 ; ======================================================
 ; SOUND OFF statement
 ; ======================================================
-L1DE5H:	MVI   A,AFH     ; Makes AFH below look like MVI A,AFH
+BSSNDO:	MVI   A,AFH     ; Makes AFH below look like MVI A,AFH
 	STA   FF44H     ; Sound flag
 	RST   2         ; Get next non-white char from M
 	RET             
@@ -5025,13 +5026,13 @@ L1DE5H:	MVI   A,AFH     ; Makes AFH below look like MVI A,AFH
 ; ======================================================
 ; MOTOR statement
 ; ======================================================
-	SUI   CBH       
-	JZ    L1DF5H    ; MOTOR OFF statement
+BSMOTR:	SUI   CBH       
+	JZ    BSMROF    ; MOTOR OFF statement
 	
 ; ======================================================
 ; MOTOR ON statement
 ; ======================================================
-	RST   1         ; Compare next byte with M
+BSMRON:	RST   1         ; Compare next byte with M
     DB	97H             ; Test for ON token ID
 	DCX   H         
 	MOV   A,H       
@@ -5039,7 +5040,7 @@ L1DE5H:	MVI   A,AFH     ; Makes AFH below look like MVI A,AFH
 ; ======================================================
 ; MOTOR OFF statement
 ; ======================================================
-L1DF5H:	MOV   E,A       
+BSMROF:	MOV   E,A       
 	RST   2         ; Get next non-white char from M
 	JMP   L7043H    ; Cassette REMOTE routine - turn motor on or off
 	
@@ -5047,7 +5048,7 @@ L1DF5H:	MOV   E,A
 ; ======================================================
 ; CALL statement
 ; ======================================================
-	CALL  L1297H    ; Evaluate expression at M
+BSCALL:	CALL  L1297H    ; Evaluate expression at M
 	XCHG            
 	SHLD  F661H     ; Address last called
 	XCHG            
@@ -5075,7 +5076,7 @@ L1E1BH:	PUSH  H
 ; ======================================================
 ; SCREEN statement
 ; ======================================================
-	CPI   2CH       ; Test if 1st byte of parameter is ','
+BSSCRN:	CPI   2CH       ; Test if 1st byte of parameter is ','
 	LDA   F638H     ; New Console device flag
 	CNZ   L112EH    ; Evaluate expression at M-1
 	CALL  L1E3CH    ; Process SCREEN number selection (0 or 1)
@@ -5115,7 +5116,7 @@ L1E52H:	SHLD  VCURLN    ; Cursor row (1-8)
 ; Entry conditions: none
 ; Exit conditions:  none
 ; ======================================================
-PRTLCD:	PUSH H
+BSLCPY:	PUSH H
     	CALL L4BA0
     	LXI  H,FE00H    ; Start of LCD character buffer
     	MVI  E,08H
@@ -5237,7 +5238,7 @@ L1F24H:	CALL  L20E4H
 ; ======================================================
 ; FILES statement
 ; ======================================================
-	PUSH  H         ; Save BASIC execution pointer to stack
+BSFILS:	PUSH  H         ; Save BASIC execution pointer to stack
 	CALL  L1F42H    ; Display Catalog
 	POP   H         ; Retriev BASIC execution pointer from stack
 	JMP   L4BB8H    ; Move LCD to blank line (send CRLF if needed)
@@ -5298,7 +5299,7 @@ L1F7FH:	RST   4         ; Send character in A to screen/printer
 ; ======================================================
 ; KILL statement
 ; ======================================================
-	CALL  L207AH    ; Parse filename for device and default to RAM
+BSKILL:	CALL  L207AH    ; Parse filename for device and default to RAM
 	DCX   H         
 	RST   2         ; Get next non-white char from M
 	JNZ   ERRSYN    ; Generate Syntax error
@@ -5325,7 +5326,7 @@ L1FA1H:	PUSH  H
 ; Kill a text file
 ; ======================================================
 	MVI   A,E5H     ; Make "PUSH H" look like "MVI A,E5H" for pass-thru
-	LXI   B,0000H  ; Set deletion length to zero
+	LXI   B,0000H   ; Set deletion length to zero
 	MOV   M,C       ; Zero out (HL). Why?
 	MOV   L,E       ; Copy LSB of DE to HL
 	MOV   H,D       ; Copy MSB of DE to HL.
@@ -5400,7 +5401,7 @@ L2017H:	MVI   M,00H
 ; ======================================================
 ; NAME statement
 ; ======================================================
-L2037H:	CALL  L207AH    ; Parse filename for device and default to RAM
+BSNAME:	CALL  L207AH    ; Parse filename for device and default to RAM
 	PUSH  D         ; Save device ID to stack
 	CALL  L224CH    ; Swap filenames in current BASIC and last loaded from tape
 	RST   1         ; Compare next byte with M
@@ -5521,7 +5522,7 @@ L20F2H:	DAD   B
 ; ======================================================
 ; NEW statement
 ; ======================================================
-	RNZ             
+BSNEW:	RNZ             
 L20FFH:	CALL  L2081H    ; Test if an unsaved BASIC program exists
 	CNZ   L2146H    ; Update system pointers for .DO), .CO), vars), etc.
 	LXI   H,F999H   ; Load marker for "Unsaved BASIC program"
@@ -5781,8 +5782,8 @@ L2273H:	CMP   M
 ; ======================================================
 ; CSAVE statement
 ; ======================================================
-	CPI   4DH       ; Test next byte is "M"
-	JZ    L22DDH    ; CSAVEM statement
+BSCSAV:	CPI   4DH       ; Test next byte is "M"
+	JZ    BSCSVM    ; CSAVEM statement
 	CALL  L25FCH    ; Validate or default to "CAS" devce for CSAVE/CSAVEM
 L2288H:	DCX   H         ; Rewind BASIC line pointer
 	RST   2         ; Get next non-white char from M
@@ -5834,7 +5835,7 @@ L22BBH:	MOV   A,M       ; Get next byte to send
 ; ======================================================
 ; SAVEM statement
 ; ======================================================
-L22CCH:	RST   2         ; Get next non-white char from M
+BSSAVM:	RST   2         ; Get next non-white char from M
 	CALL  L207AH    ; Parse filename for device and default to RAM
 	MOV   A,D       ; Put device ID in A
 	CPI   FDH       ; Test for "CAS" device
@@ -5847,7 +5848,7 @@ L22CCH:	RST   2         ; Get next non-white char from M
 ; ======================================================
 ; CSAVEM statement
 ; ======================================================
-L22DDH:	RST   2         ; Get next non-white char from M
+BSCSVM:	RST   2         ; Get next non-white char from M
 	CALL  L25FCH    ; Validate or default to "CAS" devce for CSAVE/CSAVEM
 L22E1H:	CALL  L2346H    ; Process SAVEM Arguments
 	CALL  L2611H    ; Open CAS for output of CO files
@@ -5905,7 +5906,7 @@ L2346H:	CALL  L2372H    ; Call routine to process ",arg"
 	PUSH  D         ; Save argument on stack - end address
 	DCX   H         ; Rewind BASIC line pointer to test for ','
 	RST   2         ; Get next non-white char from M
-	LXI   D,0000H  ; Set execution address to NULL
+	LXI   D,0000H   ; Set execution address to NULL
 	CNZ   L2372H    ; Call routine to process ",arg" if provided
 	DCX   H         ; Rewind BASIC line pointer
 	RST   2         ; Get next non-white char from M
@@ -5934,8 +5935,8 @@ L2372H:	RST   1         ; Compare next byte with M
 ; ======================================================
 ; CLOAD statement
 ; ======================================================
-L2377H:	CPI   4DH       ; Test for 'M' character
-	JZ    L24A7H    ; CLOADM statement
+BSCLOD:	CPI   4DH       ; Test for 'M' character
+	JZ    BSCLDM    ; CLOADM statement
 	CPI   A3H       ; Test for PRINT token ID
 	JZ    L2456H    ; If "CLOAD PRINT", jump to compare TAPE file with RAM file
 	CALL  L25E7H    ; Evaluate arguments to CLOAD/CLOADM & Clear current BASIC program
@@ -6010,7 +6011,7 @@ L23BDH:	POP   B
 	CALL  L3F28H    ; Initialize BASIC Variables for new execution
 	LDA   FC92H     ; Flag to execute BASIC program
 	ANA   A         ; Test if execute requested
-	JNZ   L0804H    ; Execute BASIC program
+	JNZ   BASEXE    ; Execute BASIC program
 	JMP   L0502H    ; Vector to BASIC ready - print Ok
 	
 	
@@ -6035,7 +6036,7 @@ L2415H:	CALL  L14B0H    ; Read byte from tape & update checksum
 ; On-error return handler for CLOAD statement
 ; ======================================================
 L2426H:	CALL  L20FFH    ; NEW statement
-	LXI   H,0000H  ; Prepare to clear ON ERROR handler vector
+	LXI   H,0000H   ; Prepare to clear ON ERROR handler vector
 	SHLD  F652H     ; Save as active ON ERROR handler vector
 	JMP   L1491H    ; Turn cassette motor off and generate I/O Error
 	
@@ -6093,7 +6094,7 @@ L2481H:	"Verifyfailed",0DH,0AH,00H
 ; ======================================================
 ; LOADM and RUNM statement
 ; ======================================================
-L2491H:	RST   2         ; Get next non-white char from M
+BSLORM:	RST   2         ; Get next non-white char from M
 	POP   PSW       
 	PUSH  PSW       
 	JZ    L08DBH    ; Generate FC error
@@ -6109,7 +6110,7 @@ L2491H:	RST   2         ; Get next non-white char from M
 ; ======================================================
 ; CLOADM statement
 ; ======================================================
-L24A7H:	RST   2         ; Get next non-white char from M
+BSCLDM:	RST   2         ; Get next non-white char from M
 	CPI   A3H       ; Test for PRINT token ID
 	JZ    L2573H    ; If "CLOADM PRINT", jump to verify the TAPE file to RAM file
 	CALL  L25E7H    ; Evaluate arguments to CLOAD/CLOADM & Clear current BASIC program
@@ -6175,7 +6176,7 @@ L251AH:	POP   H
 	SHLD  F661H     ; Address last called
 	CALL  F660H     
 	LHLD  FB99H     ; Address of last variable assigned
-	JMP   L0804H    ; Execute BASIC program
+	JMP   BASEXE    ; Execute BASIC program
 	
 L2531H:	CALL  L25A4H    ; Print .CO information to LCD (start address, etc.)
 L2534H:	LHLD  VHIMEM    ; HIMEM
@@ -6209,7 +6210,7 @@ L2542H:	MOV   A,M       ; Get next source byte
 L254BH:	CALL  L253DH    ; Copy .CO 6-byte header to Current Program Area
 	PUSH  H         ; Save pointer to .CO data on stack
 	CALL  L2534H    ; Test HIMEM for space to load CO file
-	JC    L256DH    ; BEEP and return to MENU
+	JC    L256DH    ; BSBEEP and return to MENU
 	XCHG            
 	LHLD  FAD0H     ; Length of last program loaded/saved to tape
 	MOV   B,H       ; Save length in BC
@@ -6223,7 +6224,7 @@ L254BH:	CALL  L253DH    ; Copy .CO 6-byte header to Current Program Area
 	CNZ   F660H     ; Call to launch .CO if entry address not zero
 	JMP   L5797H    ; MENU Program
 	
-L256DH:	CALL  BEEP      ; BEEP statement
+L256DH:	CALL  BSBEEP      ; BSBEEP statement
 	JMP   L5797H    ; MENU Program
 	
 L2573H:	RST   2         ; Get next non-white char from M
@@ -6484,7 +6485,7 @@ L2722H:	MOV   A,E       ; Get length of string from string stack
 ; ======================================================
 ; STR$ function
 ; ======================================================
-L273AH:	CALL  L39E8H    ; Convert binary number in FAC1 to ASCII at M
+BFSTRS:	CALL  L39E8H    ; Convert binary number in FAC1 to ASCII at M
 	CALL  L276BH    ; Search string at M until QUOTE found
 	CALL  L2919H    ; Get pointer to most recently used string
 	LXI   B,L2969H  
@@ -6832,7 +6833,7 @@ L2935H:	LHLD  FB69H     ; Load current string stack address
 ; ======================================================
 ; LEN function
 ; ======================================================
-	LXI   B,L10D1H  ; Address of Load integer in A into FAC1 routine
+BFLEN:	LXI   B,L10D1H  ; Address of Load integer in A into FAC1 routine
 	PUSH  B         ; PUSH return address to load A to FAC1
 L2947H:	CALL  L2916H    ; Get pointer to most recently used string (Len + address)
 	XRA   A         ; Zero out A. Not sure why, we overwrite below
@@ -6845,7 +6846,7 @@ L2947H:	CALL  L2916H    ; Get pointer to most recently used string (Len + addres
 ; ======================================================
 ; ASC function
 ; ======================================================
-	LXI   B,L10D1H  ; Address of Load integer in A into FAC1 routine
+BFASC:	LXI   B,L10D1H  ; Address of Load integer in A into FAC1 routine
 	PUSH  B         ; PUSH return address to load A to FAC1
 L2953H:	CALL  L2947H    ; Why not just call 2943? Get Length of most recently used String
 	JZ    L08DBH    ; Generate FC error
@@ -6860,7 +6861,7 @@ L2953H:	CALL  L2947H    ; Why not just call 2943? Get Length of most recently us
 ; ======================================================
 ; CHR$ function
 ; ======================================================
-	CALL  L275BH    ; Create a 1-byte transient string (for CHR$ & INKEY$)
+BFCHRS:	CALL  L275BH    ; Create a 1-byte transient string (for CHR$ & INKEY$)
 	CALL  L1131H    ; Get expression integer < 256 in A or FC Error
 L2965H:	LHLD  FB8AH     ; Address of transient string
 	MOV   M,E       
@@ -6871,14 +6872,14 @@ L2969H:	POP   B
 ; ======================================================
 ; STRING$ function
 ; ======================================================
-L296DH:	RST   2         ; Get next non-white char from M
+BFSTRS:	RST   2         ; Get next non-white char from M
 	RST   1         ; Compare next byte with M
     DB	28H             ; Test for '('
 	CALL  L112EH    ; Evaluate expression at M-1
 	PUSH  D         
 	RST   1         ; Compare next byte with M
     DB	2CH             ; Test for ','
-	CALL  L0DABH    ; Main BASIC evaluation routine
+	CALL  BMEVAL    ; Main BASIC evaluation routine
 	RST   1         ; Compare next byte with M
     DB	29H             ; Test for ')'
 	XTHL            
@@ -6895,7 +6896,7 @@ L298AH:	POP   D
 ; ======================================================
 ; SPACE$ function
 ; ======================================================
-L298EH:	CALL  L1131H    ; Get expression integer < 256 in A or FC Error
+BFSPCS:	CALL  L1131H    ; Get expression integer < 256 in A or FC Error
 	MVI   A,20H     
 L2993H:	PUSH  PSW       
 	MOV   A,E       
@@ -6916,7 +6917,7 @@ L29A2H:	MOV   M,A
 ; ======================================================
 ; LEFT$ function
 ; ======================================================
-	CALL  L2A2FH    
+BFLFTS:	CALL  L2A2FH    
 	XRA   A         
 L29AFH:	XTHL            
 	MOV   C,A       
@@ -6952,7 +6953,7 @@ L29B3H:	PUSH  H
 ; ======================================================
 ; RIGHT$ function
 ; ======================================================
-	CALL  L2A2FH    
+BFRGHT:	CALL  L2A2FH    
 	POP   D         
 	PUSH  D         
 	LDAX  D         
@@ -6963,7 +6964,7 @@ L29B3H:	PUSH  H
 ; ======================================================
 ; MID$ function
 ; ======================================================
-	XCHG            
+BFMIDS:	XCHG            
 	MOV   A,M       
 	CALL  L2A32H    
 	INR   B         
@@ -6992,7 +6993,7 @@ L29B3H:	PUSH  H
 ; ======================================================
 ; VAL function
 ; ======================================================
-	CALL  L2947H    
+BFVAL:	CALL  L2947H    
 	JZ    L10D1H    ; Load integer in A into FAC1
 	MOV   E,A       
 	INX   H         
@@ -7032,7 +7033,7 @@ L2A32H:	POP   B
 ; ======================================================
 ; INSTR function
 ; ======================================================
-L2A37H:	RST   2         ; Get next non-white char from M
+BFINST:	RST   2         ; Get next non-white char from M
 	CALL  L0DA9H    
 	RST   5         ; Determine type of last var used
 	MVI   A,01H     
@@ -7045,14 +7046,14 @@ L2A37H:	RST   2         ; Get next non-white char from M
 	PUSH  PSW       
 	RST   1         ; Compare next byte with M
     DB	2CH             ; Test for ','
-	CALL  L0DABH    ; Main BASIC evaluation routine
+	CALL  BMEVAL    ; Main BASIC evaluation routine
 	CALL  L35D9H    
 L2A53H:	RST   1         ; Compare next byte with M
     DB	2CH             ; Test for ','
 	PUSH  H         
 	LHLD  FC1AH     ; Start of FAC1 for integers
 	XTHL            
-	CALL  L0DABH    ; Main BASIC evaluation routine
+	CALL  BMEVAL    ; Main BASIC evaluation routine
 	RST   1         ; Compare next byte with M
     DB	29H             ; Test for ')'
 	PUSH  H         
@@ -7240,9 +7241,9 @@ L2B49H:	RST   1         ; Compare next byte with M
 ; ======================================================
 ; FRE function
 ; ======================================================
-	LHLD  FBB6H     ; Unused memory pointer
+BFFRE:	LHLD  FBB6H     ; Unused memory pointer
 	XCHG            ; Move unused memory location to DE
-	LXI   H,0000H  ; Prepare to get current SP to calc free space
+	LXI   H,0000H   ; Prepare to get current SP to calc free space
 	DAD   SP        ; Get current SP
 	RST   5         ; Determine type of last var used
 	JNZ   L10BFH    ; If not string, Subtract HL - DE and unsigned convert to SNGL in FAC1
@@ -7861,7 +7862,7 @@ L2EE6H:	MOV   A,M       ; Get next byte from M
 ; ======================================================
 ; COS function
 ; ======================================================
-L2EEFH:	LXI   H,L32CEH  ; Load pointer to FP 0.15915494309190
+BFCOS:	LXI   H,L32CEH  ; Load pointer to FP 0.15915494309190
 	CALL  L31A3H    ; Double precision math (FAC1=M * FAC2))
 	LDA   FC18H     ; Start of FAC1 for single and double precision
 	ANI   7FH       ; ABS(FAC1)
@@ -7875,13 +7876,13 @@ L2EEFH:	LXI   H,L32CEH  ; Load pointer to FP 0.15915494309190
 ; ======================================================
 ; SIN function
 ; ======================================================
-L2F09H:	LXI   H,L32CEH  ; Load pointer to FP 0.15915494309190
+BFSIN:	LXI   H,L32CEH  ; Load pointer to FP 0.15915494309190
 	CALL  L31A3H    ; Double precision math (FAC1=M * FAC2))
 L2F0FH:	LDA   FC18H     ; Start of FAC1 for single and double precision
 	ORA   A         ; Test if FAC1 negative
 	CM    L31E3H    ; If negative, Take ABS(FAC1) and push return address to ABS(FAC1)
 	CALL  L3234H    ; Push FAC1 on stack
-	CALL  L3654H    ; INT function
+	CALL  BFINT    ; INT function
 	CALL  L31B5H    ; Move FAC1 to FAC2
 	CALL  L324BH    ; Pop FAC1 from stack
 	CALL  L2B69H    ; Double precision subtract (FAC1=FAC1-FAC2)
@@ -7909,10 +7910,10 @@ L2F52H:	LXI   H,L335AH  ; Table of FP numbers for SIN function
 ; ======================================================
 ; TAN function
 ; ======================================================
-	CALL  L3234H    ; Push FAC1 on stack
-	CALL  L2EEFH    ; COS function
+BFTAN:	CALL  L3234H    ; Push FAC1 on stack
+	CALL  BFCOS    ; COS function
 	CALL  L31D2H    ; Swap FAC1 with Floating Point number on stack
-	CALL  L2F09H    ; SIN function
+	CALL  BFSIN    ; SIN function
 	CALL  L3245H    ; Pop FAC2 from stack
 	LDA   FC69H     ; Start of FAC2 for single and double precision
 	ORA   A         ; Test if FAC2 is zero
@@ -7923,7 +7924,7 @@ L2F52H:	LXI   H,L335AH  ; Table of FP numbers for SIN function
 ; ======================================================
 ; ATN function
 ; ======================================================
-	LDA   FC18H     ; Start of FAC1 for single and double precision
+BFATN:	LDA   FC18H     ; Start of FAC1 for single and double precision
 	ORA   A         ; Test if FAC1 is zero
 	RZ              ; Return if FAC1 is zero - answer also zero
 	CM    L31E3H    ; If negative, take ABS(FAC1) and push return address to ABS(FAC1)
@@ -7963,7 +7964,7 @@ L2FC9H:	LXI   H,L339BH  ; Load pointer to FP table for ATN
 ; ======================================================
 ; LOG function
 ; ======================================================
-L2FCFH:	RST   6         ; Get sign of FAC1
+BFLOG:	RST   6         ; Get sign of FAC1
 	JM    L08DBH    ; Generate FC error
 	JZ    L08DBH    ; Generate FC error
 	LXI   H,FC18H   ; Start of FAC1 for single and double precision
@@ -8023,7 +8024,7 @@ L2FEDH:	POP   PSW
 ; ======================================================
 ; SQR function
 ; ======================================================
-	RST   6         ; Get sign of FAC1
+BFSQR:	RST   6         ; Get sign of FAC1
 	RZ              
 	JM    L08DBH    ; Generate FC error
 	CALL  L31B5H    ; Move FAC1 to FAC2
@@ -8060,10 +8061,10 @@ L307CH:	STA   FB8EH
 ; ======================================================
 ; EXP function
 ; ======================================================
-L30A4H:	LXI   H,L3274H  
+BFEXP:	LXI   H,L3274H  
 	CALL  L31A3H    ; Double precision math (FAC1=M * FAC2))
 	CALL  L3234H    ; Push FAC1 on stack
-	CALL  L3501H    ; CINT function
+	CALL  BFCINT    ; CINT function
 	MOV   A,L       
 	RAL             
 	SBB   A         
@@ -8080,7 +8081,7 @@ L30A4H:	LXI   H,L3274H
 L30C8H:	JMP   L0455H    ; Generate OV error
 	
 L30CBH:	SHLD  FB8EH     
-	CALL  L35BAH    ; CDBL function
+	CALL  BFCDBL    ; CDBL function
 	CALL  L31B5H    ; Move FAC1 to FAC2
 	CALL  L324BH    ; Pop FAC1 from stack
 	CALL  L2B69H    ; Double precision subtract (FAC1=FAC1-FAC2)
@@ -8127,7 +8128,7 @@ L3130H:	LDA   FB8EH
 ; ======================================================
 ; RND function
 ; ======================================================
-L313EH:	RST   6         ; Get sign of FAC1
+BFRND:	RST   6         ; Get sign of FAC1
 	LXI   H,FC79H   ; Floating Point Temp 3
 	JZ    L3173H    ; If argument to RND is zero, then return last value
 	CM    L31CAH    ; Move FAC1 to M
@@ -8479,7 +8480,7 @@ L33EDH:	XRA   A         ; Zero out A
 ; ======================================================
 ; ABS function
 ; ======================================================
-	CALL  L3411H    ; Determine sign of last variable used
+BFABS:	CALL  L3411H    ; Determine sign of last variable used
 	RP              ; Return if already positive
 L33F6H:	RST   5         ; Determine type of last var used
 	JM    L37D0H    ; If integer, jump to ABS function for integer FAC1
@@ -8496,7 +8497,7 @@ L33FDH:	LXI   H,FC18H   ; Start of FAC1 for single and double precision
 ; ======================================================
 ; SGN function
 ; ======================================================
-L3407H:	CALL  L3411H    ; Get sign in A of last variable used
+BFSGN:	CALL  L3411H    ; Get sign in A of last variable used
 L340AH:	MOV   L,A       ; Move sign to LSB of HL
 	RAL             ; Prepare to sign extend into MSB
 	SBB   A         ; Generate zero or 1 based C flag (sign of integer)
@@ -8737,7 +8738,7 @@ L34F7H:	RAR             ; Get C flag from last subtract
 ; ======================================================
 ; CINT function
 ; ======================================================
-L3501H:	RST   5         ; Determine type of last var used
+BFCINT:	RST   5         ; Determine type of last var used
 	LHLD  FC1AH     ; Start of FAC1 for integers
 	RM              ; Return if already an integer
 	JZ    L045BH    ; Generate TM error
@@ -8765,7 +8766,7 @@ L3526H:	POP   D
 ; ======================================================
 ; CSNG function
 ; ======================================================
-L352AH:	RST   5         ; Determine type of last var used
+BFCSNG:	RST   5         ; Determine type of last var used
 	RPO             
 	JM    L3540H    ; Convert signed integer in FAC1 to single precision
 	JZ    L045BH    ; Generate TM error
@@ -8871,7 +8872,7 @@ L35B0H:	RP
 ; ======================================================
 ; CDBL function
 ; ======================================================
-L35BAH:	RST   5         ; Determine type of last var used
+BFCDBL:	RST   5         ; Determine type of last var used
 	RNC             ; Return if already double precision
 	JZ    L045BH    ; Generate TM error
 	CM    L3540H    ; Convert signed integer in FAC1 to single precision
@@ -8974,19 +8975,19 @@ L3643H:	DCX   B
 ; ======================================================
 ; FIX function
 ; ======================================================
-	RST   5         ; Determine type of last var used
+BFFIX:	RST   5         ; Determine type of last var used
 	RM              
 	RST   6         ; Get sign of FAC1
-	JP    L3654H    ; INT function
+	JP    BFINT    ; INT function
 	CALL  L33FDH    ; Perform ABS function on FAC1
-	CALL  L3654H    ; INT function
+	CALL  BFINT    ; INT function
 	JMP   L33F6H    
 	
 	
 ; ======================================================
 ; INT function
 ; ======================================================
-L3654H:	RST   5         ; Determine type of last var used
+BFINT:	RST   5         ; Determine type of last var used
 	RM              
 	LXI   H,FC20H   ; Temp BCD value for computation?
 	MVI   C,0EH     
@@ -9486,7 +9487,7 @@ L391AH:	RST   2         ; Get next non-white char from M
 	PUSH  H         
 	LXI   H,L383EH  
 	PUSH  H         
-	LXI   H,L3501H  ; Load address of CINT function
+	LXI   H,BFCINT  ; Load address of CINT function
 	PUSH  H         ; Push new return address to stack
 	PUSH  PSW       
 	JMP   L38D1H    
@@ -9508,9 +9509,9 @@ L3931H:	PUSH  H         ; Preserve HL on stack
 	PUSH  D         ; Preserve DE on stack
 	PUSH  B         ; Preserve BC on stack
 	PUSH  PSW       ; Save flags on stack
-	CZ    L352AH    ; CSNG function
+	CZ    BFCSNG    ; CSNG function
 	POP   PSW       ; Restore flags
-	CNZ   L35BAH    ; CDBL function
+	CNZ   BFCDBL    ; CDBL function
 	POP   B         ; Restore BC
 	POP   D         ; Restore DE
 	POP   H         ; Restore HL
@@ -10141,7 +10142,7 @@ L3D11H:	STA   FB8EH
 	PUSH  PSW       
 	PUSH  B         
 	PUSH  D         
-	CALL  L35BAH    ; CDBL function
+	CALL  BFCDBL    ; CDBL function
 	LXI   H,L327EH  
 	LDA   FC18H     ; Start of FAC1 for single and double precision
 	ANA   A         
@@ -10266,10 +10267,10 @@ L3DDEH:	PUSH  H
 L3DE2H:	CALL  L35CFH    ; Set type of last variable to DBL
 	CALL  L31C1H    ; Move FAC2 to FAC1
 	CALL  L31D2H    ; Swap FAC1 with Floating Point number on stack
-	CALL  L2FCFH    ; LOG function
+	CALL  BFLOG    ; LOG function
 	CALL  L3245H    ; Pop FAC2 from stack
 	CALL  L2CFFH    ; Double precision multiply (FAC1=FAC1*FAC2)
-	JMP   L30A4H    ; EXP function
+	JMP   BFEXP    ; EXP function
 	
 	
 ; ======================================================
@@ -10289,7 +10290,7 @@ L3E07H:	MOV   A,H       ; Get MSB of exponent
 	JNC   L3E0FH    ; Jump to set result to zero if not negative
 	JMP   L0449H    ; Generate /0 error
 	
-L3E0FH:	LXI   H,0000H  ; Zero ^ some positive value = 0
+L3E0FH:	LXI   H,0000H   ; Zero ^ some positive value = 0
 L3E12H:	JMP   L3510H    ; Load signed integer in HL to FAC1
 	
 L3E15H:	SHLD  FB90H     
@@ -10406,7 +10407,7 @@ L3ECFH:	PUSH  B
 	
 L3EDCH:	CALL  L31C1H    ; Move FAC2 to FAC1
 	CALL  L322EH    ; Push FAC2 on stack
-	CALL  L3654H    ; INT function
+	CALL  BFINT    ; INT function
 	CALL  L3245H    ; Pop FAC2 from stack
 	CALL  L34D2H    ; Double precision compare FAC1 with FAC2
 	STC             
@@ -10472,7 +10473,7 @@ L3F37H:	MVI   M,08H
 	SHLD  FBACH     ; Address where program stopped on last break), END), or STOP
 	LHLD  FB67H     ; File buffer area pointer
 	SHLD  FB8CH     ; Pointer to current location in BASIC string buffer
-	CALL  L407FH    ; RESTORE statement
+	CALL  BSREST    ; RESTORE statement
 	LHLD  FBB2H     ; Start of variable data pointer
 	SHLD  FBB4H     ; Start of array table pointer
 	SHLD  FBB6H     ; Unused memory pointer
@@ -10511,7 +10512,7 @@ L3F9CH:	LHLD  FB99H     ; Address of last variable assigned
 ; ======================================================
 ; TIME$ ON statement
 ; ======================================================
-L3FA0H:	DI              
+BSTMON:	DI              
 	MOV   A,M       
 	ANI   04H       
 	ORI   01H       
@@ -10527,7 +10528,7 @@ L3FB0H:	EI
 ; ======================================================
 ; TIME$ OFF statement
 ; ======================================================
-L3FB2H:	DI              
+BSTMOF:	DI              
 	MOV   A,M       
 	MVI   M,00H     
 	JMP   L3FC0H    
@@ -10536,7 +10537,7 @@ L3FB2H:	DI
 ; ======================================================
 ; TIME$ STOP statement
 ; ======================================================
-L3FB9H:	DI              
+BSTMST:	DI              
 	MOV   A,M       
 	PUSH  PSW       
 	ORI   02H       
@@ -10664,7 +10665,7 @@ L4054H:	PUSH  B         ; Save the ON-XXX index number
 	PUSH  D         ; Preserve DE on Stack
 	PUSH  H         ; Preserve HL on Stack
 	CALL  L3FF1H    ; Clear interrupt. HL points to interrupt table
-	CALL  L3FB9H    ; TIME$ STOP statement
+	CALL  BSTMST    ; TIME$ STOP statement
 	MVI   C,03H     ; Prepare to validate 6 bytes free in Unused memory
 	CALL  L3EFFH    ; Validate 6 bytes free from stack space
 	POP   B         ; POP H from stack. We don't really need to keep this one
@@ -10684,7 +10685,7 @@ L4075H:	LXI   H,F944H   ; On Com flag
 ; ======================================================
 ; RESTORE statement
 ; ======================================================
-L407FH:	XCHG            
+BSREST:	XCHG            
 L4080H:	LHLD  VBASPP    ; Start of BASIC program pointer
 	JZ    L4094H    
 	XCHG            
@@ -10704,7 +10705,7 @@ L4095H:	SHLD  FBB8H     ; Address where DATA search will begin next
 ; ======================================================
 ; STOP statement
 ; ======================================================
-L409AH:	RNZ             
+BSSTOP:	RNZ             
 	INR   A         
 	JMP   L40A9H    
 	
@@ -10712,7 +10713,7 @@ L409AH:	RNZ
 ; ======================================================
 ; END statement
 ; ======================================================
-L409FH:	RNZ             
+BSEND:	RNZ             
 	XRA   A         
 	STA   FBA7H     ; BASIC Program Running Flag
 	PUSH  PSW       
@@ -10744,7 +10745,7 @@ L40CAH:	CALL  ROTLCD    ; Reinitialize output back to LCD
 ; ======================================================
 ; CONT sttement
 ; ======================================================
-L40DAH:	LHLD  FBACH     ; Address where program stopped on last break), END), or STOP
+BSCONT:	LHLD  FBACH     ; Address where program stopped on last break), END), or STOP
 	MOV   A,H       
 	ORA   L         
 	LXI   D,L0011H  ; Prepare to generate CN Error (Can't Continue)
@@ -10776,7 +10777,7 @@ L40F2H:	CPI   41H
 ; ======================================================
 ; CLEAR statement
 ; ======================================================
-	PUSH  H         
+BSCLR:	PUSH  H         
 	CALL  L2262H    
 	POP   H         
 	DCX   H         
@@ -10846,13 +10847,13 @@ L4142H:	MOV   E,A
 	LDA   FC82H     ; Maxfiles
 	CALL  L7F2BH    ; Adjust SP location based on CLEAR parameters
 	LHLD  FB99H     ; Address of last variable assigned
-	JMP   L0804H    ; Execute BASIC program
+	JMP   BASEXE    ; Execute BASIC program
 	
 	
 ; ======================================================
 ; NEXT statement
 ; ======================================================
-	LXI   D,0000H  
+BSNEXT:	LXI   D,0000H  
 L4177H:	CNZ   L4790H    ; Find address of variable at M
 	SHLD  FB99H     ; Address of last variable assigned
 	CALL  POPRET    ; Pop return address for NEXT or RETURN
@@ -10945,7 +10946,7 @@ L4208H:	SPHL
 	LHLD  FB99H     ; Address of last variable assigned
 	MOV   A,M       
 	CPI   2CH       
-	JNZ   L0804H    ; Execute BASIC program
+	JNZ   BASEXE    ; Execute BASIC program
 	RST   2         ; Get next non-white char from M
 	CALL  L4177H    
 L421AH:	PUSH  H         
@@ -10969,7 +10970,7 @@ CRLF:	MVI  A,0DH      ; Send CR to screen or printer
 ; ======================================================
 ; L4229H: BEEP statement
 ; ======================================================
-BEEP:	MVI  A,07H
+BSBEEP:	MVI  A,07H
     	RST  4          ; Send character in A to screen/printer
     	RET
 	
@@ -11286,21 +11287,21 @@ L4378H:	INX   H         ; Skip entry handler address
 ; RST 20H lookup table
 ; ======================================================
     DB	07H             
-	DW	7662H          ; Beep routine
+    DW	7662H          ; BSBeep routine
     DB	08H             
-	DW	4461H          ; Backspace routine
+    DW	4461H          ; Backspace routine
     DB	09H             
-	DW	4480H          ; Tab routine
+    DW	4480H          ; Tab routine
     DB	0AH             
-	DW	4494H          ; Linefeed routine
+    DW	4494H          ; Linefeed routine
     DB	0BH             
-	DW	44A8H          ; Vertical tab and ESC H routine (home cursor)
+    DW	44A8H          ; Vertical tab and ESC H routine (home cursor)
     DB	0CH             
-	DW	4548H          ; Form Feed (0CH), CLS, ESC E, and ESC J routine
+    DW	4548H          ; Form Feed (0CH), CLS, ESC E, and ESC J routine
     DB	0DH             
-	DW	44AAH          ; CR routine
+    DW	44AAH          ; CR routine
     DB	1BH             
-	DW	43B2H          ; LCD output Escape routine
+    DW	43B2H          ; LCD output Escape routine
 L43A2H:	LDA   FAC7H     ; Get value at FAC7H
 	ANA   A         ; Test if zero
 	RZ              ; Return if zero (No POP needed)
@@ -11325,49 +11326,49 @@ L43AFH:	MVI   A,02H
 ; LCD Escape sequence lookup table
 ; ======================================================
     DB	'j'             
-	DW	4548H          ; Form Feed (0CH), CLS, ESC E, and ESC J routine
+    DW	4548H          ; Form Feed (0CH), CLS, ESC E, and ESC J routine
     DB	'E'             
-	DW	4548H          ; Form Feed (0CH), CLS, ESC E, and ESC J routine
+    DW	4548H          ; Form Feed (0CH), CLS, ESC E, and ESC J routine
     DB	'K'             
-	DW	4537H          
+    DW	4537H          
     DB	'J'             
-	DW	454EH          
+    DW	454EH          
     DB	'l'             
-	DW	4535H          
+    DW	4535H          
     DB	'L'             
-	DW	44EAH          
+    DW	44EAH          
     DB	'M'             
-	DW	44C4H          
+    DW	44C4H          
     DB	'Y'             
-	DW	43AFH          
+    DW	43AFH          
     DB	'A'             
-	DW	4469H          
+    DW	4469H          
     DB	'B'             
-	DW	446EH          
+    DW	446EH          
     DB	'C'             
-	DW	4453H          
+    DW	4453H          
     DB	'D'             
-	DW	445CH          
+    DW	445CH          
     DB	'H'             
-	DW	44A8H          ; Vertical tab and ESC H routine (home cursor)
+    DW	44A8H          ; Vertical tab and ESC H routine (home cursor)
     DB	'p'             
-	DW	4431H          
+    DW	4431H          
     DB	'q'             
-	DW	4432H          
+    DW	4432H          
     DB	'P'             
-	DW	44AFH          
+    DW	44AFH          
     DB	'Q'             
-	DW	44BAH          
+    DW	44BAH          
     DB	'T'             
-	DW	4439H          
+    DW	4439H          
     DB	'U'             
-	DW	4437H          
+    DW	4437H          
     DB	'V'             
-	DW	443FH          
+    DW	443FH          
     DB	'W'             
-	DW	4440H          
+    DW	4440H          
     DB	'X'             
-	DW	444AH          
+    DW	444AH          
 	
 ; ======================================================
 ; ESCape sequence driver
@@ -11953,7 +11954,7 @@ L46CC:	INR  B          ; Increment the length
     	INX  D
     	RET
 L46D4:	DCR  B
-    	JMP  BEEP       ; BEEP statement
+    	JMP  BSBEEP       ; BSBEEP statement
 l46D8:	PUSH B
     	LDA  FACAH
     	DCR  B
@@ -12035,7 +12036,7 @@ L4759:	MOV  A,B
 	ANA  A
 	JZ   NOBEXE
 	CALL L3F28H     ; Initialize BASIC Variables for new execution
-	JMP  L0804H     ; Execute BASIC program
+	JMP  BASEXE     ; Execute BASIC program
 NOBEXE:	LDA  F651H      ; In TEXT because of BASIC EDIT flag
 	ANA  A
 	JNZ  L5EBAH
@@ -12053,7 +12054,7 @@ L4786H:	DCX   H         ; Decrement BASIC file byte pointer
 ; ======================================================
 ; DIM statement
 ; ======================================================
-	LXI   B,L4786H  ; Load "RET"urn address of ',' DIM separator routine
+BSDIM:	LXI   B,L4786H  ; Load "RET"urn address of ',' DIM separator routine
 	PUSH  B         ; Push retrun address to stack
 	ORI   AFH       ; Makes AFH below look like ORI AFH
 	STA   FB64H     ; Variable Create/Locate switch
@@ -12377,7 +12378,7 @@ L498DH:	LHLD  FBA8H
 ; ======================================================
 ; USING function
 ; ======================================================
-L4991H:	CALL  L0DACH    ; Main BASIC evaluation routine
+BFUSNG:	CALL  L0DACH    ; Main BASIC evaluation routine
 	CALL  L7304H    ; Different from M100
 	RST   1         ; Compare next byte with M
     DB	3BH             
@@ -12548,7 +12549,7 @@ L4AA3H:	POP   H
 	JZ    L4AF9H    
 	PUSH  B         
 	PUSH  D         
-	CALL  L0DABH    ; Main BASIC evaluation routine
+	CALL  BMEVAL    ; Main BASIC evaluation routine
 	POP   D         
 	POP   B         
 	PUSH  B         
@@ -12613,7 +12614,7 @@ L4B04H:	MVI   C,01H
 	POP   PSW       
 	JZ    L4AF9H    
 	PUSH  B         
-	CALL  L0DABH    ; Main BASIC evaluation routine
+	CALL  BMEVAL    ; Main BASIC evaluation routine
 	CALL  L35D9H    ; Generate TM error if last variable type not string or RET
 	POP   B         
 	PUSH  B         
@@ -12770,7 +12771,7 @@ L4BE5H:	XRA   A
 ; ======================================================
 ; INKEY$ function
 ; ======================================================
-L4BEAH:	RST   2         ; Get next non-white char from M
+BFINKY:	RST   2         ; Get next non-white char from M
 	PUSH  H         
 	CALL  CHSNS     ; Check keyboard queue for pending characters
 	JZ    L4BFEH    
@@ -12790,7 +12791,7 @@ L4BFEH:	LXI   H,L03F5H
 L4C0BH:	PUSH  H         
 	JMP   L4C21H    
 	
-L4C0FH:	CALL  L0DABH    ; Main BASIC evaluation routine
+L4C0FH:	CALL  BMEVAL    ; Main BASIC evaluation routine
 	PUSH  H         ; Save HL on stack
 	CALL  L2916H    ; Get pointer to most recently used string (Len + address)
 	MOV   A,M       ; Get length of the string
@@ -12916,7 +12917,7 @@ L4CBFH:	CALL  L4C84H    ; Get file descriptor for file in A
 ; ======================================================
 ; OPEN statement
 ; ======================================================
-	LXI   B,L0C39H  ; Load address of routine to terminate BASIC?
+BSOPEN:	LXI   B,L0C39H  ; Load address of routine to terminate BASIC?
 	PUSH  B         
 	CALL  L4C0FH    ; Evaluate arguments to RUN/OPEN/SAVE commands
 	JNZ   L4CD7H    ; Test if device name specified ... jump if it was
@@ -13004,7 +13005,7 @@ L4D45H:	CALL  L4C84H    ; Get file descriptor for file in A
 	
 	
 ; ======================================================
-; LCD), CRT), and LPT file close routine
+; LCD, CRT, and LPT file close routine
 ; ======================================================
 L4D59H:	CALL  L4EFFH    
 	POP   H         
@@ -13025,13 +13026,13 @@ L4D5DH:	PUSH  H
 ; ======================================================
 ; RUN statement
 ; ======================================================
-L4D6EH:	STC             
+BSRUN2:	STC             
 	LXI   D,AFF6H   
 	PUSH  PSW       
 	DCX   H         ; Point to byte in BASIC command before space
 	RST   2         ; Get next non-white char from M
 	CPI   4DH       ; Test for "M"
-	JZ    L2491H    ; LOADM and RUNM statement
+	JZ    BSLORM    ; LOADM and RUNM statement
 	CALL  L4C0FH    ; Evaluate arguments to RUN/OPEN/SAVE commands
 	JZ    L1E7BH    
 	MOV   A,D       
@@ -13084,8 +13085,8 @@ L4DA6H:	LHLD  FC8CH
 ; ======================================================
 ; SAVE statement
 ; ======================================================
-	CPI   4DH       ; Test for 'M'
-	JZ    L22CCH    ; SAVEM statement
+BSSAVE:	CPI   4DH       ; Test for 'M'
+	JZ    BSSAVM    ; SAVEM statement
 	CALL  L3F2CH    ; Initialize BASIC Variables for new execution
 	CALL  L4C0FH    ; Evaluate arguments to RUN/OPEN/SAVE commands
 	JZ    L1ED9H    
@@ -13124,7 +13125,7 @@ L4E0BH:	XRA   A         ; Set file number to zero to prevent errors
 	JC    L4E18H    ; Test if a LIST operation requested, jump if not
 	DCX   H         ; Rewind BASIC line pointer 1 character
 	RST   2         ; Get next non-white char from M
-	JMP   L1140H    ; LIST statement
+	JMP   BSLIST    ; LIST statement
 	
 L4E18H:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	22H             
@@ -13142,7 +13143,7 @@ L4E22H:	LDA   FCA7H
 ; ======================================================
 ; CLOSE statement
 ; ======================================================
-	LDA   FC82H     ; Maxfiles
+BSCLOS:	LDA   FC82H     ; Maxfiles
 	JNZ   L4E3BH    
 	PUSH  H         
 L4E2FH:	PUSH  PSW       
@@ -13215,7 +13216,7 @@ L4E8AH:	POP   D
 ; ======================================================
 ; INPUT statement
 ; ======================================================
-L4E8EH:	RST   2         ; Get next non-white char from M
+BSINPT:	RST   2         ; Get next non-white char from M
 	RST   1         ; Compare next byte with M
     DB	24H             ; Test for '$'
 	RST   1         ; Compare next byte with M
@@ -13359,7 +13360,7 @@ L4F4DH:	RST   5         ; Determine type of last var used
 ; ======================================================
 ; LINE INPUT # statement
 ; ======================================================
-L4F5BH:	LXI   B,L0C39H  
+BSLINP:	LXI   B,L0C39H  
 	PUSH  B         
 	CALL  L4F29H    ; Test for '#' char and process argument
 	CALL  L4790H    ; Find address of variable at M
@@ -13503,31 +13504,31 @@ L504EH:	MVI   E,37H
 ; ======================================================
 ; LOF function
 ; ======================================================
-	RST   7         ; Jump to RST 38H Vector entry of following byte
+BFLOF:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	4EH             
 	
 ; ======================================================
 ; LOC function
 ; ======================================================
-	RST   7         ; Jump to RST 38H Vector entry of following byte
+BFLOC:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	50H             
 	
 ; ======================================================
 ; LFILES function
 ; ======================================================
-	RST   7         ; Jump to RST 38H Vector entry of following byte
+BFLFIL:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	52H             
 	
 ; ======================================================
 ; DSKO$ function
 ; ======================================================
-L5071H:	RST   7         ; Jump to RST 38H Vector entry of following byte
+BFDSKO:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	56H             
 	
 ; ======================================================
 ; DSKI$ function
 ; ======================================================
-L5073H:	RST   7         ; Jump to RST 38H Vector entry of following byte
+BFDSKI:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	54H             
 L5075H:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	28H             
@@ -13631,8 +13632,8 @@ L50F1H:
 ; Device control block vector addresses table
 ; ======================================================
 L5113H:
-	DW	14D2H,14F2H,167FH,1762H; LCD, CRT, CAS, COM
-	DW	1877H,1754H,17D1H,14FCH; WAND, LPT, MDM, RAM
+    DW	14D2H,14F2H,167FH,1762H; LCD, CRT, CAS, COM
+    DW	1877H,1754H,17D1H,14FCH; WAND, LPT, MDM, RAM
 	
 L5123H:	RST   7         ; Jump to RST 38H Vector entry of following byte
     DB	30H             ; OPEN hook
@@ -13675,7 +13676,7 @@ L5146H:	CALL  UNLOCK    ; Resume automatic scrolling
 ; ======================================================
 ; TELCOM ON ERROR Handler
 ; ======================================================
-L5152H:	CALL  BEEP      ; BEEP statement
+L5152H:	CALL  BSBEEP      ; BSBEEP statement
 	LXI   H,L51A4H  ; Load pointer to Main FKeys
 	CALL  STFNK     ; Set new function key table
 	
@@ -13705,15 +13706,15 @@ L517CH:
 ; ======================================================
 L5185H:
     DB	"STAT"          
-	DW	51C0H          
+    DW	51C0H          
     DB	"TERM"          
-	DW	5455H          
+    DW	5455H          
     DB	"CALL"          
-	DW	522FH          
+    DW	522FH          
     DB	"FIND"          
-	DW	524DH          
+    DW	524DH          
     DB	"MENU"          
-	DW	5797H          
+    DW	5797H          
     DB	FFH             
 	
 	
@@ -14191,7 +14192,7 @@ L54E6H:	CALL  CHSHBR    ; Check if SHIFT-BREAK is being pressed
 	JC    L54E6H    
 	JMP   L548FH    
 	
-L54EFH:	CALL  BEEP      ; BEEP statement
+L54EFH:	CALL  BSBEEP      ; BSBEEP statement
 	XRA   A         
 	STA   F659H     
 	CALL  L5556H    
@@ -14218,8 +14219,8 @@ L54FCH:	MOV   E,A
 ; ======================================================
 ; TERM Mode function key vector table
 ; ======================================================
-	DW	5523H,567EH,559DH,553EH
-	DW	5550H,551DH,5520H,571EH
+    DW	5523H,567EH,559DH,553EH
+    DW	5550H,551DH,5520H,571EH
 	
 L551DH:
     DB	FFH             ; Jump to RST 38H Vector entry of following byte
@@ -14627,7 +14628,7 @@ L5837H:	CALL  L5D4DH    ; Stop BASIC execution, Restore BASIC SP & clear SHIFT-P
 ; ======================================================
 ; MENU Program command loop
 ; ======================================================
-L585AH:	CZ    BEEP      ; BEEP statement
+L585AH:	CZ    BSBEEP      ; BSBEEP statement
 L585DH:	CALL  L5D70H    ; Print time on top line until key pressed
 	CALL  L5D64H    ; Wait for char from keyboard & convert to uppercase
 	CPI   0DH       ; Test for enter
@@ -14646,7 +14647,7 @@ L585DH:	CALL  L5D70H    ; Print time on top line until key pressed
 	CPI   09H       ; Test for TAB
 	JZ    L585AH    ; MENU Program command loop
 	CALL  L5D88H    ; Print the keystroke followed by '_'
-	JMP   L585DH    ; Loop in MENU program - no BEEP
+	JMP   L585DH    ; Loop in MENU program - no BSBEEP
 	
 	
 ; ======================================================
@@ -14654,7 +14655,7 @@ L585DH:	CALL  L5D70H    ; Print time on top line until key pressed
 ; ======================================================
 L588EH:	CALL  L5D9EH    ; Delete keystroke from MENU command buffer and erase from LCD
 	JZ    L585AH    ; MENU Program command loop
-	JMP   L585DH    ; MENU Program command loop - no BEEP
+	JMP   L585DH    ; MENU Program command loop - no BSBEEP
 	
 L5897H:	ORA   A         ; Test if keyboard entry active
 	RNZ             ; Return if keyboard entry active - space not allowed
@@ -14734,7 +14735,7 @@ L58F7H:	LDA   FDEDH     ; Flag to indicate MENU entry location or command entry
 	MVI   M,00H     ; NULL terminate the keyboard entered selection
 	CALL  L5AB1H    ; Search directory for filename
 	JNZ   L5921H    ; Launch program / file whose catalog address is in HL
-L5906H:	CALL  BEEP      ; BEEP statement
+L5906H:	CALL  BSBEEP      ; BSBEEP statement
 	JMP   L5837H    ; Handle CTRL-U key from MENU command loop
 	
 L590CH:	LDA   FDEEH     ; Current MENU directory location
@@ -14781,7 +14782,7 @@ L5921H:	PUSH  H         ; Save Catalog Entry address to stack
 	CALL  L6C9CH    ; Copy BASIC Function key table to key definition area
 	CALL  L6C7FH    
 	CALL  L3F28H    ; Initialize BASIC Variables for new execution
-	JMP   L0804H    ; Execute BASIC program
+	JMP   BASEXE    ; Execute BASIC program
 	
 	
 ; ======================================================
@@ -14920,7 +14921,7 @@ L5A12H:	CALL  CLS       ; CLS statement
 ; ======================================================
 L5A15H:	CALL  L5D6AH    ; Home cursor
 	LXI   H,FD8BH   
-	CALL  L192FH    ; DATE$ function
+	CALL  BFDATS    ; DATE$ function
 	MVI   M,20H     
 	INX   H         
 	CALL  L1962H    ; Read day and store at M
@@ -15169,7 +15170,7 @@ L5B74H:	STA   FDEDH     ; Flag to indicate MENU entry location or command entry
 L5B88H  (21H) LXI H,L5B88H	; Point to self for ON ERROR handler to keep looping
 	SHLD  F652H     ; Long jump return address on error
 	CALL  CLS       ; CLS statement
-	CALL  BEEP      ; BEEP statement
+	CALL  BSBEEP      ; BSBEEP statement
 	LHLD  FDEEH     ; Current MENU directory location
 	CALL  L5A58H    ; Print NULL terminated string at M
 	LXI   H,L5CD6H  ; Point to " not found" text
@@ -15204,7 +15205,7 @@ L5BCFH:	CALL  L5A58H    ; Print NULL terminated string at M
 L5BE2H:	SUB   A         
 	STA   VOUTSW    ; Output device for RST 20H (0=screen)
 	CALL  L4BB8H    ; Move LCD to blank line (send CRLF if needed)
-	CALL  BEEP      ; BEEP statement
+	CALL  BSBEEP      ; BSBEEP statement
 	LXI   H,L5D0AH  
 	CALL  STFNK     ; Set new function key table
 	JMP   L5BBBH    
@@ -15362,11 +15363,11 @@ L5CE8H:
 ; ======================================================
 L5CEFH:
     DB	"FIND"          
-	DW	5BF5H          
+    DW	5BF5H          
     DB	"LFND"          
-	DW	5BF7H          
+    DW	5BF7H          
     DB	"MENU"          
-	DW	5797H          
+    DW	5797H          
     DB	FFH             
 	
 L5D02H:
@@ -15525,7 +15526,7 @@ L5DEEH:	LXI   H,L5DFBH  ; Load address of Main TEXT loop ON ERROR Handler
 	LXI   H,L5E22H  ; TEXT Function key table - empty
 	CALL  STFNK     ; Set new function key table
 	XRA   A         
-L5DFBH:	CNZ   BEEP      ; BEEP statement
+L5DFBH:	CNZ   BSBEEP      ; BSBEEP statement
 	CALL  L5D53H    ; Stop BASIC execution, Restore BASIC SP & clear SHIFT-PRINT Key
 	LXI   H,L5E15H  ; Point to "File to edit" text
 	CALL  L27B1H    ; Print buffer at M until NULL or '"'
@@ -15562,7 +15563,7 @@ L5E4FH:	DAD   D
 ; ======================================================
 ; EDIT statement
 ; ======================================================
-	PUSH  H         
+BSEDIT:	PUSH  H         
 	PUSH  PSW       
 	MVI   A,01H     
 	JZ    L5E5AH    
@@ -15582,7 +15583,7 @@ L5E5AH:	STA   F651H     ; In TEXT because of BASIC EDIT flag
 	POP   PSW       
 	POP   H         
 	PUSH  H         
-	JMP   L1140H    ; LIST statement
+	JMP   BSLIST    ; LIST statement
 	
 L5E82H:	CALL  L4F45H    
 	CALL  L212DH    
@@ -15779,14 +15780,14 @@ L6015H:	RET             ; "RET"urn to handler function
 ; TEXT control character vector table
 ; ======================================================
 L6016H:
-	DW	6015H,618CH,61D7H,628FH
-	DW	60DEH,6155H,617AH,6713H
-	DW	610BH,608AH,6015H,6015H
-	DW	6242H,60BEH,6551H,6431H
-	DW	607CH,620BH,61FDH,6151H
-	DW	61C2H,6445H,6774H,6210H
-	DW	60E2H,6691H,621CH,6056H
-	DW	60DEH,6151H,6155H,60E2H
+    DW	6015H,618CH,61D7H,628FH
+    DW	60DEH,6155H,617AH,6713H
+    DW	610BH,608AH,6015H,6015H
+    DW	6242H,60BEH,6551H,6431H
+    DW	607CH,620BH,61FDH,6151H
+    DW	61C2H,6445H,6774H,6210H
+    DW	60E2H,6691H,621CH,6056H
+    DW	60DEH,6151H,6155H,60E2H
 	
 	
 ; ======================================================
@@ -16731,19 +16732,19 @@ L6654H:	LXI   D,VKYBBF  ; Keyboard buffer
 	JMP   L6678H    
 	
     DB	03H             
-	DW	6672H          
+    DW	6672H          
     DB	08H             ; Backspace Key
-	DW	IHBACK          ; Backspace key handler
+    DW	IHBACK          ; Backspace key handler
     DB	09H             ; TAB Key
-	DW	667CH           ; TAB Key handler
+    DW	667CH           ; TAB Key handler
     DB	0DH             
-	DW	6675H          
+    DW	6675H          
     DB	15H             
-	DW	IHCTUX          ; CTRL-U handler
+    DW	IHCTUX          ; CTRL-U handler
     DB	18H             
-	DW	IHCTUX          ; CTRL-X handler
+    DW	IHCTUX          ; CTRL-X handler
     DB	1DH             
-	DW	IHBACK          ; Input routine backspace, left arrow, CTRL-H handler
+    DW	IHBACK          ; Input routine backspace, left arrow, CTRL-H handler
 L6672H:	LXI   D,VKYBBF  ; Keyboard buffer
 L6675H:	POP   H         
 	XRA   A         
@@ -16757,7 +16758,7 @@ L667EH:	MOV   C,A       ; Save in C
 	SUI   09H       ; Tab stops are 8 characters
 	LXI   H,VCURCL  ; Cursor column (1-40)
 	CMP   M         ; Test if column < 9
-	JC    BEEP      ; BEEP statement
+	JC    BSBEEP      ; BSBEEP statement
 	MOV   A,C       ; Restore TAB character to A
 	INR   B         
 	RST   4         ; Send character in A to screen/printer
@@ -17585,36 +17586,36 @@ L6BE6H:	MOV   A,M
 ; ======================================================
 L6BF1H:
     DB	B0H             
-	DW	6C49H          
+    DW	6C49H          
     DB	"BASIC",00H     
     DB	B0H             
-	DW	5DEEH          
+    DW	5DEEH          
     DB	"TEXT ",00H     
     DB	B0H             
-	DW	5146H          
+    DW	5146H          
     DB	"TELCOM",00H     
     DB	B0H             
-	DW	5B68H          
+    DW	5B68H          
     DB	"ADDRSS",00H     
     DB	B0H             
-	DW	5B6FH          
+    DW	5B6FH          
     DB	"SCHEDL",00H     
     DB	88H             
-	DW	0000H          
+    DW	0000H          
     DB	32H,FBH,FFH,C3H,82H,76H,20H          ; Different from M100
     DB	C8H             
-	DW	0000H          
+    DW	0000H          
 L6C37H:
     DB	C5H,CDH,DDH,26H,C1H,C9H,69H          ; Different from M100
     DB	48H             
-	DW	0000H          
+    DW	0000H          
 L6C42H:
     DB	32H,09H,F8H,C3H,8DH,21H,20H          ; Different from M100
 	
 ; ======================================================
 ; BASIC Entry point
 ; ======================================================
-L6C49H:	CALL  L6C7FH    
+BENTRY:	CALL  L6C7FH
 	CALL  L7EA6H    ; Display TRS-80 Model number & Free bytes on LCD
 	LXI   H,F999H   
 	SHLD  FA8CH     ; Mark Unsaved BASIC program as active program
@@ -18023,9 +18024,9 @@ L6E92H:	POP   H
 ; ======================================================
 ; RS232 baud rate timer values
 ; ======================================================
-	DW	4800H,456BH,4200H,4100H
-	DW	4080H,4040H,4020H,4010H
-	DW	4008H          
+    DW	4800H,456BH,4200H,4100H
+    DW	4080H,4040H,4020H,4010H
+    DW	4008H          
 	
 	
 ; ======================================================
@@ -18209,7 +18210,7 @@ L6F87H:	CALL  L6FDBH    ; Read Cassette port data bit
 	JNZ   L6F87H    ; Loop for 128 bits (16 bytes)
 L6F9AH:	CALL  CHSHBR    ; Check if SHIFT-BREAK is being pressed
 	RC              ; Return if SHIFT-BREAK pressed
-	LXI   H,0000H  ; Set count of 0->1 and 0->0 transitions to zero
+	LXI   H,0000H   ; Set count of 0->1 and 0->0 transitions to zero
 	MVI   B,40H     ; Load bit count to 64 (8 bytes)
 L6FA3H:	CALL  L7016H    ; Read a bit (period in C)
 	RC              ; Return if SHIFT-BREAK pressed
@@ -19350,7 +19351,7 @@ L765CH:	DI              ; Disalbe interrupts
 	
 	
 ; ======================================================
-; Beep routine
+; BSBeep routine
 ; ======================================================
 L7662H:	CALL  L765CH    ; Set interrupt to 1DH
 	MVI   B,00H     
@@ -19718,7 +19719,7 @@ L7D75H:	LXI   H,VOPTRF  ; Option ROM flag
 	JNZ   L7DE7H    ; Cold boot routine
 	LHLD  VSPOPD    ; Load signature for Auto Poweroff
 	XCHG            ; Put signature in DE
-	LXI   H,0000H  ; Prepare to clear signature for Auto Poweroff
+	LXI   H,0000H   ; Prepare to clear signature for Auto Poweroff
 	SHLD  VSPOPD    ; Clear signature for Auto Poweroff
 	LXI   H,9C0BH   ; Load comparison signature saved by Auto Poweroff
 	RST   3         ; Compare DE and HL
@@ -19936,7 +19937,7 @@ L7F01H:
 	POP   PSW       
 	CALL  L7F2BH    ; Adjust SP location based on CLEAR parameters
 	CALL  L3F2FH    ; Initialize BASIC Variables for new execution
-	JMP   L0804H    ; Execute BASIC program
+	JMP   BASEXE    ; Execute BASIC program
 	
 L7F2BH:	PUSH  PSW       
 	LHLD  VHIMEM    ; HIMEM
@@ -20050,7 +20051,7 @@ L7FD6H:	XTHL            ; Get PC from stack to read vector byte
 	XTHL            ; Restore HL & "PUSH" return address of the RST vector
 L7FF3H:	RET             ; Return (to the vector address from the table)
 	
-L7FF4H:	CALL  L35BAH    ; CDBL function
+L7FF4H:	CALL  BFCDBL    ; CDBL function
 	JMP   L31B5H    ; Move FAC1 to FAC2
 	
 L7FFAH:	LXI   H,F684H   ; Different from M100
