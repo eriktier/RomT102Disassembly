@@ -4579,7 +4579,7 @@ L1B98H:	LHLD  VCURLN    ; Cursor row (1-8)
 	JMP   L659BH    ; Get 10's place to test for century roll-over
 	
 L1BA7H:	XRA   A         ; Jump to skip update if not a new century
-L1BA8H:	JMP   L7D33H    ; End different from m100
+L1BA8H:	JMP   BOOT    ; End different from m100
 	
 L1BABH:	CALL  L7682H    ; Check for optional external controller
 L1BAEH:	JMP   L7391H    ; Jump to Cursor BLINK - Continuation of RST 7.5 Background hook
@@ -15526,7 +15526,7 @@ L5DEEH:	LXI   H,L5DFBH  ; Load address of Main TEXT loop ON ERROR Handler
 	LXI   H,L5E22H  ; TEXT Function key table - empty
 	CALL  STFNK     ; Set new function key table
 	XRA   A         
-L5DFBH:	CNZ   BSBEEP      ; BSBEEP statement
+L5DFBH:	CNZ   BSBEEP    ; BSBEEP statement
 	CALL  L5D53H    ; Stop BASIC execution, Restore BASIC SP & clear SHIFT-PRINT Key
 	LXI   H,L5E15H  ; Point to "File to edit" text
 	CALL  L27B1H    ; Print buffer at M until NULL or '"'
@@ -15761,10 +15761,10 @@ L5FDDH:	CALL  L5D53H    ; Stop BASIC execution, Restore BASIC SP & clear SHIFT-P
 	CPI   7FH       ; Test for DEL key
 	JZ    L6118H    ; Jump to Handler for DEL key
 	CPI   20H       ; Test for SPACE
-	JNC   L608AH    ; TEXT control I routine
+	JNC   TEXTCI    ; TEXT control I routine
 	MOV   C,A       ; Load control code to BC to offset into table
 	MVI   B,00H     
-	LXI   H,L6016H  ; TEXT control character vector table
+	LXI   H,TXCCVT  ; TEXT control character vector table
 	DAD   B         ; Offset into table
 	DAD   B         ; Offset into table (each entry 2 bytes)
 	MOV   C,M       ; Get the LSB of the handler function pointer
@@ -15779,21 +15779,21 @@ L6015H:	RET             ; "RET"urn to handler function
 ; ======================================================
 ; TEXT control character vector table
 ; ======================================================
-L6016H:
-    DW	6015H,618CH,61D7H,628FH
-    DW	60DEH,6155H,617AH,6713H
-    DW	610BH,608AH,6015H,6015H
-    DW	6242H,60BEH,6551H,6431H
-    DW	607CH,620BH,61FDH,6151H
-    DW	61C2H,6445H,6774H,6210H
-    DW	60E2H,6691H,621CH,6056H
-    DW	60DEH,6151H,6155H,60E2H
+TXCCVT:
+    DW	L6015H,TEXTCA,TEXTCB,TEXTCC
+    DW	TEXTRA,TEXTUA,TEXTCF,TEXTCG
+    DW	TEXTCH,TEXTCI,L6015H,L6015H
+    DW	TEXTCL,TEXTCM,TEXTCN,TEXTCO
+    DW	TEXTCP,L620BH,TEXTCR,TEXTLA	; TODO: come up with good name for L620BH
+    DW	TEXTCT,TEXTCU,TEXTCV,TEXTCW
+    DW	TEXTDA,TEXTCY,TEXTCZ,TXTESC
+    DW	TEXTRA,TEXTLA,TEXTUA,TEXTDA
 	
 	
 ; ======================================================
-; TEXT ESCape routine
+; 6056H: TEXT ESCape routine
 ; ======================================================
-	LDA   F6E0H     ; Load value of previous key (testing for ESC ESC)
+TXTESC:	LDA   F6E0H     ; Load value of previous key (testing for ESC ESC)
 	SUI   1BH       ; Test if previous key was also ESC
 	RNZ             ; Return if previous key wasn't ESC ... only exit if ESC ESC
 	MOV   L,A       ; Prepare to NULL out long jump return address
@@ -15813,9 +15813,9 @@ L6016H:
 	
 	
 ; ======================================================
-; TEXT control P routine
+; 607CH: TEXT control P routine
 ; ======================================================
-L607CH:	CALL  L63E5H    ; Get next byte for TEXT Program entry
+TEXTCP:	CALL  L63E5H    ; Get next byte for TEXT Program entry
 	JC    L6501H    ; Paste routine. Insert PASTE buffer into .DO file
 	ANA   A         
 	RZ              
@@ -15825,10 +15825,10 @@ L607CH:	CALL  L63E5H    ; Get next byte for TEXT Program entry
 	RZ              
 	
 ; ======================================================
-; TEXT control I routine
+; 608AH: TEXT control I routine
 ; ======================================================
-L608AH:	PUSH  PSW       ; Save byte (TAB) on stack
-	CALL  L628FH    ; TEXT control C routine
+TEXTCI:	PUSH  PSW       ; Save byte (TAB) on stack
+	CALL  TEXTCC    ; TEXT control C routine
 	CALL  L6A9BH    
 	CALL  L6AF9H    ; Get address in .DO file of current cursor position
 	POP   PSW       ; Restore byte from stack
@@ -15851,9 +15851,9 @@ L60B1H:
 	
 	
 ; ======================================================
-; TEXT control M routine
+; 60BEH: TEXT control M routine
 ; ======================================================
-	CALL  L628FH    ; TEXT control C routine
+TEXTCM:	CALL  TEXTCC    ; TEXT control C routine
 	CALL  L6A9BH    
 	LHLD  FB62H     ; Pointer to end of .DO file
 	INX   H         
@@ -15870,15 +15870,15 @@ L60B1H:
 	
 	
 ; ======================================================
-; TEXT right arrow and control D routine
+; 60DEH: TEXT right arrow and control D routine
 ; ======================================================
-L60DEH:	CALL  L60E8H    ; Call right arrow processing
+TEXTRA:	CALL  L60E8H    ; Call right arrow processing
 	STC             ; Set Carry to prevent call below
 	
 ; ======================================================
-; TEXT down arrow and control X routine
+; 60E2H: TEXT down arrow and control X routine
 ; ======================================================
-L60E2H:	CNC   L60F5H    ; Call Down arrow processing if no fall-through
+TEXTDA:	CNC   L60F5H    ; Call Down arrow processing if no fall-through
 	JMP   L62A0H    
 	
 L60E8H:	LHLD  VCURLN    ; Cursor row (1-8)
@@ -15904,14 +15904,14 @@ L60F5H:	INR   L         ; Increment the ROW number
 	
 	
 ; ======================================================
-; TEXT control H routine
+; 610BH: TEXT control H routine
 ; ======================================================
-L610BH:	CALL  L628FH    ; TEXT control C routine
+TEXTCH:	CALL  TEXTCC    ; TEXT control C routine
 	CALL  L6AF9H    ; Get address in .DO file of current cursor position
 	CALL  L630BH    ; Reposition TEXT LCD cursor to file pos in HL
 	CALL  L615BH    ; Call left arrow processing routine
 	RC              
-L6118H:	CALL  L628FH    ; TEXT control C routine
+L6118H:	CALL  TEXTCC    ; TEXT control C routine
 	CALL  L6AF9H    ; Get address in .DO file of current cursor position
 	PUSH  H         
 	CALL  L630BH    ; Reposition TEXT LCD cursor to file pos in HL
@@ -15945,22 +15945,29 @@ L6146H:	PUSH  H         ; Preserve HL
 	
 	
 ; ======================================================
-; TEXT left arrow and control S routine
+; 6151H: TEXT left arrow and control S routine
 ; ======================================================
-	CALL  L615BH    ; Call left arrow processing routine
+TEXTLA:	CALL  L615BH    ; Call left arrow processing routine
 	STC             ; Set carry and fall through
 	
 ; ======================================================
-; TEXT up arrow and control E routine
+; 6155H: TEXT up arrow and control E routine
 ; ======================================================
-	CNC   L6166H    ; Handle UP key if not fall-through
-	JMP   L62A0H    
-	
+TEXTUA:	CNC   L6166H    ; Handle UP key if not fall-through
+	JMP   L62A0H
+
+; ======================================================
+; Handle left arrow processing during TEXT
+; ======================================================
 L615BH:	LHLD  VCURLN    ; Cursor row (1-8)
 	DCR   H         ; Decrement COL
 	JNZ   L6175H    ; Jump to simply update the cursor position if not zero
 	LDA   VACTCC    ; Active columns count (1-40)
 	MOV   H,A       ; Place column on right edge of screen
+
+; ======================================================
+; Handle left and up arrow processing during TEXT
+; ======================================================
 L6166H:	PUSH  H         ; Save new COL on stack
 	CALL  L6A45H    ; Get address in .DO file of start of current row using Line Starts array
 	LHLD  F767H     ; Load start address of .DO file being edited
@@ -15970,15 +15977,17 @@ L6166H:	PUSH  H         ; Save new COL on stack
 	RC              ; Return if at top of text ... no update
 	DCR   L         ; Decrement the LCD row
 	CZ    L631DH    ; If decremented off-screen, call to update the LCD
+
+; Update the current cursor position
 L6175H:	CALL  POSIT     ; Set the current cursor position (H=Row),L=Col)
 	ANA   A         ; Clear the Carry flag for return processing
 	RET             
 	
 	
 ; ======================================================
-; TEXT control F routine
+; 617AH: TEXT control F routine
 ; ======================================================
-	CALL  L6AF9H    ; Get address in .DO file of current cursor position
+TEXTCF:	CALL  L6AF9H    ; Get address in .DO file of current cursor position
 L617DH:	CALL  L61A4H    ; Test for EOF. If not EOF, test for word-wrap char
 	JNZ   L617DH    
 L6183H:	CALL  L61A4H    ; Test for EOF. If not EOF, test for word-wrap char
@@ -15987,9 +15996,9 @@ L6183H:	CALL  L61A4H    ; Test for EOF. If not EOF, test for word-wrap char
 	
 	
 ; ======================================================
-; TEXT control A routine
+; 618CH: TEXT control A routine
 ; ======================================================
-	CALL  L6AF9H    ; Get address in .DO file of current cursor position
+TEXTCA:	CALL  L6AF9H    ; Get address in .DO file of current cursor position
 L618FH:	CALL  L61AFH    ; Test for start of .DO file and word-wrap
 	JZ    L618FH    
 L6195H:	CALL  L61AFH    ; Test for start of .DO file and word-wrap
@@ -16021,9 +16030,9 @@ L61BAH:	PUSH  B         ; Push return address back to stack
 	
 	
 ; ======================================================
-; TEXT control T routine
+; 61C2H: TEXT control T routine
 ; ======================================================
-L61C2H:	DCR   L         
+TEXTCT:	DCR   L         
 	MVI   L,01H     
 	JNZ   L61D1H    
 	PUSH  H         
@@ -16036,9 +16045,9 @@ L61D1H:	CALL  POSIT     ; Set the current cursor position (H=Row),L=Col)
 	
 	
 ; ======================================================
-; TEXT control B routine
+; 61D7H: TEXT control B routine
 ; ======================================================
-	PUSH  H         
+TEXTCB:	PUSH  H         
 	INR   L         
 	CALL  L63CDH    ; Get number of LCD rows based on label protect, preserve flags
 	INR   A         
@@ -16064,30 +16073,31 @@ L61ECH:	DCR   A
 	
 	
 ; ======================================================
-; TEXT control R routine
+; 61FDH: TEXT control R routine
 ; ======================================================
-	LDA   VACTCC    ; Active columns count (1-40)
+TEXTCR:	LDA   VACTCC    ; Active columns count (1-40)
 	MOV   H,A       
 	CALL  POSIT     ; Set the current cursor position (H=Row),L=Col)
 	CALL  L6AF9H    ; Get address in .DO file of current cursor position
 	CALL  L6AA3H    ; Find address of 1st char on LCD line for ROW containing file pos in HL
-	LXI   B,L0126H  
+    DB  01H		; LXI   B,L0126H   
+L620BH: MVI   H,01H	; second 'half' (26h) of instruction on 620AH
 	JMP   L61D1H    
 	
 	
 ; ======================================================
-; TEXT control W routine
+; 6210H: TEXT control W routine
 ; ======================================================
-	LHLD  F767H     ; Load start address of .DO file being edited
+TEXTCW:	LHLD  F767H     ; Load start address of .DO file being edited
 	CALL  L6236H    
 	CALL  HOME      ; Home cursor
 	JMP   L62A0H    
 	
 	
 ; ======================================================
-; TEXT control Z routine
+; 621CH: TEXT control Z routine
 ; ======================================================
-	LHLD  FB62H     ; Pointer to end of .DO file
+TEXTCZ:	LHLD  FB62H     ; Pointer to end of .DO file
 	PUSH  H         
 	CALL  L6A3EH    ; Get address in .DO file of start of row just below visible LCD
 	POP   H         
@@ -16108,9 +16118,9 @@ L6236H:	CALL  L0013H    ; Load pointer to Storage of TEXT Line Starts in DE
 	
 	
 ; ======================================================
-; TEXT control L routine
+; 6242H: TEXT control L routine
 ; ======================================================
-L6242H:	CALL  L628FH    ; TEXT control C routine
+TEXTCL:	CALL  TEXTCC    ; TEXT control C routine
 	CALL  L6AF9H    ; Get address in .DO file of current cursor position
 	SHLD  F6E2H     ; Start address in .DO file of SELection for copy/cut
 	SHLD  F6E4H     ; End address in .DO file of SELection for copy/cut
@@ -16157,9 +16167,9 @@ L6284H:	ADD   A
 	
 	
 ; ======================================================
-; TEXT control C routine
+; 628FH: TEXT control C routine
 ; ======================================================
-L628FH:	CALL  L62EEH    ; Test for a valid SEL region. If none, return to caller to skip the copy/cut
+TEXTCC:	CALL  L62EEH    ; Test for a valid SEL region. If none, return to caller to skip the copy/cut
 	PUSH  H         
 	LXI   H,0000H  
 	SHLD  F6E2H     ; Start address in .DO file of SELection for copy/cut
@@ -16429,22 +16439,22 @@ L6414H:	PUSH  H
 	
 	
 ; ======================================================
-; TEXT control O routine
+; 6431H: TEXT control O routine
 ; ======================================================
-	CALL  L62EEH    ; Test for a valid SEL region. If none, return to caller to skip the copy/cut
+TEXTCO:	CALL  L62EEH    ; Test for a valid SEL region. If none, return to caller to skip the copy/cut
 	CALL  L6383H    ; Delete zeros from end of edited DO file and update pointers
 	CALL  L64B6H    
 	PUSH  PSW       
 	CALL  L634AH    ; Expand .DO file so it fills all memory for editing
 	POP   PSW       
-	JNC   L628FH    ; TEXT control C routine
+	JNC   TEXTCC    ; TEXT control C routine
 	JMP   L60A3H    ; Display "Memory Full"
 	
 	
 ; ======================================================
-; TEXT control U routine
+; 6445H: TEXT control U routine
 ; ======================================================
-	CALL  L62EEH    ; Test for a valid SEL region. If none, return to caller to skip the copy/cut
+TEXTCU:	CALL  L62EEH    ; Test for a valid SEL region. If none, return to caller to skip the copy/cut
 	CALL  L6383H    ; Delete zeros from end of edited DO file and update pointers
 	CALL  L64B6H    
 	PUSH  PSW       
@@ -16551,7 +16561,7 @@ L64F9H:	PUSH  H
 	POP   H         
 	RET             
 	
-L6501H:	CALL  L628FH    ; TEXT control C routine
+L6501H:	CALL  TEXTCC    ; TEXT control C routine
 	CALL  L6383H    ; Delete zeros from end of edited DO file and update pointers
 	CALL  L2146H    ; Update system pointers for .DO), .CO), vars), etc.
 	CALL  L6AF9H    ; Get address in .DO file of current cursor position
@@ -16592,9 +16602,9 @@ L6545H:	RST   3         ; Compare DE and HL
 	
 	
 ; ======================================================
-; TEXT control N routine
+; 6551H: TEXT control N routine
 ; ======================================================
-	CALL  L1B98H    ; Different from M100
+TEXTCN:	CALL  L1B98H    ; Different from M100
 	CALL  L6AF9H    ; Get address in .DO file of current cursor position
 	PUSH  H         
 	LXI   H,L65D7H  ; Load pointer to "String:" text
@@ -16631,7 +16641,7 @@ L658FH:	LXI   H,L65CEH  ; Load pointer to "No match" text
 	CNC   L65AEH    ; Draw "No match" text and set "Redraw last line" flag
 	JMP   L6229H    
 	
-L6598H:	CALL  L628FH    ; TEXT control C routine
+L6598H:	CALL  TEXTCC    ; TEXT control C routine
 L659BH:	LHLD  VCURLN    ; Cursor row (1-8)
 	CALL  L63CDH    ; Get number of LCD rows based on label protect, preserve flags
 	CMP   L         
@@ -16768,9 +16778,9 @@ L667EH:	MOV   C,A       ; Save in C
 	
 	
 ; ======================================================
-; TEXT control Y routine
+; 6691H: TEXT control Y routine
 ; ======================================================
-	CALL  L6598H    
+TEXTCY:	CALL  L6598H    
 	LXI   H,L66F2H  
 	SHLD  F652H     ; Save as active ON ERROR handler vector
 	PUSH  H         
@@ -16829,9 +16839,9 @@ L670CH:
 	
 	
 ; ======================================================
-; TEXT control G routine
+; 6713H: TEXT control G routine
 ; ======================================================
-	LXI   D,L6735H  ; Load pointer to "Save to:" prompt
+TEXTCG:	LXI   D,L6735H  ; Load pointer to "Save to:" prompt
 	CALL  L673EH    
 	JC    L66F2H    
 	JZ    L66E6H    
@@ -16881,9 +16891,9 @@ L6760H:	MOV   A,D
 	
 	
 ; ======================================================
-; TEXT control V routine
+; 6774H: TEXT control V routine
 ; ======================================================
-	LXI   D,L67D4H  ; Pointer to "Load from:" text
+TEXTCV:	LXI   D,L67D4H  ; Pointer to "Load from:" text
 	CALL  L673EH    
 	JC    L66F2H    
 	JZ    L66E6H    
@@ -19684,7 +19694,7 @@ L7CF9H:
 ; ======================================================
 ; Boot routine
 ; ======================================================
-L7D33H:	LXI   SP,FCC0H  ; Different from M100: Start of Alt LCD character buffer
+BOOT:	LXI   SP,FCC0H  ; Different from M100: Start of Alt LCD character buffer
 	DCR   A         ; Different from M100
 	JNZ   L1BA8H    ; Different from M100
 L7D3AH:	IN    D8H       ; Different from M100
@@ -19700,23 +19710,23 @@ L7D3AH:	IN    D8H       ; Different from M100
 	ANI   82H       ; Mask all but CTRL-BREAK keys
 	MVI   A,EDH     ; Load code to disable key-scan col 9 (for CTRL-BREAK)
 	OUT   BAH       ; Disable key-scan col 9
-	JZ    L7DE7H    ; Cold boot routine
+	JZ    CBOOT     ; Cold boot routine
 	LHLD  VSSYS     ; Active system signature -- Warm vs Cold boot
 	LXI   D,8A4DH   ; Compare value to test if cold boot needed
 	RST   3         ; Compare DE and HL
-	JNZ   L7DE7H    ; Cold boot routine
+	JNZ   CBOOT     ; Cold boot routine
 	LDA   FAC1H     ; Load MSB of lowest known RAM address
 	MOV   D,A       ; Save value of last physical RAM
 	CALL  L7EE1H    ; Calculate physical RAM available
 	CMP   D         ; Test if more or less RAM than last boot-up
-	JNZ   L7DE7H    ; Cold boot routine
+	JNZ   CBOOT     ; Cold boot routine
 	CALL  VOPTRD    ; Call RAM routine to Detect Option ROM (copied to RAM by cold-boot)
 	MVI   A,00H     ; Indicate no Option ROM detected
 	JNZ   L7D75H    ; Jump if it's really true to skip DEC
 	DCR   A         ; Indicate OptROM detected
 L7D75H:	LXI   H,VOPTRF  ; Option ROM flag
 	CMP   M         ; Test if option ROM added or removed
-	JNZ   L7DE7H    ; Cold boot routine
+	JNZ   CBOOT     ; Cold boot routine
 	LHLD  VSPOPD    ; Load signature for Auto Poweroff
 	XCHG            ; Put signature in DE
 	LXI   H,0000H   ; Prepare to clear signature for Auto Poweroff
@@ -19770,7 +19780,7 @@ L7DBBH:	LXI   H,FAAFH   ; Start of IPL filename
 ; ======================================================
 ; Cold boot routine
 ; ======================================================
-L7DE7H:	LXI   SP,F5E6H  ; Load the SP with Cold Boot location
+CBOOT:	LXI   SP,F5E6H  ; Load the SP with Cold Boot location
 	CALL  L7EE1H    ; Calculate physical RAM available
 	MVI   B,90H     ; Prepare to copy 90H bytes of code to RAM
 	LXI   D,VSSYS   ; Active system signature -- Warm vs Cold boot
@@ -19790,10 +19800,10 @@ L7DE7H:	LXI   SP,F5E6H  ; Load the SP with Cold Boot location
 	CALL  L3469H    ; Move B bytes from (DE) to M with increment
 	MVI   B,D1H     ; Length of RAM directory (19 entries x 11 bytes)
 	XRA   A         ; Prepare to zero out RAM directory
-L7E1CH:	MOV   M,A       ; Zero out next byte of RAM directory
+LZEROB:	MOV   M,A       ; Zero out next byte of RAM directory
 	INX   H         ; Increment to next RAM directory location
 	DCR   B         ; Decrement counter
-	JNZ   L7E1CH    ; Loop until all bytes zeroed
+	JNZ   LZEROB    ; Loop until all bytes zeroed
 	MVI   M,FFH     
 	CALL  VOPTRD    ; Detect Option ROM
 	JNZ   L7E43H    
