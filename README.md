@@ -20,6 +20,7 @@ The goals of this project are:
 
 The following tools are used on this project:
 
+* [opForge](https://github.com/pig-games/opForge): This is the default assembler used for building the rom files so they can be compared to the original OS Rom. The goal is to keep the roms 100% identical.
 * *My trusty T102 with REXClassic and Cleuseau/ROM2 opt-rom*: There is nothing like using the real thing to quickly run a hex-dump or disassembly (using the Cleuseau/ROM2 opt-rom);
 * *VirtualT*: this emulator includes an IDE, Assembler, Dis-assembler, Debugger and Monitor. These are indispensable in testing whether the new assembler source code reproduces the exact identical ROM image;
 * *[Visual Studio Code](https://code.visualstudio.com/)*: This excellent editor is used as the main editor for the assembly files. It helps greatly with the editing, but also allows quick navigation and documentation previews on all addresses and labels in the source code. The built-in diff tool has been instrumental in merging the M100 documentation to the T102 dissassembly;
