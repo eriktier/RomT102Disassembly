@@ -4,7 +4,7 @@ VSSYS   equ 0F5F0H            ; Start of system
 VSPOPD  equ 0F5F2H            ; SP on power-down
 VHIMEM  equ 0F5F4H            ; HIMEM value
 VPWONH  equ 0F5F6H            ; Power on hook
-VBCRIH  equ 0F5F9H	      ; BCR interrupt hook
+VBCRIH  equ 0F5F9H	          ; BCR interrupt hook
 VUARTH  equ 0F5FCH            ; UART DR hook
 VTLINH  equ 0F5FFH            ; TL interupt hook
 VLPSIH  equ 0F602H            ; LPS interupt hook
@@ -39,7 +39,7 @@ VTMPHL  equ 0F6E7H            ; Temp HL Storage
 VTXTLS  equ 0F6EBH            ; Line starts array
 VTCTR3  equ 0F71FH            ; Unknown Control location - set to zero
 VDOEDI  equ 0F767H            ; Address of beginning of .DO file being edited
-VPSTBF  equ 0F88CH            ; Location of PASTE buffer
+VPSTBF  equ 0F88CH            ; End of RAM for file storage
 VLCLPS  equ 0F920H            ; LCD vs LPT output
 VWWRAP  equ 0F921H            ; Word wrap enable flag
 VOWIDT  equ 0F922H            ; Output width
@@ -47,7 +47,7 @@ VCLKTK  equ 0F92FH            ; The background tick
 VPWROF  equ 0F932H            ; Automatic poweroff renew flag
 VONTMT  equ 0F93DH            ; Used for RST7 Hook helper routine
 VBASNS  equ 0F99AH            ; Pointer to BASIC program not saved
-VPSTBF  equ 0F9A5H            ; Paste buffer pointer storage
+VPSTBP  equ 0F9A5H            ; Paste buffer pointer storage
 VPRVBR  equ 0F9A8H            ; Storage for previous baud rate settings (in Hayashi in Cat) !NOT USED
 VCATFS  equ 0F9BAH            ; Address of 1st available slot in catalog
 VFDARR  equ 0FA91H            ; Address of FD array
